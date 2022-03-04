@@ -43,8 +43,8 @@ public final class Camera {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public Ray3D generatePrimaryRay(final double pixelX, final double pixelY, final double gridSampleU, final double gridSampleV) {
-		final Point2D sample = doSample(pixelX, pixelY, gridSampleU, gridSampleV);
+	public Ray3D generatePrimaryRay(final double pixelX, final double pixelY, final double sampleU, final double sampleV) {
+		final Point2D sample = doSample(pixelX, pixelY, sampleU, sampleV);
 		
 		final Vector3D u = Vector3D.multiply(this.u, sample.u);
 		final Vector3D v = Vector3D.multiply(this.v, sample.v);
@@ -61,13 +61,13 @@ public final class Camera {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	private Point2D doSample(final double pixelX, final double pixelY, final double gridSampleU, final double gridSampleV) {
+	private Point2D doSample(final double pixelX, final double pixelY, final double sampleU, final double sampleV) {
 //		Generate a Point2D instance whose u and v fields contains doubles in the range [-1.0D, +1.0D]:
 		final Point2D sample = Point2D.sampleExactInverseTentFilter();
 		
-//		The variables gridSampleU and gridSampleV are in the range [0.0D, 1.0D]:
-		final double sampleU1 = (gridSampleU + 0.5D + sample.u) / 2.0D;
-		final double sampleV1 = (gridSampleV + 0.5D + sample.v) / 2.0D;
+//		The variables sampleU and sampleV are in the range [0.0D, 1.0D]:
+		final double sampleU1 = (sampleU + 0.5D + sample.u) / 2.0D;
+		final double sampleV1 = (sampleV + 0.5D + sample.v) / 2.0D;
 		
 //		The variables sampleU1 and sampleV1 are in the range [-0.25D, +1.25D]:
 		final double sampleU2 = (sampleU1 + pixelX) / this.resolutionX - 0.5D;
