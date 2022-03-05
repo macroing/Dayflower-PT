@@ -25,6 +25,27 @@ public interface Texture {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	static Texture blend(final Texture textureA, final Texture textureB, final double tR, final double tG, final double tB) {
+		Objects.requireNonNull(textureA, "textureA == null");
+		Objects.requireNonNull(textureB, "textureB == null");
+		
+		return intersection -> Color3D.blend(textureA.compute(intersection), textureB.compute(intersection), tR, tG, tB);
+	}
+	
+	static Texture bullseye(final Texture textureA, final Texture textureB, final Point3D origin, final double scale) {
+		Objects.requireNonNull(textureA, "textureA == null");
+		Objects.requireNonNull(textureB, "textureB == null");
+		Objects.requireNonNull(origin, "origin == null");
+		
+		return intersection -> {
+			final Vector3D direction = Vector3D.direction(origin, intersection.getSurfaceIntersectionPoint());
+			
+			final boolean isTextureA = Math.remainder(direction.length() * scale, 1.0D) > 0.5D;
+			
+			return isTextureA ? textureA.compute(intersection) : textureB.compute(intersection);
+		};
+	}
+	
 	static Texture checkerboard(final Texture textureA, final Texture textureB, final double angleDegrees, final double scaleU, final double scaleV) {
 		Objects.requireNonNull(textureA, "textureA == null");
 		Objects.requireNonNull(textureB, "textureB == null");
@@ -39,8 +60,9 @@ public interface Texture {
 			
 			final boolean isU = Math.fractionalPart((u * angleRadiansCos - v * angleRadiansSin) * scaleU) > 0.5D;
 			final boolean isV = Math.fractionalPart((v * angleRadiansCos + u * angleRadiansSin) * scaleV) > 0.5D;
+			final boolean isTextureA = isU ^ isV;
 			
-			return isU ^ isV ? textureA.compute(intersection) : textureB.compute(intersection);
+			return isTextureA ? textureA.compute(intersection) : textureB.compute(intersection);
 		};
 	}
 	

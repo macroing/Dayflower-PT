@@ -82,7 +82,7 @@ public final class Scene {
 		Intersection intersection = null;
 		
 		for(final Primitive primitive : this.primitives) {
-			final Shape3D shape = primitive.getShape();
+			final Shape shape = primitive.getShape();
 			
 			final double t = shape.intersection(ray, tMinimum, tMaximum);
 			
@@ -103,15 +103,15 @@ public final class Scene {
 	public static Scene createScene(final Camera camera) {
 		final
 		Scene scene = new Scene(camera);
-		scene.addPrimitive(new Primitive(Material.matte(Texture.checkerboard(Texture.constant(new Color3D(0.750D, 0.250D, 0.250D)), Texture.constant(new Color3D(0.250D, 0.750D, 0.250D)), 0.0D, 1.0D, 1.0D)), new Sphere3D(new Point3D( 1.0e5D + 1.0D, 40.8D, 81.6D), 1.0e5D)));
-		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.250D, 0.250D, 0.750D))), new Sphere3D(new Point3D(-1.0e5D + 99.0D, 40.8D, 81.6D), 1.0e5D)));
-		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), new Sphere3D(new Point3D(50.0D, 40.8D, 1.0e5D), 1.0e5D)));
-		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), new Sphere3D(new Point3D(50.0D, 40.8D, -1.0e5D + 170.0D), 1.0e5D)));
-		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), new Sphere3D(new Point3D(50.0D, 1.0e5D, 81.6D), 1.0e5D)));
-		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), new Sphere3D(new Point3D(50.0D, -1.0e5D + 81.6D, 81.6D), 1.0e5D)));
-		scene.addPrimitive(new Primitive(Material.metal(Texture.constant(new Color3D(0.999D, 0.999D, 0.999D))), new Sphere3D(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
-		scene.addPrimitive(new Primitive(Material.glass(), new Sphere3D(new Point3D(73.0D, 16.5D, 78.0D), 16.5D)));
-		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.000D, 0.000D, 0.000D)), Texture.constant(new Color3D(12.0D))), new Sphere3D(new Point3D(50.0D, 681.6D - 0.27D, 81.6D), 600.0D)));
+		scene.addPrimitive(new Primitive(Material.checkerboard(Material.matte(Texture.constant(new Color3D(0.750D, 0.250D, 0.250D))), Material.mirror(Texture.constant(new Color3D(0.5D, 0.5D, 0.5D))), 0.0D, 1.0D, 1.0D), Shape.sphere(new Point3D( 1.0e5D + 1.0D, 40.8D, 81.6D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.250D, 0.250D, 0.750D))), Shape.sphere(new Point3D(-1.0e5D + 99.0D, 40.8D, 81.6D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), Shape.sphere(new Point3D(50.0D, 40.8D, 1.0e5D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), Shape.sphere(new Point3D(50.0D, 40.8D, -1.0e5D + 170.0D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), Shape.sphere(new Point3D(50.0D, 1.0e5D, 81.6D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), Shape.sphere(new Point3D(50.0D, -1.0e5D + 81.6D, 81.6D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.metal(Texture.constant(new Color3D(0.999D, 0.999D, 0.999D))), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
+		scene.addPrimitive(new Primitive(Material.glass(), Shape.sphere(new Point3D(73.0D, 16.5D, 78.0D), 16.5D)));
+		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.000D, 0.000D, 0.000D)), Texture.constant(new Color3D(12.0D))), Shape.sphere(new Point3D(50.0D, 681.6D - 0.27D, 81.6D), 600.0D)));
 		
 		return scene;
 	}

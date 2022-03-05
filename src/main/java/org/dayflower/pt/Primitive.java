@@ -22,11 +22,11 @@ import java.util.Objects;
 
 public final class Primitive {
 	private final Material material;
-	private final Shape3D shape;
+	private final Shape shape;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public Primitive(final Material material, final Shape3D shape) {
+	public Primitive(final Material material, final Shape shape) {
 		this.material = Objects.requireNonNull(material, "material == null");
 		this.shape = Objects.requireNonNull(shape, "shape == null");
 	}
@@ -37,7 +37,7 @@ public final class Primitive {
 		return this.material;
 	}
 	
-	public Shape3D getShape() {
+	public Shape getShape() {
 		return this.shape;
 	}
 }

@@ -82,6 +82,10 @@ public final class Math {
 		return value >= valueThreshold ? value : value + valueAdd;
 	}
 	
+	public static double lerp(final double a, final double b, final double t) {
+		return (1.0D - t) * a + t * b;
+	}
+	
 	public static double max(final double a, final double b) {
 		return java.lang.Math.max(a, b);
 	}
@@ -100,6 +104,10 @@ public final class Math {
 	
 	public static double random() {
 		return ThreadLocalRandom.current().nextDouble();
+	}
+	
+	public static double remainder(final double x, final double y) {
+		return x - toInt(x / y) * y;
 	}
 	
 	public static double saturate(final double value) {

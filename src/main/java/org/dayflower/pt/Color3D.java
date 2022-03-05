@@ -64,6 +64,10 @@ public final class Color3D {
 		return new Color3D(cLHS.r + cRHS.r, cLHS.g + cRHS.g, cLHS.b + cRHS.b);
 	}
 	
+	public static Color3D blend(final Color3D cLHS, final Color3D cRHS, final double tR, final double tG, final double tB) {
+		return new Color3D(Math.lerp(cLHS.r, cRHS.r, tR), Math.lerp(cLHS.g, cRHS.g, tG), Math.lerp(cLHS.b, cRHS.b, tB));
+	}
+	
 	public static Color3D divide(final Color3D c, final double s) {
 		return new Color3D(c.r / s, c.g / s, c.b / s);
 	}

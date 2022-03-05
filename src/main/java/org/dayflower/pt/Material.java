@@ -26,6 +26,26 @@ public interface Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees, final double scaleU, final double scaleV) {
+		Objects.requireNonNull(materialA, "materialA == null");
+		Objects.requireNonNull(materialB, "materialB == null");
+		
+		final double angleRadians = Math.toRadians(angleDegrees);
+		final double angleRadiansCos = Math.cos(angleRadians);
+		final double angleRadiansSin = Math.sin(angleRadians);
+		
+		return intersection -> {
+			final double u = intersection.getTextureCoordinates().u;
+			final double v = intersection.getTextureCoordinates().v;
+			
+			final boolean isU = Math.fractionalPart((u * angleRadiansCos - v * angleRadiansSin) * scaleU) > 0.5D;
+			final boolean isV = Math.fractionalPart((v * angleRadiansCos + u * angleRadiansSin) * scaleV) > 0.5D;
+			final boolean isMaterialA = isU ^ isV;
+			
+			return isMaterialA ? materialA.compute(intersection) : materialB.compute(intersection);
+		};
+	}
+	
 	static Material glass() {
 		return intersection -> {
 			final Vector3D direction = intersection.getRay().getDirection();
