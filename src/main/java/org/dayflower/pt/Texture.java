@@ -25,6 +25,25 @@ public interface Texture {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	static Texture checkerboard(final Texture textureA, final Texture textureB, final double angleDegrees, final double scaleU, final double scaleV) {
+		Objects.requireNonNull(textureA, "textureA == null");
+		Objects.requireNonNull(textureB, "textureB == null");
+		
+		final double angleRadians = Math.toRadians(angleDegrees);
+		final double angleRadiansCos = Math.cos(angleRadians);
+		final double angleRadiansSin = Math.sin(angleRadians);
+		
+		return intersection -> {
+			final double u = intersection.getTextureCoordinates().u;
+			final double v = intersection.getTextureCoordinates().v;
+			
+			final boolean isU = Math.fractionalPart((u * angleRadiansCos - v * angleRadiansSin) * scaleU) > 0.5D;
+			final boolean isV = Math.fractionalPart((v * angleRadiansCos + u * angleRadiansSin) * scaleV) > 0.5D;
+			
+			return isU ^ isV ? textureA.compute(intersection) : textureB.compute(intersection);
+		};
+	}
+	
 	static Texture constant(final Color3D color) {
 		Objects.requireNonNull(color, "color == null");
 		

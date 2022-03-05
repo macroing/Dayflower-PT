@@ -29,14 +29,14 @@ public final class Camera {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public Camera(final double resolutionX, final double resolutionY) {
-		this(resolutionX, resolutionY, 0.5135D);
+		this(resolutionX, resolutionY, 2.0D * Math.tan(Math.toRadians(28.799323D) * 0.5D));
 	}
 	
-	public Camera(final double resolutionX, final double resolutionY, final double fieldOfView) {
+	public Camera(final double resolutionX, final double resolutionY, final double fieldOfViewX) {
 		this.eye = new Point3D(50.0D, 50.0D, 295.6D);
 		this.w = Vector3D.normalize(new Vector3D(0.0D, -0.042612D, -1.0D));
-		this.u = new Vector3D(fieldOfView * resolutionX / resolutionY, 0.0D, 0.0D);
-		this.v = Vector3D.multiply(Vector3D.normalize(Vector3D.crossProduct(this.u, this.w)), fieldOfView);
+		this.u = new Vector3D(fieldOfViewX * resolutionX / resolutionY, 0.0D, 0.0D);
+		this.v = Vector3D.multiply(Vector3D.normalize(Vector3D.crossProduct(this.u, this.w)), fieldOfViewX);
 		this.resolutionX = resolutionX;
 		this.resolutionY = resolutionY;
 	}

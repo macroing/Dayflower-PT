@@ -50,12 +50,32 @@ public final class Math {
 		return java.lang.Math.acos(a);
 	}
 	
+	public static double atan(final double a) {
+		return java.lang.Math.atan(a);
+	}
+	
 	public static double atan2(final double y, final double x) {
 		return java.lang.Math.atan2(y, x);
 	}
 	
+	public static double ceil(final double value) {
+		return java.lang.Math.ceil(value);
+	}
+	
 	public static double cos(final double a) {
 		return java.lang.Math.cos(a);
+	}
+	
+	public static double floor(final double value) {
+		return java.lang.Math.floor(value);
+	}
+	
+	public static double fractionalPart(final double value) {
+		return fractionalPart(value, false);
+	}
+	
+	public static double fractionalPart(final double value, final boolean isUsingCeilOnNegativeValue) {
+		return value < 0.0D && isUsingCeilOnNegativeValue ? ceil(value) - value : value - floor(value);
 	}
 	
 	public static double getOrAdd(final double value, final double valueThreshold, final double valueAdd) {
@@ -99,6 +119,18 @@ public final class Math {
 	
 	public static double sqrt(final double value) {
 		return java.lang.Math.sqrt(value);
+	}
+	
+	public static double tan(final double a) {
+		return java.lang.Math.tan(a);
+	}
+	
+	public static double toDegrees(final double angleRadians) {
+		return java.lang.Math.toDegrees(angleRadians);
+	}
+	
+	public static double toRadians(final double angleDegrees) {
+		return java.lang.Math.toRadians(angleDegrees);
 	}
 	
 	public static double[] solveQuadraticSystem(final double a, final double b, final double c) {
