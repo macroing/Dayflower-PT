@@ -19,7 +19,8 @@
 package org.dayflower.pt;
 
 public final class Color3D {
-	public static final Color3D BLACK = new Color3D();
+	public static final Color3D BLACK = new Color3D(0.0D, 0.0D, 0.0D);
+	public static final Color3D WHITE = new Color3D(1.0D, 1.0D, 1.0D);
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -44,6 +45,14 @@ public final class Color3D {
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public boolean isBlack() {
+		return Math.isZero(this.r) && Math.isZero(this.g) && Math.isZero(this.b);  
+	}
+	
+	public double average() {
+		return (this.r + this.g + this.b) / 3.0D; 
+	}
 	
 	public double max() {
 		return Math.max(this.r, this.g, this.b);
@@ -81,6 +90,14 @@ public final class Color3D {
 	}
 	
 	public static Color3D saturate(final Color3D c) {
-		return new Color3D(Math.saturate(c.r), Math.saturate(c.g), Math.saturate(c.b));
+		return saturate(c, 0.0D, 1.0D);
+	}
+	
+	public static Color3D saturate(final Color3D c, final double intervalA, final double intervalB) {
+		return new Color3D(Math.saturate(c.r, intervalA, intervalB), Math.saturate(c.g, intervalA, intervalB), Math.saturate(c.b, intervalA, intervalB));
+	}
+	
+	public static Color3D subtract(final Color3D cLHS, final Color3D cRHS) {
+		return new Color3D(cLHS.r - cRHS.r, cLHS.g - cRHS.g, cLHS.b - cRHS.b);
 	}
 }

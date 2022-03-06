@@ -34,6 +34,14 @@ public final class Math {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public static boolean equal(final double a, final double b) {
+		return Double.compare(a, b) == 0;
+	}
+	
+	public static boolean isInfinite(final double value) {
+		return Double.isInfinite(value);
+	}
+	
 	public static boolean isNaN(final double value) {
 		return Double.isNaN(value);
 	}
@@ -84,6 +92,10 @@ public final class Math {
 	
 	public static double lerp(final double a, final double b, final double t) {
 		return (1.0D - t) * a + t * b;
+	}
+	
+	public static double log(final double a) {
+		return java.lang.Math.log(a);
 	}
 	
 	public static double max(final double a, final double b) {

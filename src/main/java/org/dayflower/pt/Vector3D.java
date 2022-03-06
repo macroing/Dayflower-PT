@@ -35,6 +35,36 @@ public final class Vector3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public double cosPhi() {
+		final double sinTheta = sinTheta();
+		
+		if(Math.equal(sinTheta, 0.0D)) {
+			return 1.0D;
+		}
+		
+		return Math.saturate(this.x / sinTheta, -1.0D, 1.0D);
+	}
+	
+	public double cosPhiSquared() {
+		return cosPhi() * cosPhi();
+	}
+	
+	public double cosTheta() {
+		return this.z;
+	}
+	
+	public double cosThetaAbs() {
+		return Math.abs(cosTheta());
+	}
+	
+	public double cosThetaQuartic() {
+		return cosThetaSquared() * cosThetaSquared();
+	}
+	
+	public double cosThetaSquared() {
+		return cosTheta() * cosTheta();
+	}
+	
 	public double length() {
 		return Math.sqrt(lengthSquared());
 	}
@@ -43,11 +73,41 @@ public final class Vector3D {
 		return this.x * this.x + this.y * this.y + this.z * this.z;
 	}
 	
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	public static double dotProduct(final Vector3D vLHS, final Vector3D vRHS) {
-		return vLHS.x * vRHS.x + vLHS.y * vRHS.y + vLHS.z * vRHS.z;
+	public double sinPhi() {
+		final double sinTheta = sinTheta();
+		
+		if(Math.isZero(sinTheta)) {
+			return 0.0D;
+		}
+		
+		return Math.saturate(this.y / sinTheta, -1.0D, 1.0D);
 	}
+	
+	public double sinPhiSquared() {
+		return sinPhi() * sinPhi();
+	}
+	
+	public double sinTheta() {
+		return Math.sqrt(sinThetaSquared());
+	}
+	
+	public double sinThetaSquared() {
+		return Math.max(0.0D, 1.0D - cosThetaSquared());
+	}
+	
+	public double tanTheta() {
+		return sinTheta() / cosTheta();
+	}
+	
+	public double tanThetaAbs() {
+		return Math.abs(tanTheta());
+	}
+	
+	public double tanThetaSquared() {
+		return sinThetaSquared() / cosThetaSquared();
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public static Optional<Vector3D> refraction(final Vector3D direction, final Vector3D normal, final double eta) {
 		final double cosThetaI = dotProduct(direction, normal);
@@ -140,7 +200,11 @@ public final class Vector3D {
 	}
 	
 	public static Vector3D reflection(final Vector3D direction, final Vector3D normal) {
-		return subtract(direction, multiply(normal, dotProduct(direction, normal) * 2.0D));
+		return reflection(direction, normal, false);
+	}
+	
+	public static Vector3D reflection(final Vector3D direction, final Vector3D normal, final boolean isFacingSurface) {
+		return isFacingSurface ? subtract(direction, multiply(normal, dotProduct(direction, normal) * 2.0D)) : subtract(multiply(normal, dotProduct(direction, normal) * 2.0D), direction);
 	}
 	
 	public static Vector3D sampleHemisphereCosineDistribution() {
@@ -177,5 +241,17 @@ public final class Vector3D {
 	
 	public static Vector3D y() {
 		return new Vector3D(0.0D, 1.0D, 0.0D);
+	}
+	
+	public static Vector3D z() {
+		return new Vector3D(0.0D, 0.0D, 1.0D);
+	}
+	
+	public static boolean sameHemisphereZ(final Vector3D vLHS, final Vector3D vRHS) {
+		return vLHS.z * vRHS.z > 0.0D;
+	}
+	
+	public static double dotProduct(final Vector3D vLHS, final Vector3D vRHS) {
+		return vLHS.x * vRHS.x + vLHS.y * vRHS.y + vLHS.z * vRHS.z;
 	}
 }
