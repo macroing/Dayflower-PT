@@ -164,7 +164,7 @@ public interface Material {
 				final Vector3D oU = Vector3D.normalize(Vector3D.crossProduct(oV, oW));
 				
 				final Vector3D oWS = Vector3D.negate(intersection.getRay().getDirection());
-				final Vector3D oLS = Vector3D.normalize(new Vector3D(Vector3D.dotProduct(oWS, oU), Vector3D.dotProduct(oWS, oV), Vector3D.dotProduct(oWS, oW)));
+				final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, oU, oV, oW);
 				
 				final double u = Math.min(Math.random(), 0.99999994D);
 				final double v = Math.random();
@@ -172,7 +172,7 @@ public interface Material {
 				if(u < 0.5D) {
 					final Vector3D iSample = Vector3D.sampleHemisphereCosineDistribution(Math.min(2.0D * u, 0.99999994D), v);
 					final Vector3D iLS = oLS.z < 0.0D ? Vector3D.negate(iSample) : iSample;
-					final Vector3D iWS = Vector3D.normalize(new Vector3D(iLS.x * oU.x + iLS.y * oV.x + iLS.z * oW.x, iLS.x * oU.y + iLS.y * oV.y + iLS.z * oW.y, iLS.x * oU.z + iLS.y * oV.z + iLS.z * oW.z));
+					final Vector3D iWS = Vector3D.transformNormalize(iLS, oU, oV, oW);
 					
 					final Color3D result = BXDF.evaluateDistributionFunctionFresnelBlendBRDF(oLS, iLS, colorKD, colorKS, roughnessU, roughnessV);
 					
@@ -185,7 +185,7 @@ public interface Material {
 				
 				final Vector3D nLS = MicrofacetDistribution.sampleNormalTrowbridgeReitz(oLS, new Point2D(Math.min(2.0D * (u - 0.5D), 0.99999994D), v), isSamplingVisibleArea, roughnessU, roughnessV);
 				final Vector3D iLS = Vector3D.reflection(oLS, nLS);
-				final Vector3D iWS = Vector3D.normalize(new Vector3D(iLS.x * oU.x + iLS.y * oV.x + iLS.z * oW.x, iLS.x * oU.y + iLS.y * oV.y + iLS.z * oW.y, iLS.x * oU.z + iLS.y * oV.z + iLS.z * oW.z));
+				final Vector3D iWS = Vector3D.transformNormalize(iLS, oU, oV, oW);
 				
 				if(!Vector3D.sameHemisphereZ(oLS, iLS)) {
 					return Optional.empty();
