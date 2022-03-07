@@ -114,6 +114,14 @@ public final class Math {
 		return java.lang.Math.pow(base, exponent);
 	}
 	
+	public static double pow2(final double base) {
+		return base * base;
+	}
+	
+	public static double pow5(final double base) {
+		return base * base * base * base * base;
+	}
+	
 	public static double random() {
 		return ThreadLocalRandom.current().nextDouble();
 	}

@@ -186,6 +186,10 @@ public final class Vector3D {
 		return dotProduct(direction, normal) < 0.0D ? normal : negate(normal);
 	}
 	
+	public static Vector3D orientNormalSameHemisphereZ(final Vector3D direction, final Vector3D normal) {
+		return sameHemisphereZ(direction, normal) ? normal : negate(normal);
+	}
+	
 	public static Vector3D orthogonal(final Vector3D v) {
 		final Vector3D v0 = normalize(v);
 		final Vector3D v1 = abs(v0);

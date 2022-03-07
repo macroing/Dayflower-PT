@@ -262,144 +262,98 @@ public interface Material {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		public static Vector3D sampleNormalTrowbridgeReitz(final Vector3D outgoing, final Point2D sample, final boolean isSamplingVisibleArea, final double alphaX, final double alphaY) {
-			final double u = sample.u;
-			final double v = sample.v;
+		public static Vector3D sampleNormalTrowbridgeReitz(final Vector3D o, final Point2D s, final boolean isSamplingVisibleArea, final double x, final double y) {
+			final double u = s.u;
+			final double v = s.v;
 			
-			if(isSamplingVisibleArea) {
-				return outgoing.z >= 0.0D ? doSample(outgoing, alphaX, alphaY, u, v) : Vector3D.negate(doSample(Vector3D.negate(outgoing), alphaX, alphaY, u, v));
-			} else if(Math.equal(alphaX, alphaY)) {
+			if(isSamplingVisibleArea && o.z >= 0.0D) {
+				return doSample(o, x, y, u, v);
+			} else if(isSamplingVisibleArea) {
+				return Vector3D.negate(doSample(Vector3D.negate(o), x, y, u, v));
+			} else if(Math.equal(x, y)) {
 				final double phi = v * 2.0D * Math.PI;
-				final double tanThetaSquared = alphaX * alphaX * u / (1.0D - u);
-				final double cosTheta = 1.0D / Math.sqrt(1.0D + tanThetaSquared);
+				final double cosTheta = 1.0D / Math.sqrt(1.0D + (x * x * u / (1.0D - u)));
 				final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
 				
-				final Vector3D normal = Vector3D.directionSpherical(sinTheta, cosTheta, phi);
-				final Vector3D normalCorrectlyOriented = Vector3D.sameHemisphereZ(outgoing, normal) ? normal : Vector3D.negate(normal);
-				
-				return normalCorrectlyOriented;
+				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
 			} else {
-				final double phi = Math.atan(alphaY / alphaX * Math.tan(2.0D * Math.PI * v + 0.5D * Math.PI)) + (v > 0.5D ? Math.PI : 0.0D);
-				final double cosPhi = Math.cos(phi);
-				final double sinPhi = Math.sin(phi);
-				final double alphaXSquared = alphaX * alphaX;
-				final double alphaYSquared = alphaY * alphaY;
-				final double alphaSquared = 1.0D / (cosPhi * cosPhi / alphaXSquared + sinPhi * sinPhi / alphaYSquared);
-				final double tanThetaSquared = alphaSquared * u / (1.0D - u);
-				final double cosTheta = 1.0D / Math.sqrt(1.0D + tanThetaSquared);
+				final double phi = Math.atan(y / x * Math.tan(2.0D * Math.PI * v + 0.5D * Math.PI)) + (v > 0.5D ? Math.PI : 0.0D);
+				final double cosTheta = 1.0D / Math.sqrt(1.0D + ((1.0D / (Math.pow2(Math.cos(phi)) / (x * x) + Math.pow2(Math.sin(phi)) / (y * y))) * u / (1.0D - u)));
 				final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
 				
-				final Vector3D normal = Vector3D.directionSpherical(sinTheta, cosTheta, phi);
-				final Vector3D normalCorrectlyOriented = Vector3D.sameHemisphereZ(outgoing, normal) ? normal : Vector3D.negate(normal);
-				
-				return normalCorrectlyOriented;
+				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
 			}
 		}
 		
-		public static double computeDifferentialAreaTrowbridgeReitz(final Vector3D normal, final double alphaX, final double alphaY) {
-			final double tanThetaSquaredNormal = normal.tanThetaSquared();
+		public static double computeDifferentialAreaTrowbridgeReitz(final Vector3D n, final double x, final double y) {
+			final double tanThetaSquared = n.tanThetaSquared();
 			
-			if(Math.isInfinite(tanThetaSquaredNormal)) {
+			if(Math.isInfinite(tanThetaSquared)) {
 				return 0.0D;
 			}
 			
-			final double alphaXSquared = alphaX * alphaX;
-			final double alphaYSquared = alphaY * alphaY;
-			
-			final double cosPhiSquaredNormal = normal.cosPhiSquared();
-			final double sinPhiSquaredNormal = normal.sinPhiSquared();
-			
-			final double cosThetaQuarticNormal = normal.cosThetaQuartic();
-			
-			final double exponent = (cosPhiSquaredNormal / alphaXSquared + sinPhiSquaredNormal / alphaYSquared) * tanThetaSquaredNormal;
-			
-			final double differentialArea = 1.0D / (Math.PI * alphaX * alphaY * cosThetaQuarticNormal * (1.0D + exponent) * (1.0D + exponent));
-			
-			return differentialArea;
+			return 1.0D / (Math.PI * x * y * n.cosThetaQuartic() * Math.pow2(1.0D + (n.cosPhiSquared() / (x * x) + n.sinPhiSquared() / (y * y)) * tanThetaSquared));
 		}
 		
-		public static double computeLambdaTrowbridgeReitz(final Vector3D outgoing, final double alphaX, final double alphaY) {
-			final double tanThetaAbsOutgoing = outgoing.tanThetaAbs();
+		public static double computeLambdaTrowbridgeReitz(final Vector3D o, final double x, final double y) {
+			final double tanThetaAbs = o.tanThetaAbs();
 			
-			if(Math.isInfinite(tanThetaAbsOutgoing)) {
+			if(Math.isInfinite(tanThetaAbs)) {
 				return 0.0D;
 			}
 			
-			final double cosPhiSquaredOutgoing = outgoing.cosPhiSquared();
-			final double sinPhiSquaredOutgoing = outgoing.sinPhiSquared();
-			
-			final double alpha = Math.sqrt(cosPhiSquaredOutgoing * alphaX * alphaX + sinPhiSquaredOutgoing * alphaY * alphaY);
-			final double alphaTanThetaAbsOutgoingSquared = (alpha * tanThetaAbsOutgoing) * (alpha * tanThetaAbsOutgoing);
-			
-			final double lambda = (-1.0D + Math.sqrt(1.0D + alphaTanThetaAbsOutgoingSquared)) / 2.0D;
-			
-			return lambda;
+			return (-1.0D + Math.sqrt(1.0D + Math.pow2(Math.sqrt(o.cosPhiSquared() * x * x + o.sinPhiSquared() * y * y) * tanThetaAbs))) / 2.0D;
 		}
 		
-		public static double computePDFTrowbridgeReitz(final Vector3D outgoing, final Vector3D normal, final boolean isSamplingVisibleArea, final double alphaX, final double alphaY) {
-			return isSamplingVisibleArea ? computeDifferentialAreaTrowbridgeReitz(normal, alphaX, alphaY) * computeShadowingAndMaskingTrowbridgeReitz(outgoing, alphaX, alphaY) * Math.abs(Vector3D.dotProduct(outgoing, normal)) / outgoing.cosThetaAbs() : computeDifferentialAreaTrowbridgeReitz(normal, alphaX, alphaY) * normal.cosThetaAbs();
+		public static double computePDFTrowbridgeReitz(final Vector3D o, final Vector3D n, final boolean isSamplingVisibleArea, final double x, final double y) {
+			return isSamplingVisibleArea ? computeDifferentialAreaTrowbridgeReitz(n, x, y) * computeShadowingAndMaskingTrowbridgeReitz(o, x, y) * Math.abs(Vector3D.dotProduct(o, n)) / o.cosThetaAbs() : computeDifferentialAreaTrowbridgeReitz(n, x, y) * n.cosThetaAbs();
 		}
 		
-		public static double computeShadowingAndMaskingTrowbridgeReitz(final Vector3D outgoing, final double alphaX, final double alphaY) {
-			return 1.0D / (1.0D + computeLambdaTrowbridgeReitz(outgoing, alphaX, alphaY));
+		public static double computeShadowingAndMaskingTrowbridgeReitz(final Vector3D o, final double x, final double y) {
+			return 1.0D / (1.0D + computeLambdaTrowbridgeReitz(o, x, y));
 		}
 		
-		public static double computeShadowingAndMaskingTrowbridgeReitz(final Vector3D outgoing, final Vector3D incoming, final boolean isSeparableModel, final double alphaX, final double alphaY) {
-			return isSeparableModel ? computeShadowingAndMaskingTrowbridgeReitz(outgoing, alphaX, alphaY) * computeShadowingAndMaskingTrowbridgeReitz(incoming, alphaX, alphaY) : 1.0D / (1.0D + computeLambdaTrowbridgeReitz(outgoing, alphaX, alphaY) + computeLambdaTrowbridgeReitz(incoming, alphaX, alphaY));
+		public static double computeShadowingAndMaskingTrowbridgeReitz(final Vector3D o, final Vector3D i, final boolean isSeparableModel, final double x, final double y) {
+			return isSeparableModel ? computeShadowingAndMaskingTrowbridgeReitz(o, x, y) * computeShadowingAndMaskingTrowbridgeReitz(i, x, y) : 1.0D / (1.0D + computeLambdaTrowbridgeReitz(o, x, y) + computeLambdaTrowbridgeReitz(i, x, y));
 		}
 		
 		public static double convertRoughnessToAlpha(final double roughness) {
-			final double x = Math.max(roughness, 1.0e-3D);
-			final double y = Math.log(x);
-			final double z = 1.62142D + 0.819955D * y + 0.1734D * y * y + 0.0171201D * y * y * y + 0.000640711D * y * y * y * y;
+			final double x = Math.log(Math.max(roughness, 1.0e-3D));
+			final double y = 1.62142D + 0.819955D * x + 0.1734D * x * x + 0.0171201D * x * x * x + 0.000640711D * x * x * x * x;
 			
-			return z;
+			return y;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		private static Vector3D doSample(final Vector3D incoming, final double alphaX, final double alphaY, final double u, final double v) {
-			final Vector3D incomingStretched = Vector3D.normalize(new Vector3D(incoming.x * alphaX, incoming.y * alphaY, incoming.z));
+		private static Vector3D doSample(final Vector3D i, final double x, final double y, final double u, final double v) {
+			final Vector3D iStretched = Vector3D.normalize(new Vector3D(i.x * x, i.y * y, i.z));
 			
-			final double[] slope = doComputeSlope(incomingStretched.cosTheta(), u, v);
+			final double[] slope = doComputeSlope(iStretched.cosTheta(), u, v);
 			
-			final double x = -((incomingStretched.cosPhi() * slope[0] - incomingStretched.sinPhi() * slope[1]) * alphaX);
-			final double y = -((incomingStretched.sinPhi() * slope[0] + incomingStretched.cosPhi() * slope[1]) * alphaY);
-			final double z = 1.0D;
-			
-			return Vector3D.normalize(new Vector3D(x, y, z));
+			return Vector3D.normalize(new Vector3D(-((iStretched.cosPhi() * slope[0] - iStretched.sinPhi() * slope[1]) * x), -((iStretched.sinPhi() * slope[0] + iStretched.cosPhi() * slope[1]) * y), 1.0D));
 		}
 		
-		private static double[] doComputeSlope(final double cosThetaIncoming, final double u, final double v) {
-			if(cosThetaIncoming > 0.9999D) {
+		private static double[] doComputeSlope(final double cosTheta, final double u, final double v) {
+			if(cosTheta > 0.9999D) {
 				final double r = Math.sqrt(u / (1.0D - u));
 				final double phi = 2.0D * Math.PI * v;
 				
-				final double cosPhi = Math.cos(phi);
-				final double sinPhi = Math.sin(phi);
-				
-				final double x = r * cosPhi;
-				final double y = r * sinPhi;
+				final double x = r * Math.cos(phi);
+				final double y = r * Math.sin(phi);
 				
 				return new double[] {x, y};
 			}
 			
-			final double sinThetaIncoming = Math.sqrt(Math.max(0.0D, 1.0D - cosThetaIncoming * cosThetaIncoming));
-			final double tanThetaIncoming = sinThetaIncoming / cosThetaIncoming;
-			
-			final double a = 2.0D / (1.0D + Math.sqrt(1.0D + tanThetaIncoming * tanThetaIncoming));
-			final double b = 2.0D * u / a - 1.0D;
+			final double a = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta)) / cosTheta;
+			final double b = 2.0D * u / (2.0D / (1.0D + Math.sqrt(1.0D + a * a))) - 1.0D;
 			final double c = Math.min(1.0D / (b * b - 1.0D), 1.0e10D);
-			final double d = tanThetaIncoming;
-			final double e = Math.sqrt(Math.max(d * d * c * c - (b * b - d * d) * c, 0.0D));
-			final double f = d * c - e;
-			final double g = d * c + e;
-			final double h = v > 0.5D ? 1.0D : -1.0D;
-			final double i = v > 0.5D ? 2.0D * (v - 0.5D) : 2.0D * (0.5D - v);
-			final double j = (i * (i * (i * 0.27385D - 0.73369D) + 0.46341D)) / (i * (i * (i * 0.093073D + 0.309420D) - 1.0D) + 0.597999D);
+			final double d = Math.sqrt(Math.max(a * a * c * c - (b * b - a * a) * c, 0.0D));
+			final double e = a * c + d;
+			final double f = v > 0.5D ? 2.0D * (v - 0.5D) : 2.0D * (0.5D - v);
 			
-			final double x = b < 0.0D || g > 1.0D / tanThetaIncoming ? f : g;
-			final double y = h * j * Math.sqrt(1.0D + x * x);
+			final double x = b < 0.0D || e > 1.0D / a ? a * c - d : e;
+			final double y = (v > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Math.sqrt(1.0D + x * x);
 			
 			return new double[] {x, y};
 		}
@@ -453,9 +407,7 @@ public interface Material {
 		}
 		
 		public static double fresnelWeight(final double cosTheta) {
-			final double m = Math.saturate(1.0D - cosTheta);
-			
-			return (m * m) * (m * m) * m;
+			return Math.pow5(Math.saturate(1.0D - cosTheta));
 		}
 	}
 }
