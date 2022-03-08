@@ -81,7 +81,7 @@ public interface Material {
 				
 				final double r0 = (etaB - etaA) * (etaB - etaA) / ((etaB + etaA) * (etaB + etaA));
 				
-				final double reflectance = Schlick.fresnelDielectric(cosThetaICorrectlyOriented, r0);
+				final double reflectance = Fresnel.evaluateDielectricSchlick(cosThetaICorrectlyOriented, r0);
 				final double transmittance = 1.0D - reflectance;
 				
 				final double probabilityRussianRoulette = 0.25D + 0.5D * reflectance;
@@ -123,7 +123,75 @@ public interface Material {
 		};
 	}
 	
-	static Material metal(final Texture reflectance) {
+	static Material metal() {
+		return metal(Texture.constant(Color3D.AU_K), Texture.constant(Color3D.AU_ETA), Texture.constant(Color3D.BLACK), Texture.constant(new Color3D(0.01D)), Texture.constant(new Color3D(0.01D)), true);
+	}
+	
+	static Material metal(final Texture textureK, final Texture textureEta, final Texture textureEmission, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness) {
+		Objects.requireNonNull(textureK, "textureK == null");
+		Objects.requireNonNull(textureEta, "textureEta == null");
+		Objects.requireNonNull(textureEmission, "textureEmission == null");
+		Objects.requireNonNull(textureRoughnessU, "textureRoughnessU == null");
+		Objects.requireNonNull(textureRoughnessV, "textureRoughnessV == null");
+		
+		return intersection -> {
+			final Color3D colorEtaI = Color3D.WHITE;
+			final Color3D colorEtaT = textureEta.compute(intersection);
+			final Color3D colorK = textureK.compute(intersection);
+			
+			final double roughnessU = Math.max(isRemappingRoughness ? MicrofacetDistribution.convertRoughnessToAlpha(textureRoughnessU.compute(intersection).average()) : textureRoughnessU.compute(intersection).average(), 0.001D);
+			final double roughnessV = Math.max(isRemappingRoughness ? MicrofacetDistribution.convertRoughnessToAlpha(textureRoughnessV.compute(intersection).average()) : textureRoughnessV.compute(intersection).average(), 0.001D);
+			
+			final Vector3D surfaceNormal = Vector3D.faceForwardNegated(intersection.getSurfaceNormal(), intersection.getRay().getDirection());
+			
+			final Vector3D oW = intersection.getSurfaceNormal();
+			final Vector3D oV = Vector3D.orthogonal(oW);
+			final Vector3D oU = Vector3D.normalize(Vector3D.crossProduct(oV, oW));
+			
+			final Vector3D oWS = Vector3D.negate(intersection.getRay().getDirection());
+			final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, oU, oV, oW);
+			
+			if(Math.isZero(oLS.z)) {
+				return Optional.empty();
+			}
+			
+			final double u = Math.min(Math.random(), 0.99999994D);
+			final double v = Math.random();
+			
+			final Vector3D h = MicrofacetDistribution.sampleHTrowbridgeReitz(oLS, u, v, true, roughnessU, roughnessV);
+			
+			if(Vector3D.dotProduct(oLS, h) < 0.0D) {
+				return Optional.empty();
+			}
+			
+			final Vector3D iLS = Vector3D.reflection(oLS, h);
+			final Vector3D iWS = Vector3D.transformNormalize(iLS, oU, oV, oW);
+			
+			if(!Vector3D.sameHemisphereZ(oLS, iLS)) {
+				return Optional.empty();
+			}
+			
+			final Color3D result = BXDF.evaluateDistributionFunctionTorranceSparrowBRDFConductor(oLS, iLS, colorEtaI, colorEtaI, colorEtaT, colorK, roughnessU, roughnessV);
+			
+			final double probabilityDensityFunctionValue = MicrofacetDistribution.computePDFTrowbridgeReitz(oLS, h, true, roughnessU, roughnessV) / (4.0D * Vector3D.dotProduct(oLS, h));
+			
+			if(result.isBlack() || Math.isZero(probabilityDensityFunctionValue)) {
+				return Optional.empty();
+			}
+			
+			final Color3D reflectance = Color3D.divide(Color3D.multiply(result, Vector3D.dotProductAbs(iWS, surfaceNormal)), probabilityDensityFunctionValue);
+			
+			return Optional.of(new Result(Color3D.BLACK, reflectance, new Ray3D(intersection.getSurfaceIntersectionPoint(), iWS)));
+		};
+	}
+	
+	static Material mirror(final Texture reflectance) {
+		Objects.requireNonNull(reflectance, "reflectance == null");
+		
+		return intersection -> Optional.of(new Result(new Color3D(), reflectance.compute(intersection), new Ray3D(intersection.getSurfaceIntersectionPoint(), Vector3D.reflection(intersection.getRay().getDirection(), intersection.getSurfaceNormal(), true))));
+	}
+	
+	static Material phong(final Texture reflectance) {
 		Objects.requireNonNull(reflectance, "reflectance == null");
 		
 		return intersection -> {
@@ -136,10 +204,8 @@ public interface Material {
 		};
 	}
 	
-	static Material mirror(final Texture reflectance) {
-		Objects.requireNonNull(reflectance, "reflectance == null");
-		
-		return intersection -> Optional.of(new Result(new Color3D(), reflectance.compute(intersection), new Ray3D(intersection.getSurfaceIntersectionPoint(), Vector3D.reflection(intersection.getRay().getDirection(), intersection.getSurfaceNormal(), true))));
+	static Material substrate() {
+		return substrate(Texture.constant(new Color3D(1.0D, 0.2D, 0.2D)), Texture.constant(new Color3D(0.5D)), Texture.constant(Color3D.BLACK), Texture.constant(new Color3D(0.1D)), Texture.constant(new Color3D(0.1D)), true);
 	}
 	
 	static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureEmission, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness) {
@@ -166,6 +232,10 @@ public interface Material {
 				final Vector3D oWS = Vector3D.negate(intersection.getRay().getDirection());
 				final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, oU, oV, oW);
 				
+				if(Math.isZero(oLS.z)) {
+					return Optional.empty();
+				}
+				
 				final double u = Math.min(Math.random(), 0.99999994D);
 				final double v = Math.random();
 				
@@ -178,13 +248,17 @@ public interface Material {
 					
 					final double probabilityDensityFunctionValue = BXDF.evaluatePDFFresnelBlendBRDF(oLS, iLS, isSamplingVisibleArea, roughnessU, roughnessV);
 					
-					final Color3D reflectance = Color3D.divide(Color3D.multiply(result, Math.abs(Vector3D.dotProduct(iLS, Vector3D.z()))), probabilityDensityFunctionValue);
+					if(result.isBlack() || Math.isZero(probabilityDensityFunctionValue)) {
+						return Optional.empty();
+					}
+					
+					final Color3D reflectance = Color3D.divide(Color3D.multiply(result, Vector3D.dotProductAbs(iLS, Vector3D.z())), probabilityDensityFunctionValue);
 					
 					return Optional.of(new Result(Color3D.BLACK, reflectance, new Ray3D(intersection.getSurfaceIntersectionPoint(), iWS)));
 				}
 				
-				final Vector3D nLS = MicrofacetDistribution.sampleNormalTrowbridgeReitz(oLS, new Point2D(Math.min(2.0D * (u - 0.5D), 0.99999994D), v), isSamplingVisibleArea, roughnessU, roughnessV);
-				final Vector3D iLS = Vector3D.reflection(oLS, nLS);
+				final Vector3D hLS = MicrofacetDistribution.sampleHTrowbridgeReitz(oLS, Math.min(2.0D * (u - 0.5D), 0.99999994D), v, isSamplingVisibleArea, roughnessU, roughnessV);
+				final Vector3D iLS = Vector3D.reflection(oLS, hLS);
 				final Vector3D iWS = Vector3D.transformNormalize(iLS, oU, oV, oW);
 				
 				if(!Vector3D.sameHemisphereZ(oLS, iLS)) {
@@ -195,7 +269,11 @@ public interface Material {
 				
 				final double probabilityDensityFunctionValue = BXDF.evaluatePDFFresnelBlendBRDF(oLS, iLS, isSamplingVisibleArea, roughnessU, roughnessV);
 				
-				final Color3D reflectance = Color3D.divide(Color3D.multiply(result, Math.abs(Vector3D.dotProduct(iLS, Vector3D.z()))), probabilityDensityFunctionValue);
+				if(result.isBlack() || Math.isZero(probabilityDensityFunctionValue)) {
+					return Optional.empty();
+				}
+				
+				final Color3D reflectance = Color3D.divide(Color3D.multiply(result, Vector3D.dotProductAbs(iLS, Vector3D.z())), probabilityDensityFunctionValue);
 				
 				return Optional.of(new Result(Color3D.BLACK, reflectance, new Ray3D(intersection.getSurfaceIntersectionPoint(), iWS)));
 			}
@@ -213,43 +291,156 @@ public interface Material {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		public static Color3D evaluateDistributionFunctionFresnelBlendBRDF(final Vector3D outgoing, final Vector3D incoming, final Color3D colorKD, final Color3D colorKS, final double alphaX, final double alphaY) {
-			Objects.requireNonNull(outgoing, "outgoing == null");
-			Objects.requireNonNull(incoming, "incoming == null");
+		public static Color3D evaluateDistributionFunctionFresnelBlendBRDF(final Vector3D o, final Vector3D i, final Color3D colorKD, final Color3D colorKS, final double x, final double y) {
+			final Vector3D h = Vector3D.add(o, i);
 			
-			final Vector3D n = Vector3D.add(outgoing, incoming);
-			
-			if(Math.isZero(n.x) && Math.isZero(n.y) && Math.isZero(n.z)) {
+			if(h.isZero()) {
 				return Color3D.BLACK;
 			}
 			
-			final Vector3D nNormalized = Vector3D.normalize(n);
+			final Vector3D hNormalized = Vector3D.normalize(h);
 			
 			final double a = 28.0D / (23.0D * Math.PI);
-			final double b = 1.0D - Math.pow(1.0D - 0.5D * incoming.cosThetaAbs(), 5.0D);
-			final double c = 1.0D - Math.pow(1.0D - 0.5D * outgoing.cosThetaAbs(), 5.0D);
-			final double d = MicrofacetDistribution.computeDifferentialAreaTrowbridgeReitz(nNormalized, alphaX, alphaY);
-			final double e = 4.0D * Math.abs(Vector3D.dotProduct(incoming, nNormalized)) * Math.max(incoming.cosThetaAbs(), outgoing.cosThetaAbs());
+			final double b = 1.0D - Math.pow5(1.0D - 0.5D * i.cosThetaAbs());
+			final double c = 1.0D - Math.pow5(1.0D - 0.5D * o.cosThetaAbs());
+			final double d = MicrofacetDistribution.computeDifferentialAreaTrowbridgeReitz(hNormalized, x, y);
+			final double e = 4.0D * Vector3D.dotProductAbs(i, hNormalized) * Math.max(i.cosThetaAbs(), o.cosThetaAbs());
 			final double f = d / e;
 			
-			final Color3D fresnel = Schlick.fresnelDielectric(Vector3D.dotProduct(incoming, nNormalized), colorKS);
-			final Color3D colorDiffuse = Color3D.multiply(Color3D.multiply(Color3D.multiply(Color3D.multiply(colorKD, a), Color3D.subtract(Color3D.WHITE, colorKS)), b), c);
-			final Color3D colorSpecular = Color3D.multiply(fresnel, f);
+			final Color3D cF = Fresnel.evaluateDielectricSchlick(Vector3D.dotProduct(i, hNormalized), colorKS);
+			final Color3D cD = Color3D.multiply(Color3D.multiply(Color3D.multiply(Color3D.multiply(colorKD, a), Color3D.subtract(Color3D.WHITE, colorKS)), b), c);
+			final Color3D cS = Color3D.multiply(cF, f);
 			
-			return Color3D.add(colorDiffuse, colorSpecular);
+			return Color3D.add(cD, cS);
 		}
 		
-		public static double evaluatePDFFresnelBlendBRDF(final Vector3D outgoing, final Vector3D incoming, final boolean isSamplingVisibleArea, final double alphaX, final double alphaY) {
-			Objects.requireNonNull(outgoing, "outgoing == null");
-			Objects.requireNonNull(incoming, "incoming == null");
+		public static Color3D evaluateDistributionFunctionTorranceSparrowBRDFConductor(final Vector3D o, final Vector3D i, final Color3D colorR, final Color3D colorEtaI, final Color3D colorEtaT, final Color3D colorK, final double x, final double y) {
+			final double cosThetaAbsO = o.cosThetaAbs();
+			final double cosThetaAbsI = i.cosThetaAbs();
 			
-			if(!Vector3D.sameHemisphereZ(outgoing, incoming)) {
+			if(Math.isZero(cosThetaAbsO) || Math.isZero(cosThetaAbsI)) {
+				return Color3D.BLACK;
+			}
+			
+			final Vector3D h = Vector3D.add(i, o);
+			
+			if(h.isZero()) {
+				return Color3D.BLACK;
+			}
+			
+			final Vector3D hNormalized = Vector3D.normalize(h);
+			
+			final double d = MicrofacetDistribution.computeDifferentialAreaTrowbridgeReitz(hNormalized, x, y);
+			final double g = MicrofacetDistribution.computeShadowingAndMaskingTrowbridgeReitz(o, i, false, x, y);
+			
+			final Color3D f = Fresnel.evaluateConductor(Vector3D.dotProductAbs(i, Vector3D.faceForward(hNormalized, Vector3D.z())), colorEtaI, colorEtaT, colorK);
+			
+			return Color3D.divide(Color3D.multiply(Color3D.multiply(Color3D.multiply(colorR, d), g), f), 4.0D * cosThetaAbsI * cosThetaAbsO);
+		}
+		
+		public static double evaluatePDFFresnelBlendBRDF(final Vector3D o, final Vector3D i, final boolean isSamplingVisibleArea, final double x, final double y) {
+			if(!Vector3D.sameHemisphereZ(o, i)) {
 				return 0.0D;
 			}
 			
-			final Vector3D n = Vector3D.normalize(Vector3D.add(outgoing, incoming));
+			final Vector3D h = Vector3D.normalize(Vector3D.add(o, i));
 			
-			return 0.5D * (incoming.cosThetaAbs() / Math.PI + MicrofacetDistribution.computePDFTrowbridgeReitz(outgoing, n, isSamplingVisibleArea, alphaX, alphaY) / (4.0D * Vector3D.dotProduct(outgoing, n)));
+			return 0.5D * (i.cosThetaAbs() / Math.PI + MicrofacetDistribution.computePDFTrowbridgeReitz(o, h, isSamplingVisibleArea, x, y) / (4.0D * Vector3D.dotProduct(o, h)));
+		}
+		
+		public static double evaluatePDFTorranceSparrowBRDFConductor(final Vector3D o, final Vector3D i, final boolean isSamplingVisibleArea, final double x, final double y) {
+			if(!Vector3D.sameHemisphereZ(o, i)) {
+				return 0.0D;
+			}
+			
+			final Vector3D h = Vector3D.normalize(Vector3D.add(o, i));
+			
+			return MicrofacetDistribution.computePDFTrowbridgeReitz(o, h, isSamplingVisibleArea, x, y) / (4.0D * Vector3D.dotProduct(o, h));
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public static final class Fresnel {
+		private Fresnel() {
+			
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public static Color3D evaluateConductor(final double cosThetaI, final Color3D etaI, final Color3D etaT, final Color3D k) {
+			final double saturateCosThetaI = Math.saturate(cosThetaI, -1.0D, 1.0D);
+			final double saturateCosThetaIMultipliedBy2 = saturateCosThetaI * 2.0D;
+			
+			final double etaR = etaT.r / etaI.r;
+			final double etaG = etaT.g / etaI.g;
+			final double etaB = etaT.b / etaI.b;
+			
+			final double etaKR = k.r / etaI.r;
+			final double etaKG = k.g / etaI.g;
+			final double etaKB = k.b / etaI.b;
+			
+			final double cosThetaISquared = saturateCosThetaI * saturateCosThetaI;
+			final double sinThetaISquared = 1.0D - cosThetaISquared;
+			final double sinThetaISquaredSquared = sinThetaISquared * sinThetaISquared;
+			
+			final double etaSquaredR = etaR * etaR;
+			final double etaSquaredG = etaG * etaG;
+			final double etaSquaredB = etaB * etaB;
+			
+			final double etaKSquaredR = etaKR * etaKR;
+			final double etaKSquaredG = etaKG * etaKG;
+			final double etaKSquaredB = etaKB * etaKB;
+			
+			final double t0R = etaSquaredR - etaKSquaredR - sinThetaISquared;
+			final double t0G = etaSquaredG - etaKSquaredG - sinThetaISquared;
+			final double t0B = etaSquaredB - etaKSquaredB - sinThetaISquared;
+			
+			final double t0SquaredR = t0R * t0R;
+			final double t0SquaredG = t0G * t0G;
+			final double t0SquaredB = t0B * t0B;
+			
+			final double aSquaredPlusBSquaredR = Math.sqrt(t0SquaredR + etaSquaredR * etaKSquaredR * 4.0D);
+			final double aSquaredPlusBSquaredG = Math.sqrt(t0SquaredG + etaSquaredG * etaKSquaredG * 4.0D);
+			final double aSquaredPlusBSquaredB = Math.sqrt(t0SquaredB + etaSquaredB * etaKSquaredB * 4.0D);
+			
+			final double t1R = aSquaredPlusBSquaredR + cosThetaISquared;
+			final double t1G = aSquaredPlusBSquaredG + cosThetaISquared;
+			final double t1B = aSquaredPlusBSquaredB + cosThetaISquared;
+			
+			final double t2R = Math.sqrt((aSquaredPlusBSquaredR + t0R) * 0.5D) * saturateCosThetaIMultipliedBy2;
+			final double t2G = Math.sqrt((aSquaredPlusBSquaredG + t0G) * 0.5D) * saturateCosThetaIMultipliedBy2;
+			final double t2B = Math.sqrt((aSquaredPlusBSquaredB + t0B) * 0.5D) * saturateCosThetaIMultipliedBy2;
+			
+			final double t3R = aSquaredPlusBSquaredR * cosThetaISquared + sinThetaISquaredSquared;
+			final double t3G = aSquaredPlusBSquaredG * cosThetaISquared + sinThetaISquaredSquared;
+			final double t3B = aSquaredPlusBSquaredB * cosThetaISquared + sinThetaISquaredSquared;
+			
+			final double t4R = t2R * sinThetaISquared;
+			final double t4G = t2G * sinThetaISquared;
+			final double t4B = t2B * sinThetaISquared;
+			
+			final double reflectanceSR = (t1R - t2R) / (t1R + t2R);
+			final double reflectanceSG = (t1G - t2G) / (t1G + t2G);
+			final double reflectanceSB = (t1B - t2B) / (t1B + t2B);
+			
+			final double reflectancePR = reflectanceSR * (t3R - t4R) / (t3R + t4R);
+			final double reflectancePG = reflectanceSG * (t3G - t4G) / (t3G + t4G);
+			final double reflectancePB = reflectanceSB * (t3B - t4B) / (t3B + t4B);
+			
+			final double reflectanceR = (reflectancePR + reflectanceSR) * 0.5D;
+			final double reflectanceG = (reflectancePG + reflectanceSG) * 0.5D;
+			final double reflectanceB = (reflectancePB + reflectanceSB) * 0.5D;
+			
+			return new Color3D(reflectanceR, reflectanceG, reflectanceB);
+		}
+		
+		public static Color3D evaluateDielectricSchlick(final double cosTheta, final Color3D r0) {
+			return Color3D.add(r0, Color3D.multiply(Color3D.subtract(Color3D.WHITE, r0), Math.pow5(1.0D - cosTheta)));
+		}
+		
+		public static double evaluateDielectricSchlick(final double cosTheta, final double r0) {
+			return r0 + (1.0D - r0) * Math.pow5(Math.saturate(1.0D - cosTheta));
 		}
 	}
 	
@@ -262,14 +453,9 @@ public interface Material {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		public static Vector3D sampleNormalTrowbridgeReitz(final Vector3D o, final Point2D s, final boolean isSamplingVisibleArea, final double x, final double y) {
-			final double u = s.u;
-			final double v = s.v;
-			
-			if(isSamplingVisibleArea && o.z >= 0.0D) {
-				return doSample(o, x, y, u, v);
-			} else if(isSamplingVisibleArea) {
-				return Vector3D.negate(doSample(Vector3D.negate(o), x, y, u, v));
+		public static Vector3D sampleHTrowbridgeReitz(final Vector3D o, final double u, final double v, final boolean isSamplingVisibleArea, final double x, final double y) {
+			if(isSamplingVisibleArea) {
+				return o.z >= 0.0D ? doSample(o, u, v, x, y) : Vector3D.negate(doSample(Vector3D.negate(o), u, v, x, y));
 			} else if(Math.equal(x, y)) {
 				final double phi = v * 2.0D * Math.PI;
 				final double cosTheta = 1.0D / Math.sqrt(1.0D + (x * x * u / (1.0D - u)));
@@ -285,14 +471,14 @@ public interface Material {
 			}
 		}
 		
-		public static double computeDifferentialAreaTrowbridgeReitz(final Vector3D n, final double x, final double y) {
-			final double tanThetaSquared = n.tanThetaSquared();
+		public static double computeDifferentialAreaTrowbridgeReitz(final Vector3D h, final double x, final double y) {
+			final double tanThetaSquared = h.tanThetaSquared();
 			
 			if(Math.isInfinite(tanThetaSquared)) {
 				return 0.0D;
 			}
 			
-			return 1.0D / (Math.PI * x * y * n.cosThetaQuartic() * Math.pow2(1.0D + (n.cosPhiSquared() / (x * x) + n.sinPhiSquared() / (y * y)) * tanThetaSquared));
+			return 1.0D / (Math.PI * x * y * h.cosThetaQuartic() * Math.pow2(1.0D + (h.cosPhiSquared() / (x * x) + h.sinPhiSquared() / (y * y)) * tanThetaSquared));
 		}
 		
 		public static double computeLambdaTrowbridgeReitz(final Vector3D o, final double x, final double y) {
@@ -305,8 +491,8 @@ public interface Material {
 			return (-1.0D + Math.sqrt(1.0D + Math.pow2(Math.sqrt(o.cosPhiSquared() * x * x + o.sinPhiSquared() * y * y) * tanThetaAbs))) / 2.0D;
 		}
 		
-		public static double computePDFTrowbridgeReitz(final Vector3D o, final Vector3D n, final boolean isSamplingVisibleArea, final double x, final double y) {
-			return isSamplingVisibleArea ? computeDifferentialAreaTrowbridgeReitz(n, x, y) * computeShadowingAndMaskingTrowbridgeReitz(o, x, y) * Math.abs(Vector3D.dotProduct(o, n)) / o.cosThetaAbs() : computeDifferentialAreaTrowbridgeReitz(n, x, y) * n.cosThetaAbs();
+		public static double computePDFTrowbridgeReitz(final Vector3D o, final Vector3D h, final boolean isSamplingVisibleArea, final double x, final double y) {
+			return isSamplingVisibleArea ? computeDifferentialAreaTrowbridgeReitz(h, x, y) * computeShadowingAndMaskingTrowbridgeReitz(o, x, y) * Vector3D.dotProductAbs(o, h) / o.cosThetaAbs() : computeDifferentialAreaTrowbridgeReitz(h, x, y) * h.cosThetaAbs();
 		}
 		
 		public static double computeShadowingAndMaskingTrowbridgeReitz(final Vector3D o, final double x, final double y) {
@@ -326,23 +512,21 @@ public interface Material {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		private static Vector3D doSample(final Vector3D i, final double x, final double y, final double u, final double v) {
+		private static Vector3D doSample(final Vector3D i, final double u, final double v, final double x, final double y) {
 			final Vector3D iStretched = Vector3D.normalize(new Vector3D(i.x * x, i.y * y, i.z));
 			
-			final double[] slope = doComputeSlope(iStretched.cosTheta(), u, v);
+			final double cosPhi = iStretched.cosPhi();
+			final double cosTheta = iStretched.cosTheta();
+			final double sinPhi = iStretched.sinPhi();
 			
-			return Vector3D.normalize(new Vector3D(-((iStretched.cosPhi() * slope[0] - iStretched.sinPhi() * slope[1]) * x), -((iStretched.sinPhi() * slope[0] + iStretched.cosPhi() * slope[1]) * y), 1.0D));
-		}
-		
-		private static double[] doComputeSlope(final double cosTheta, final double u, final double v) {
 			if(cosTheta > 0.9999D) {
 				final double r = Math.sqrt(u / (1.0D - u));
 				final double phi = 2.0D * Math.PI * v;
 				
-				final double x = r * Math.cos(phi);
-				final double y = r * Math.sin(phi);
+				final double slopeX = r * Math.cos(phi);
+				final double slopeY = r * Math.sin(phi);
 				
-				return new double[] {x, y};
+				return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * x), -((sinPhi * slopeX + cosPhi * slopeY) * y), 1.0D));
 			}
 			
 			final double a = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta)) / cosTheta;
@@ -352,10 +536,10 @@ public interface Material {
 			final double e = a * c + d;
 			final double f = v > 0.5D ? 2.0D * (v - 0.5D) : 2.0D * (0.5D - v);
 			
-			final double x = b < 0.0D || e > 1.0D / a ? a * c - d : e;
-			final double y = (v > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Math.sqrt(1.0D + x * x);
+			final double slopeX = b < 0.0D || e > 1.0D / a ? a * c - d : e;
+			final double slopeY = (v > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Math.sqrt(1.0D + x * x);
 			
-			return new double[] {x, y};
+			return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * x), -((sinPhi * slopeX + cosPhi * slopeY) * y), 1.0D));
 		}
 	}
 	
@@ -386,28 +570,6 @@ public interface Material {
 		
 		public Ray3D getRay() {
 			return this.ray;
-		}
-	}
-	
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	public final class Schlick {
-		private Schlick() {
-			
-		}
-		
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		public static Color3D fresnelDielectric(final double cosTheta, final Color3D r0) {
-			return Color3D.add(r0, Color3D.multiply(Color3D.subtract(Color3D.WHITE, r0), Math.pow(1.0D - cosTheta, 5.0D)));
-		}
-		
-		public static double fresnelDielectric(final double cosTheta, final double r0) {
-			return r0 + (1.0D - r0) * fresnelWeight(cosTheta);
-		}
-		
-		public static double fresnelWeight(final double cosTheta) {
-			return Math.pow5(Math.saturate(1.0D - cosTheta));
 		}
 	}
 }

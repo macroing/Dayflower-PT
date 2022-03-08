@@ -35,6 +35,10 @@ public final class Vector3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public boolean isZero() {
+		return Math.isZero(this.x) && Math.isZero(this.y) && Math.isZero(this.z);  
+	}
+	
 	public double cosPhi() {
 		final double sinTheta = sinTheta();
 		
@@ -170,6 +174,14 @@ public final class Vector3D {
 		return new Vector3D(v.x / s, v.y / s, v.z / s);
 	}
 	
+	public static Vector3D faceForward(final Vector3D vLHS, final Vector3D vRHS) {
+		return dotProduct(vLHS, vRHS) < 0.0D ? negate(vLHS) : vLHS;
+	}
+	
+	public static Vector3D faceForwardNegated(final Vector3D vLHS, final Vector3D vRHS) {
+		return dotProduct(vLHS, vRHS) > 0.0D ? negate(vLHS) : vLHS;
+	}
+	
 	public static Vector3D multiply(final Vector3D v, final double s) {
 		return new Vector3D(v.x * s, v.y * s, v.z * s);
 	}
@@ -273,5 +285,9 @@ public final class Vector3D {
 	
 	public static double dotProduct(final Vector3D vLHS, final Vector3D vRHS) {
 		return vLHS.x * vRHS.x + vLHS.y * vRHS.y + vLHS.z * vRHS.z;
+	}
+	
+	public static double dotProductAbs(final Vector3D vLHS, final Vector3D vRHS) {
+		return Math.abs(dotProduct(vLHS, vRHS));
 	}
 }
