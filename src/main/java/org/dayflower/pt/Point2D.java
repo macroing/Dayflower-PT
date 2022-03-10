@@ -24,6 +24,10 @@ public final class Point2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public Point2D() {
+		this(0.0D, 0.0D);
+	}
+	
 	public Point2D(final double u, final double v) {
 		this.u = u;
 		this.v = v;
@@ -31,8 +35,39 @@ public final class Point2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public static Point2D sampleRandom() {
-		return new Point2D(Math.random(), Math.random());
+	public boolean isZero() {
+		return Math.isZero(this.u) && Math.isZero(this.v); 
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public static Point2D sampleDiskUniformDistributionByConcentricMapping() {
+		return sampleDiskUniformDistributionByConcentricMapping(sampleRandom());
+	}
+	
+	public static Point2D sampleDiskUniformDistributionByConcentricMapping(final Point2D p) {
+		return sampleDiskUniformDistributionByConcentricMapping(p, 1.0D);
+	}
+	
+	public static Point2D sampleDiskUniformDistributionByConcentricMapping(final Point2D p, final double radius) {
+		if(p.isZero()) {
+			return p;
+		}
+		
+		final double a = p.u * 2.0D - 1.0D;
+		final double b = p.v * 2.0D - 1.0D;
+		
+		if(a * a > b * b) {
+			final double phi = Math.PI / 4.0D * (b / a);
+			final double r = radius * a;
+			
+			return new Point2D(r * Math.cos(phi), r * Math.sin(phi));
+		}
+		
+		final double phi = Math.PI / 2.0D - Math.PI / 4.0D * (a / b);
+		final double r = radius * b;
+		
+		return new Point2D(r * Math.cos(phi), r * Math.sin(phi));
 	}
 	
 	public static Point2D sampleExactInverseTentFilter() {
@@ -47,5 +82,9 @@ public final class Point2D {
 		final double v = y < 1.0D ? Math.sqrt(y) - 1.0D : 1.0D - Math.sqrt(2.0D - y);
 		
 		return new Point2D(u, v);
+	}
+	
+	public static Point2D sampleRandom() {
+		return new Point2D(Math.random(), Math.random());
 	}
 }

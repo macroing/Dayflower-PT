@@ -107,14 +107,14 @@ public final class Scene {
 	public static Scene createScene(final Camera camera) {
 		final
 		Scene scene = new Scene(camera);
-		scene.addPrimitive(new Primitive(Material.checkerboard(Material.matte(Texture.constant(new Color3D(0.750D, 0.250D, 0.250D))), Material.mirror(Texture.constant(new Color3D(0.5D, 0.5D, 0.5D))), 0.0D, 1.0D, 1.0D), Shape.sphere(new Point3D( 1.0e5D + 1.0D, 40.8D, 81.6D), 1.0e5D)));
-//		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.250D, 0.250D))), Shape.sphere(new Point3D( 1.0e5D + 1.0D, 40.8D, 81.6D), 1.0e5D)));
+//		scene.addPrimitive(new Primitive(Material.checkerboard(Material.substrate(), Material.metal(), 0.0D, 1.0D, 1.0D), Shape.sphere(new Point3D( 1.0e5D + 1.0D, 40.8D, 81.6D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.250D, 0.250D))), Shape.sphere(new Point3D( 1.0e5D + 1.0D, 40.8D, 81.6D), 1.0e5D)));
 		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.250D, 0.250D, 0.750D))), Shape.sphere(new Point3D(-1.0e5D + 99.0D, 40.8D, 81.6D), 1.0e5D)));
 		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), Shape.sphere(new Point3D(50.0D, 40.8D, 1.0e5D), 1.0e5D)));
 		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), Shape.sphere(new Point3D(50.0D, 40.8D, -1.0e5D + 170.0D), 1.0e5D)));
 		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), Shape.sphere(new Point3D(50.0D, 1.0e5D, 81.6D), 1.0e5D)));
 		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), Shape.sphere(new Point3D(50.0D, -1.0e5D + 81.6D, 81.6D), 1.0e5D)));
-//		scene.addPrimitive(new Primitive(Material.metal(Texture.constant(new Color3D(0.999D, 0.999D, 0.999D))), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
+//		scene.addPrimitive(new Primitive(Material.mirror(Texture.constant(new Color3D(0.999D, 0.999D, 0.999D))), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
 //		scene.addPrimitive(new Primitive(Material.substrate(), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
 		scene.addPrimitive(new Primitive(Material.metal(), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
 		scene.addPrimitive(new Primitive(Material.glass(), Shape.sphere(new Point3D(73.0D, 16.5D, 78.0D), 16.5D)));

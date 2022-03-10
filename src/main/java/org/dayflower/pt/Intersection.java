@@ -35,6 +35,10 @@ public final class Intersection {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public OrthonormalBasis33D getOrthonormalBasis() {
+		return this.primitive.getShape().computeOrthonormalBasis(this.ray, this.t);
+	}
+	
 	public Point2D getTextureCoordinates() {
 		return this.primitive.getShape().computeTextureCoordinates(this.ray, this.t);
 	}
@@ -53,6 +57,10 @@ public final class Intersection {
 	
 	public Vector3D getSurfaceNormal() {
 		return this.primitive.getShape().computeSurfaceNormal(this.ray, this.t);
+	}
+	
+	public Vector3D getSurfaceNormalCorrectlyOriented() {
+		return Vector3D.faceForwardNegated(getSurfaceNormal(), getRay().getDirection());
 	}
 	
 	public double getT() {
