@@ -396,9 +396,11 @@ public abstract class Material {
 				return Optional.empty();
 			}
 			
-			final Vector3D hLS = microfacetDistribution.sampleH(oLS, Math.min(Math.random(), 0.99999994D), Math.random());
+			final Vector3D hLS = microfacetDistribution.sampleH(oLS, new Point2D(Math.min(Math.random(), 0.99999994D), Math.random()));
 			
-			if(Vector3D.dotProduct(oLS, hLS) < 0.0D) {
+			final double oDotH = Vector3D.dotProduct(oLS, hLS);
+			
+			if(oDotH < 0.0D) {
 				return Optional.empty();
 			}
 			
@@ -416,21 +418,39 @@ public abstract class Material {
 				return Optional.empty();
 			}
 			
-			final double d = microfacetDistribution.computeDifferentialArea(hLS);
-			final double g = microfacetDistribution.computeShadowingAndMasking(oLS, iLS);
+			final double probabilityDensityFunctionValue = microfacetDistribution.computePDF(oLS, hLS) / (4.0D * oDotH);
 			
-			final Color3D f = Fresnel.evaluateConductor(Vector3D.dotProductAbs(iLS, Vector3D.faceForward(hLS, Vector3D.z())), Color3D.WHITE, colorEta, colorK);
-			final Color3D result = Color3D.divide(Color3D.multiply(f, d * g), 4.0D * cosThetaAbsI * cosThetaAbsO);
-			
-			final double probabilityDensityFunctionValue = microfacetDistribution.computePDF(oLS, hLS) / (4.0D * Vector3D.dotProduct(oLS, hLS));
-			
-			if(result.isBlack() || Math.isZero(probabilityDensityFunctionValue)) {
+			if(Math.isZero(probabilityDensityFunctionValue)) {
 				return Optional.empty();
 			}
 			
-			final Color3D reflectance = Color3D.divide(Color3D.multiply(result, Vector3D.dotProductAbs(iWS, nWS)), probabilityDensityFunctionValue);
+			final double iDotHAbs = Vector3D.dotProductAbs(iLS, Vector3D.faceForward(hLS, Vector3D.z()));
+			final double iDotNAbs = Vector3D.dotProductAbs(iWS, nWS);
 			
-			return Optional.of(new Result(this.textureEmission.compute(intersection), reflectance, new Ray3D(intersection.getSurfaceIntersectionPoint(), iWS)));
+			final Color3D colorFresnel = Fresnel.evaluateConductor(iDotHAbs, Color3D.WHITE, colorEta, colorK);
+			
+			final double a = microfacetDistribution.computeDifferentialArea(hLS);
+			final double b = microfacetDistribution.computeShadowingAndMasking(oLS, iLS);
+			final double c = 4.0D * cosThetaAbsI * cosThetaAbsO;
+			
+			final double resultR = colorFresnel.r * a * b / c;
+			final double resultG = colorFresnel.g * a * b / c;
+			final double resultB = colorFresnel.b * a * b / c;
+			
+			if(Math.isZero(resultR) && Math.isZero(resultG) && Math.isZero(resultB)) {
+				return Optional.empty();
+			}
+			
+			final double reflectanceR = resultR * iDotNAbs / probabilityDensityFunctionValue;
+			final double reflectanceG = resultG * iDotNAbs / probabilityDensityFunctionValue;
+			final double reflectanceB = resultB * iDotNAbs / probabilityDensityFunctionValue;
+			
+			final Color3D emission = this.textureEmission.compute(intersection);
+			final Color3D reflectance = new Color3D(reflectanceR, reflectanceG, reflectanceB);
+			
+			final Ray3D ray = new Ray3D(intersection.getSurfaceIntersectionPoint(), iWS);
+			
+			return Optional.of(new Result(emission, reflectance, ray));
 		}
 	}
 	
@@ -449,7 +469,7 @@ public abstract class Material {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		public abstract Vector3D sampleH(final Vector3D o, final double u, final double v);
+		public abstract Vector3D sampleH(final Vector3D o, final Point2D p);
 		
 		public final boolean isSamplingVisibleArea() {
 			return this.isSamplingVisibleArea;
@@ -583,11 +603,14 @@ public abstract class Material {
 					return Optional.empty();
 				}
 				
-				final double u = Math.min(Math.random(), 0.99999994D);
+				final double t = Math.min(Math.random(), 0.99999994D);
+				final double u = t < 0.5D ? Math.min(2.0D * t, 0.99999994D) : Math.min(2.0D * (t - 0.5D), 0.99999994D);
 				final double v = Math.random();
 				
-				final Vector3D i = u < 0.5D ? Vector3D.sampleHemisphereCosineDistribution(new Point2D(Math.min(2.0D * u, 0.99999994D), v)) : Vector3D.reflection(oLS, microfacetDistribution.sampleH(oLS, Math.min(2.0D * (u - 0.5D), 0.99999994D), v));
-				final Vector3D iLS = u < 0.5D && oLS.z < 0.0D ? Vector3D.negate(i) : i;
+				final Point2D p = new Point2D(u, v);
+				
+				final Vector3D i = t < 0.5D ? Vector3D.sampleHemisphereCosineDistribution(p) : Vector3D.reflection(oLS, microfacetDistribution.sampleH(oLS, p));
+				final Vector3D iLS = t < 0.5D && oLS.z < 0.0D ? Vector3D.negate(i) : i;
 				final Vector3D iWS = Vector3D.transformNormalize(iLS, orthonormalBasis);
 				
 				if(!Vector3D.sameHemisphereZ(oLS, iLS)) {
@@ -602,28 +625,47 @@ public abstract class Material {
 				
 				final Vector3D hLSNormalized = Vector3D.normalize(hLS);
 				
-				final double a = 28.0D / (23.0D * Math.PI);
-				final double b = 1.0D - Math.pow5(1.0D - 0.5D * iLS.cosThetaAbs());
-				final double c = 1.0D - Math.pow5(1.0D - 0.5D * oLS.cosThetaAbs());
-				final double d = microfacetDistribution.computeDifferentialArea(hLSNormalized);
-				final double e = 4.0D * Vector3D.dotProductAbs(iLS, hLSNormalized) * Math.max(iLS.cosThetaAbs(), oLS.cosThetaAbs());
-				final double f = d / e;
+				final double iDotH = Vector3D.dotProduct(iLS, hLSNormalized);
+				final double iDotHAbs = Math.abs(iDotH);
+				final double iDotNAbs = Vector3D.dotProductAbs(iWS, nWS);
+				final double oDotH = Vector3D.dotProduct(oLS, hLSNormalized);
 				
-				final Color3D cF = Fresnel.evaluateDielectricSchlick(Vector3D.dotProduct(iLS, hLSNormalized), colorKS);
-				final Color3D cD = Color3D.multiply(Color3D.multiply(Color3D.multiply(Color3D.multiply(colorKD, a), Color3D.subtract(Color3D.WHITE, colorKS)), b), c);
-				final Color3D cS = Color3D.multiply(cF, f);
+				final double cosThetaAbsI = iLS.cosThetaAbs();
+				final double cosThetaAbsO = oLS.cosThetaAbs();
 				
-				final Color3D result = Color3D.add(cD, cS);
+				final double probabilityDensityFunctionValue = 0.5D * (cosThetaAbsI / Math.PI + microfacetDistribution.computePDF(oLS, hLSNormalized) / (4.0D * oDotH));
 				
-				final double probabilityDensityFunctionValue = 0.5D * (iLS.cosThetaAbs() / Math.PI + microfacetDistribution.computePDF(oLS, hLSNormalized) / (4.0D * Vector3D.dotProduct(oLS, hLSNormalized)));
-				
-				if(result.isBlack() || Math.isZero(probabilityDensityFunctionValue)) {
+				if(Math.isZero(probabilityDensityFunctionValue)) {
 					return Optional.empty();
 				}
 				
-				final Color3D reflectance = Color3D.divide(Color3D.multiply(result, Vector3D.dotProductAbs(iWS, nWS)), probabilityDensityFunctionValue);
+				final double a = 28.0D / (23.0D * Math.PI);
+				final double b = 1.0D - Math.pow5(1.0D - 0.5D * cosThetaAbsI);
+				final double c = 1.0D - Math.pow5(1.0D - 0.5D * cosThetaAbsO);
+				final double d = microfacetDistribution.computeDifferentialArea(hLSNormalized);
+				final double e = 4.0D * iDotHAbs * Math.max(cosThetaAbsI, cosThetaAbsO);
+				final double f = d / e;
 				
-				return Optional.of(new Result(this.textureEmission.compute(intersection), reflectance, new Ray3D(intersection.getSurfaceIntersectionPoint(), iWS)));
+				final Color3D colorFresnel = Fresnel.evaluateDielectricSchlick(iDotH, colorKS);
+				
+				final double resultR = colorKD.r * a * (1.0D - colorKS.r) * b * c + colorFresnel.r * f;
+				final double resultG = colorKD.g * a * (1.0D - colorKS.g) * b * c + colorFresnel.g * f;
+				final double resultB = colorKD.b * a * (1.0D - colorKS.b) * b * c + colorFresnel.b * f;
+				
+				if(Math.isZero(resultR) && Math.isZero(resultG) && Math.isZero(resultB)) {
+					return Optional.empty();
+				}
+				
+				final double reflectanceR = resultR * iDotNAbs / probabilityDensityFunctionValue;
+				final double reflectanceG = resultG * iDotNAbs / probabilityDensityFunctionValue;
+				final double reflectanceB = resultB * iDotNAbs / probabilityDensityFunctionValue;
+				
+				final Color3D emission = this.textureEmission.compute(intersection);
+				final Color3D reflectance = new Color3D(reflectanceR, reflectanceG, reflectanceB);
+				
+				final Ray3D ray = new Ray3D(intersection.getSurfaceIntersectionPoint(), iWS);
+				
+				return Optional.of(new Result(emission, reflectance, ray));
 			}
 			
 			return Optional.empty();
@@ -648,18 +690,18 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public Vector3D sampleH(final Vector3D o, final double u, final double v) {
+		public Vector3D sampleH(final Vector3D o, final Point2D p) {
 			if(isSamplingVisibleArea()) {
-				return o.z >= 0.0D ? doSample(o, u, v) : Vector3D.negate(doSample(Vector3D.negate(o), u, v));
+				return o.z >= 0.0D ? doSample(o, p) : Vector3D.negate(doSample(Vector3D.negate(o), p));
 			} else if(Math.equal(this.alphaX, this.alphaY)) {
-				final double phi = v * 2.0D * Math.PI;
-				final double cosTheta = 1.0D / Math.sqrt(1.0D + (this.alphaX * this.alphaX * u / (1.0D - u)));
+				final double phi = p.v * 2.0D * Math.PI;
+				final double cosTheta = 1.0D / Math.sqrt(1.0D + (this.alphaX * this.alphaX * p.u / (1.0D - p.u)));
 				final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
 				
 				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
 			} else {
-				final double phi = Math.atan(this.alphaY / this.alphaX * Math.tan(2.0D * Math.PI * v + 0.5D * Math.PI)) + (v > 0.5D ? Math.PI : 0.0D);
-				final double cosTheta = 1.0D / Math.sqrt(1.0D + ((1.0D / (Math.pow2(Math.cos(phi)) / (this.alphaX * this.alphaX) + Math.pow2(Math.sin(phi)) / (this.alphaY * this.alphaY))) * u / (1.0D - u)));
+				final double phi = Math.atan(this.alphaY / this.alphaX * Math.tan(2.0D * Math.PI * p.v + 0.5D * Math.PI)) + (p.v > 0.5D ? Math.PI : 0.0D);
+				final double cosTheta = 1.0D / Math.sqrt(1.0D + ((1.0D / (Math.pow2(Math.cos(phi)) / (this.alphaX * this.alphaX) + Math.pow2(Math.sin(phi)) / (this.alphaY * this.alphaY))) * p.u / (1.0D - p.u)));
 				final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
 				
 				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
@@ -690,7 +732,7 @@ public abstract class Material {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		private Vector3D doSample(final Vector3D i, final double u, final double v) {
+		private Vector3D doSample(final Vector3D i, final Point2D p) {
 			final Vector3D iStretched = Vector3D.normalize(new Vector3D(i.x * this.alphaX, i.y * this.alphaY, i.z));
 			
 			final double cosPhi = iStretched.cosPhi();
@@ -698,8 +740,8 @@ public abstract class Material {
 			final double sinPhi = iStretched.sinPhi();
 			
 			if(cosTheta > 0.9999D) {
-				final double r = Math.sqrt(u / (1.0D - u));
-				final double phi = 2.0D * Math.PI * v;
+				final double r = Math.sqrt(p.u / (1.0D - p.u));
+				final double phi = 2.0D * Math.PI * p.v;
 				
 				final double slopeX = r * Math.cos(phi);
 				final double slopeY = r * Math.sin(phi);
@@ -708,14 +750,14 @@ public abstract class Material {
 			}
 			
 			final double a = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta)) / cosTheta;
-			final double b = 2.0D * u / (2.0D / (1.0D + Math.sqrt(1.0D + a * a))) - 1.0D;
+			final double b = 2.0D * p.u / (2.0D / (1.0D + Math.sqrt(1.0D + a * a))) - 1.0D;
 			final double c = Math.min(1.0D / (b * b - 1.0D), 1.0e10D);
 			final double d = Math.sqrt(Math.max(a * a * c * c - (b * b - a * a) * c, 0.0D));
 			final double e = a * c + d;
-			final double f = v > 0.5D ? 2.0D * (v - 0.5D) : 2.0D * (0.5D - v);
+			final double f = p.v > 0.5D ? 2.0D * (p.v - 0.5D) : 2.0D * (0.5D - p.v);
 			
 			final double slopeX = b < 0.0D || e > 1.0D / a ? a * c - d : e;
-			final double slopeY = (v > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Math.sqrt(1.0D + this.alphaX * this.alphaX);
+			final double slopeY = (p.v > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Math.sqrt(1.0D + this.alphaX * this.alphaX);
 			
 			return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * this.alphaX), -((sinPhi * slopeX + cosPhi * slopeY) * this.alphaY), 1.0D));
 		}
