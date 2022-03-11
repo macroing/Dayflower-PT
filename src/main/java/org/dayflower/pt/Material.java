@@ -560,6 +560,76 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	private static final class PlasticMaterial extends Material {
+		private final Texture textureEmission;
+		private final Texture textureKD;
+		private final Texture textureKS;
+		private final Texture textureRoughness;
+		private final boolean isRemappingRoughness;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public PlasticMaterial(final Texture textureKD, final Texture textureKS, final Texture textureRoughness, final boolean isRemappingRoughness, final Texture textureEmission) {
+			this.textureKD = Objects.requireNonNull(textureKD, "textureKD == null");
+			this.textureKS = Objects.requireNonNull(textureKS, "textureKS == null");
+			this.textureRoughness = Objects.requireNonNull(textureRoughness, "textureRoughness == null");
+			this.isRemappingRoughness = isRemappingRoughness;
+			this.textureEmission = Objects.requireNonNull(textureEmission, "textureEmission == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Optional<Result> compute(final Intersection intersection) {
+			final Color3D colorKD = Color3D.saturate(this.textureKD.compute(intersection), 0.0D, Math.MAX_VALUE);
+			final Color3D colorKS = Color3D.saturate(this.textureKS.compute(intersection), 0.0D, Math.MAX_VALUE);
+			
+			final boolean hasColorKD = !colorKD.isBlack();
+			final boolean hasColorKS = !colorKS.isBlack();
+			
+			if(hasColorKD || hasColorKS) {
+				final OrthonormalBasis33D orthonormalBasis = intersection.getOrthonormalBasis();
+				
+				final Vector3D nWS = intersection.getSurfaceNormalCorrectlyOriented();
+				final Vector3D oWS = Vector3D.negate(intersection.getRay().getDirection());
+				final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, orthonormalBasis);
+				
+				if(Math.isZero(oLS.z)) {
+					return Optional.empty();
+				}
+				
+				final double sampleU = Math.random();
+				final double sampleV = Math.random();
+				
+				final int matches = (hasColorKD ? 1 : 0) + (hasColorKS ? 1 : 0);
+				final int match = Math.min(Math.toInt(Math.floor(sampleU * matches)), matches - 1);
+				
+				final double u = Math.min(sampleU * matches - match, 0.99999994D);
+				final double v = sampleV;
+				
+				final Point2D p = new Point2D(u, v);
+				
+				if(hasColorKD) {
+					final Vector3D i = Vector3D.sampleHemisphereCosineDistribution(p);
+					final Vector3D iLS = Vector3D.faceForwardZ(oLS, i);
+					final Vector3D iWS = Vector3D.transformNormalize(iLS, orthonormalBasis);
+					
+					final Color3D result = Color3D.divide(colorKD, Math.PI);
+					
+					final double probabilityDensityFunctionValue = Vector3D.sameHemisphereZ(oLS, iLS) ? iLS.cosThetaAbs() / Math.PI : 0.0D;
+				}
+				
+				if(hasColorKS) {
+					
+				}
+			}
+			
+			return Optional.empty();
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	private static final class SubstrateMaterial extends Material {
 		private final Texture textureEmission;
 		private final Texture textureKD;

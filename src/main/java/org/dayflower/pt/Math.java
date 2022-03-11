@@ -189,6 +189,10 @@ public final class Math {
 		return result;
 	}
 	
+	public static int min(final int a, final int b) {
+		return java.lang.Math.min(a, b);
+	}
+	
 	public static int toInt(final double value) {
 		return (int)(value);
 	}

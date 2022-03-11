@@ -182,12 +182,20 @@ public final class Vector3D {
 		return dotProduct(vLHS, vRHS) > 0.0D ? negate(vLHS) : vLHS;
 	}
 	
+	public static Vector3D faceForwardZ(final Vector3D vLHS, final Vector3D vRHS) {
+		return vLHS.z < 0.0D ? negateZ(vRHS) : vRHS;
+	}
+	
 	public static Vector3D multiply(final Vector3D v, final double s) {
 		return new Vector3D(v.x * s, v.y * s, v.z * s);
 	}
 	
 	public static Vector3D negate(final Vector3D v) {
 		return new Vector3D(-v.x, -v.y, -v.z);
+	}
+	
+	public static Vector3D negateZ(final Vector3D v) {
+		return new Vector3D(v.x, v.y, -v.z);
 	}
 	
 	public static Vector3D normalize(final Vector3D v) {
