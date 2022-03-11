@@ -116,7 +116,8 @@ public final class Scene {
 		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.750D, 0.750D, 0.750D))), Shape.sphere(new Point3D(50.0D, -1.0e5D + 81.6D, 81.6D), 1.0e5D)));
 //		scene.addPrimitive(new Primitive(Material.mirror(Texture.constant(new Color3D(0.999D, 0.999D, 0.999D))), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
 //		scene.addPrimitive(new Primitive(Material.substrate(), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
-		scene.addPrimitive(new Primitive(Material.metal(), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
+//		scene.addPrimitive(new Primitive(Material.metal(), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
+		scene.addPrimitive(new Primitive(Material.plastic(), Shape.sphere(new Point3D(27.0D, 16.5D, 47.0D), 16.5D)));
 		scene.addPrimitive(new Primitive(Material.glass(), Shape.sphere(new Point3D(73.0D, 16.5D, 78.0D), 16.5D)));
 		scene.addPrimitive(new Primitive(Material.matte(Texture.constant(new Color3D(0.000D, 0.000D, 0.000D)), Texture.constant(new Color3D(12.0D))), Shape.sphere(new Point3D(50.0D, 681.6D - 0.27D, 81.6D), 600.0D)));
 		
