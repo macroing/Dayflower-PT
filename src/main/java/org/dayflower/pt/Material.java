@@ -461,7 +461,7 @@ public abstract class Material {
 				return Optional.empty();
 			}
 			
-			final double iDotHAbs = Vector3D.dotProductAbs(iLS, Vector3D.faceForward(hLS, Vector3D.z()));
+			final double iDotHAbs = Vector3D.dotProductAbs(iLS, Vector3D.faceForwardLHS(hLS, Vector3D.z()));
 			final double iDotNAbs = Vector3D.dotProductAbs(iWS, nWS);
 			
 			final Color3D colorFresnel = Fresnel.evaluateConductor(iDotHAbs, Color3D.WHITE, colorEta, colorK);
@@ -654,7 +654,7 @@ public abstract class Material {
 				final MicrofacetDistribution microfacetDistribution = new TrowbridgeReitzMicrofacetDistribution(true, false, roughness, roughness);
 				
 				if(isSelectingLambertianBRDF) {
-					final Vector3D iLS = Vector3D.faceForwardZ(oLS, Vector3D.sampleHemisphereCosineDistribution(p));
+					final Vector3D iLS = Vector3D.faceForwardRHSZ(oLS, Vector3D.sampleHemisphereCosineDistribution(p));
 					final Vector3D iWS = Vector3D.transformNormalize(iLS, orthonormalBasis);
 					
 					Color3D result = Color3D.divide(colorKD, Math.PI);
@@ -675,7 +675,7 @@ public abstract class Material {
 								
 								probabilityDensityFunctionValue += microfacetDistribution.computePDF(oLS, hLSNormalized) / (4.0D * Vector3D.dotProduct(oLS, hLSNormalized));
 								
-								final double iDotHAbs = Vector3D.dotProductAbs(iLS, Vector3D.faceForward(hLS, Vector3D.z()));
+								final double iDotHAbs = Vector3D.dotProductAbs(iLS, Vector3D.faceForwardLHS(hLS, Vector3D.z()));
 								
 								final double fresnel = Fresnel.evaluateDielectric(iDotHAbs, 1.5D, 1.0D);
 								
@@ -731,7 +731,7 @@ public abstract class Material {
 						return Optional.empty();
 					}
 					
-					final double iDotHAbs = Vector3D.dotProductAbs(iLS, Vector3D.faceForward(hLS, Vector3D.z()));
+					final double iDotHAbs = Vector3D.dotProductAbs(iLS, Vector3D.faceForwardLHS(hLS, Vector3D.z()));
 					
 					final double fresnel = Fresnel.evaluateDielectric(iDotHAbs, 1.5D, 1.0D);
 					

@@ -60,7 +60,7 @@ public final class Intersection {
 	}
 	
 	public Vector3D getSurfaceNormalCorrectlyOriented() {
-		return Vector3D.faceForwardNegated(getSurfaceNormal(), getRay().getDirection());
+		return Vector3D.faceForwardLHSNegated(getSurfaceNormal(), getRay().getDirection());
 	}
 	
 	public double getT() {

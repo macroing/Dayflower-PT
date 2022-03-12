@@ -174,15 +174,15 @@ public final class Vector3D {
 		return new Vector3D(v.x / s, v.y / s, v.z / s);
 	}
 	
-	public static Vector3D faceForward(final Vector3D vLHS, final Vector3D vRHS) {
+	public static Vector3D faceForwardLHS(final Vector3D vLHS, final Vector3D vRHS) {
 		return dotProduct(vLHS, vRHS) < 0.0D ? negate(vLHS) : vLHS;
 	}
 	
-	public static Vector3D faceForwardNegated(final Vector3D vLHS, final Vector3D vRHS) {
+	public static Vector3D faceForwardLHSNegated(final Vector3D vLHS, final Vector3D vRHS) {
 		return dotProduct(vLHS, vRHS) > 0.0D ? negate(vLHS) : vLHS;
 	}
 	
-	public static Vector3D faceForwardZ(final Vector3D vLHS, final Vector3D vRHS) {
+	public static Vector3D faceForwardRHSZ(final Vector3D vLHS, final Vector3D vRHS) {
 		return vLHS.z < 0.0D ? negateZ(vRHS) : vRHS;
 	}
 	
