@@ -46,6 +46,14 @@ public abstract class Material {
 		return new GlassMaterial();
 	}
 	
+	public static Material matte(final Color3D colorKD) {
+		return matte(colorKD, Color3D.BLACK);
+	}
+	
+	public static Material matte(final Color3D colorKD, final Color3D colorEmission) {
+		return matte(Texture.constant(colorKD), Texture.constant(colorEmission));
+	}
+	
 	public static Material matte(final Texture textureKD) {
 		return matte(textureKD, Texture.constant(Color3D.BLACK));
 	}
