@@ -66,7 +66,27 @@ public abstract class Material {
 	}
 	
 	public static Material metal() {
-		return metal(Texture.constant(Color3D.AU_K), Texture.constant(Color3D.AU_ETA), Texture.constant(new Color3D(0.01D)), Texture.constant(new Color3D(0.01D)), true, Texture.constant(Color3D.BLACK));
+		return metal(Color3D.AU_K, Color3D.AU_ETA);
+	}
+	
+	public static Material metal(final Color3D colorK, final Color3D colorEta) {
+		return metal(colorK, colorEta, 0.01D);
+	}
+	
+	public static Material metal(final Color3D colorK, final Color3D colorEta, final double doubleRoughness) {
+		return metal(colorK, colorEta, doubleRoughness, doubleRoughness);
+	}
+	
+	public static Material metal(final Color3D colorK, final Color3D colorEta, final double doubleRoughnessU, final double doubleRoughnessV) {
+		return metal(colorK, colorEta, doubleRoughnessU, doubleRoughnessV, true);
+	}
+	
+	public static Material metal(final Color3D colorK, final Color3D colorEta, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness) {
+		return metal(colorK, colorEta, doubleRoughnessU, doubleRoughnessV, isRemappingRoughness, Color3D.BLACK);
+	}
+	
+	public static Material metal(final Color3D colorK, final Color3D colorEta, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness, final Color3D colorEmission) {
+		return metal(Texture.constant(colorK), Texture.constant(colorEta), Texture.constant(new Color3D(doubleRoughnessU)), Texture.constant(new Color3D(doubleRoughnessV)), isRemappingRoughness, Texture.constant(colorEmission));
 	}
 	
 	public static Material metal(final Texture textureK, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness, final Texture textureEmission) {
