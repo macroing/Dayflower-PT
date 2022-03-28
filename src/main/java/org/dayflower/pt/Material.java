@@ -99,6 +99,14 @@ public abstract class Material {
 		return new MetalMaterial(textureK, textureEta, textureRoughnessU, textureRoughnessV, isRemappingRoughness, textureEmission);
 	}
 	
+	public static Material mirror(final Color3D colorKR) {
+		return mirror(colorKR, Color3D.BLACK);
+	}
+	
+	public static Material mirror(final Color3D colorKR, final Color3D colorEmission) {
+		return mirror(Texture.constant(colorKR), Texture.constant(colorEmission));
+	}
+	
 	public static Material mirror(final Texture textureKR) {
 		return mirror(textureKR, Texture.constant(Color3D.BLACK));
 	}
