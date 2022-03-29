@@ -19,51 +19,112 @@
 package org.dayflower.pt;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 public final class Intersection {
 	private final Primitive primitive;
-	private final Ray3D ray;
-	private final double t;
+	private final Ray3D rayOS;
+	private final Ray3D rayWS;
+	private final Supplier<OrthonormalBasis33D> orthonormalBasisOS;
+	private final Supplier<OrthonormalBasis33D> orthonormalBasisWS;
+	private final Supplier<Point2D> textureCoordinates;
+	private final Supplier<Point3D> surfaceIntersectionPointOS;
+	private final Supplier<Point3D> surfaceIntersectionPointWS;
+	private final double tOS;
+	private final double tWS;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public Intersection(final Primitive primitive, final Ray3D ray, final double t) {
+	public Intersection(final Primitive primitive, final Ray3D rayOS, final double tOS) {
 		this.primitive = Objects.requireNonNull(primitive, "primitive == null");
-		this.ray = Objects.requireNonNull(ray, "ray == null");
-		this.t = t;
+		this.rayOS = Objects.requireNonNull(rayOS, "rayOS == null");
+		this.rayWS = Ray3D.transform(getPrimitive().getTransform().getObjectToWorld(), getRayOS());
+		this.tOS = tOS;
+		this.tWS = Ray3D.transformT(getPrimitive().getTransform().getObjectToWorld(), getRayOS(), getRayWS(), getTOS());
+		this.orthonormalBasisOS = new LazySupplier<>(() -> getPrimitive().getShape().computeOrthonormalBasis(getRayOS(), getTOS()));
+		this.orthonormalBasisWS = new LazySupplier<>(() -> OrthonormalBasis33D.transformTranspose(getPrimitive().getTransform().getWorldToObject(), getOrthonormalBasisOS()));
+		this.textureCoordinates = new LazySupplier<>(() -> getPrimitive().getShape().computeTextureCoordinates(getRayOS(), getTOS()));
+		this.surfaceIntersectionPointOS = new LazySupplier<>(() -> Point3D.add(getRayOS().getOrigin(), getRayOS().getDirection(), getTOS()));
+		this.surfaceIntersectionPointWS = new LazySupplier<>(() -> Point3D.transformAndDivide(getPrimitive().getTransform().getObjectToWorld(), getSurfaceIntersectionPointOS()));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public OrthonormalBasis33D getOrthonormalBasis() {
-		return this.primitive.getShape().computeOrthonormalBasis(this.ray, this.t);
+	public OrthonormalBasis33D getOrthonormalBasisOS() {
+		return this.orthonormalBasisOS.get();
+	}
+	
+	public OrthonormalBasis33D getOrthonormalBasisWS() {
+		return this.orthonormalBasisWS.get();
 	}
 	
 	public Point2D getTextureCoordinates() {
-		return this.primitive.getShape().computeTextureCoordinates(this.ray, this.t);
+		return this.textureCoordinates.get();
 	}
 	
-	public Point3D getSurfaceIntersectionPoint() {
-		return Point3D.add(this.ray.getOrigin(), this.ray.getDirection(), this.t);
+	public Point3D getSurfaceIntersectionPointOS() {
+		return this.surfaceIntersectionPointOS.get();
+	}
+	
+	public Point3D getSurfaceIntersectionPointWS() {
+		return this.surfaceIntersectionPointWS.get();
 	}
 	
 	public Primitive getPrimitive() {
 		return this.primitive;
 	}
 	
-	public Ray3D getRay() {
-		return this.ray;
+	public Ray3D getRayOS() {
+		return this.rayOS;
 	}
 	
-	public Vector3D getSurfaceNormal() {
-		return this.primitive.getShape().computeSurfaceNormal(this.ray, this.t);
+	public Ray3D getRayWS() {
+		return this.rayWS;
 	}
 	
-	public Vector3D getSurfaceNormalCorrectlyOriented() {
-		return Vector3D.faceForwardLHSNegated(getSurfaceNormal(), getRay().getDirection());
+	public Vector3D getSurfaceNormalOS() {
+		return getOrthonormalBasisOS().w;
 	}
 	
-	public double getT() {
-		return this.t;
+	public Vector3D getSurfaceNormalOSCorrectlyOriented() {
+		return Vector3D.faceForwardLHSNegated(getSurfaceNormalOS(), getRayOS().getDirection());
+	}
+	
+	public Vector3D getSurfaceNormalWS() {
+		return getOrthonormalBasisWS().w;
+	}
+	
+	public Vector3D getSurfaceNormalWSCorrectlyOriented() {
+		return Vector3D.faceForwardLHSNegated(getSurfaceNormalWS(), getRayWS().getDirection());
+	}
+	
+	public double getTOS() {
+		return this.tOS;
+	}
+	
+	public double getTWS() {
+		return this.tWS;
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class LazySupplier<T> implements Supplier<T> {
+		private final AtomicReference<T> value;
+		private final Supplier<T> valueSupplier;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public LazySupplier(final Supplier<T> valueSupplier) {
+			this.value = new AtomicReference<>();
+			this.valueSupplier = Objects.requireNonNull(valueSupplier, "valueSupplier == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public T get() {
+			return this.value.updateAndGet(value -> value != null ? value : this.valueSupplier.get());
+		}
 	}
 }

@@ -37,10 +37,112 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public static Shape cone() {
+		return cone(360.0D);
+	}
+	
+	public static Shape cone(final double phiMax) {
+		return cone(phiMax, 1.0D);
+	}
+	
+	public static Shape cone(final double phiMax, final double radius) {
+		return cone(phiMax, radius, 1.0D);
+	}
+	
+	public static Shape cone(final double phiMax, final double radius, final double zMax) {
+		return new Cone(Math.toRadians(phiMax), radius, zMax);
+	}
+	
+	public static Shape sphere() {
+		return sphere(new Point3D());
+	}
+	
+	public static Shape sphere(final Point3D center) {
+		return sphere(center, 1.0D);
+	}
+	
 	public static Shape sphere(final Point3D center, final double radius) {
 		Objects.requireNonNull(center, "center == null");
 		
 		return new Sphere(center, radius);
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class Cone extends Shape {
+		private final double phiMax;
+		private final double radius;
+		private final double zMax;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public Cone(final double phiMax, final double radius, final double zMax) {
+			this.phiMax = phiMax;
+			this.radius = radius;
+			this.zMax = zMax;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
+			final Point3D surfaceIntersectionPoint = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final double value = 1.0D - (surfaceIntersectionPoint.z / this.zMax);
+			
+			final Vector3D u = Vector3D.normalize(new Vector3D(-this.phiMax * surfaceIntersectionPoint.y, this.phiMax * surfaceIntersectionPoint.x, 0.0D));
+			final Vector3D v = Vector3D.normalize(new Vector3D(-surfaceIntersectionPoint.x / value, -surfaceIntersectionPoint.y / value, this.zMax));
+			final Vector3D w = Vector3D.crossProduct(u, v);
+			
+			return new OrthonormalBasis33D(w, v, u);
+		}
+		
+		@Override
+		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
+			final Point3D surfaceIntersectionPoint = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final double u = surfaceIntersectionPoint.sphericalPhi() / this.phiMax;
+			final double v = surfaceIntersectionPoint.z / this.zMax;
+			
+			return new Point2D(u, v);
+		}
+		
+		@Override
+		public Vector3D computeSurfaceNormal(final Ray3D ray, final double t) {
+			return computeOrthonormalBasis(ray, t).w;
+		}
+		
+		@Override
+		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
+			final Point3D origin = ray.getOrigin();
+			
+			final Vector3D direction = ray.getDirection();
+			
+			final double k = (this.radius / this.zMax) * (this.radius / this.zMax);
+			final double a = direction.x * direction.x + direction.y * direction.y - k * direction.z * direction.z;
+			final double b = 2.0D * (direction.x * origin.x + direction.y * origin.y - k * direction.z * (origin.z - this.zMax));
+			final double c = origin.x * origin.x + origin.y * origin.y - k * (origin.z - this.zMax) * (origin.z - this.zMax);
+			
+			final double[] ts = Math.solveQuadraticSystem(a, b, c);
+			
+			for(int i = 0; i < ts.length; i++) {
+				final double t = ts[i];
+				
+				if(Math.isNaN(t)) {
+					return Math.NaN;
+				}
+				
+				if(t > tMinimum && t < tMaximum) {
+					final Point3D surfaceIntersectionPoint = Point3D.add(origin, direction, t);
+					
+					if(surfaceIntersectionPoint.z >= 0.0D && surfaceIntersectionPoint.z <= this.zMax && surfaceIntersectionPoint.sphericalPhi() <= this.phiMax) {
+						return t;
+					}
+				}
+			}
+			
+			return Math.NaN;
+		}
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

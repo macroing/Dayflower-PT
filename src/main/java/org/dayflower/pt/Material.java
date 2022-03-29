@@ -206,10 +206,10 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		public Optional<Result> compute(final Intersection intersection, final Color3D emission) {
-			final OrthonormalBasis33D orthonormalBasis = intersection.getOrthonormalBasis();
+			final OrthonormalBasis33D orthonormalBasis = intersection.getOrthonormalBasisWS();
 			
-			final Vector3D nWS = intersection.getSurfaceNormalCorrectlyOriented();
-			final Vector3D oWS = Vector3D.negate(intersection.getRay().getDirection());
+			final Vector3D nWS = intersection.getSurfaceNormalWSCorrectlyOriented();
+			final Vector3D oWS = Vector3D.negate(intersection.getRayWS().getDirection());
 			final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, orthonormalBasis);
 			
 			if(Math.isZero(oLS.z)) {
@@ -254,7 +254,7 @@ public abstract class Material {
 				return Optional.empty();
 			}
 			
-			final Ray3D ray = new Ray3D(intersection.getSurfaceIntersectionPoint(), iWS);
+			final Ray3D ray = new Ray3D(intersection.getSurfaceIntersectionPointWS(), iWS);
 			
 			if(matches > 1) {
 				for(final BXDF currentBXDF : this.bXDFs) {
@@ -493,9 +493,9 @@ public abstract class Material {
 		
 		@Override
 		public Optional<Result> compute(final Intersection intersection) {
-			final Vector3D direction = intersection.getRay().getDirection();
+			final Vector3D direction = intersection.getRayWS().getDirection();
 			
-			final Vector3D surfaceNormal = intersection.getSurfaceNormal();
+			final Vector3D surfaceNormal = intersection.getSurfaceNormalWS();
 			final Vector3D surfaceNormalCorrectlyOriented = Vector3D.orientNormal(direction, surfaceNormal);
 			
 			final boolean isEntering = Vector3D.dotProduct(surfaceNormal, surfaceNormalCorrectlyOriented) > 0.0D;
@@ -506,7 +506,7 @@ public abstract class Material {
 			final double etaT = isEntering ? etaB : etaA;
 			final double eta = etaI / etaT;
 			
-			final Point3D reflectionOrigin = intersection.getSurfaceIntersectionPoint();
+			final Point3D reflectionOrigin = intersection.getSurfaceIntersectionPointWS();
 			
 			final Vector3D reflectionDirection = Vector3D.reflection(direction, surfaceNormal, true);
 			
@@ -515,7 +515,7 @@ public abstract class Material {
 			final Optional<Vector3D> optionalTransmissionDirection = Vector3D.refraction(direction, surfaceNormalCorrectlyOriented, eta);
 			
 			if(optionalTransmissionDirection.isPresent()) {
-				final Point3D transmissionOrigin = intersection.getSurfaceIntersectionPoint();
+				final Point3D transmissionOrigin = intersection.getSurfaceIntersectionPointWS();
 				
 				final Vector3D transmissionDirection = optionalTransmissionDirection.get();
 				
@@ -593,14 +593,14 @@ public abstract class Material {
 		@Override
 		public Optional<Result> compute(final Intersection intersection) {
 			final Vector3D s = Vector3D.sampleHemisphereCosineDistribution();
-			final Vector3D w = Vector3D.orientNormal(intersection.getRay().getDirection(), intersection.getSurfaceNormal());
+			final Vector3D w = Vector3D.orientNormal(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS());
 			final Vector3D u = Vector3D.normalize(Vector3D.crossProduct(Math.abs(w.x) > 0.1D ? Vector3D.y() : Vector3D.x(), w));
 			final Vector3D v = Vector3D.normalize(Vector3D.crossProduct(w, u));
 			
 			final Color3D colorEmission = this.textureEmission.compute(intersection);
 			final Color3D colorKD = this.textureKD.compute(intersection);
 			
-			return Optional.of(new Result(colorEmission, colorKD, new Ray3D(intersection.getSurfaceIntersectionPoint(), Vector3D.directionNormalized(u, v, w, s))));
+			return Optional.of(new Result(colorEmission, colorKD, new Ray3D(intersection.getSurfaceIntersectionPointWS(), Vector3D.directionNormalized(u, v, w, s))));
 		}
 	}
 	
@@ -719,7 +719,7 @@ public abstract class Material {
 			final Color3D colorEmission = this.textureEmission.compute(intersection);
 			final Color3D colorKR = this.textureKR.compute(intersection);
 			
-			return Optional.of(new Result(colorEmission, colorKR, new Ray3D(intersection.getSurfaceIntersectionPoint(), Vector3D.reflection(intersection.getRay().getDirection(), intersection.getSurfaceNormal(), true))));
+			return Optional.of(new Result(colorEmission, colorKR, new Ray3D(intersection.getSurfaceIntersectionPointWS(), Vector3D.reflection(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS(), true))));
 		}
 	}
 	
@@ -741,14 +741,14 @@ public abstract class Material {
 		@Override
 		public Optional<Result> compute(final Intersection intersection) {
 			final Vector3D s = Vector3D.sampleHemispherePowerCosineDistribution();
-			final Vector3D w = Vector3D.normalize(Vector3D.reflection(intersection.getRay().getDirection(), intersection.getSurfaceNormal(), true));
+			final Vector3D w = Vector3D.normalize(Vector3D.reflection(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS(), true));
 			final Vector3D v = Vector3D.orthogonal(w);
 			final Vector3D u = Vector3D.normalize(Vector3D.crossProduct(v, w));
 			
 			final Color3D colorEmission = this.textureEmission.compute(intersection);
 			final Color3D colorKR = this.textureKR.compute(intersection);
 			
-			return Optional.of(new Result(colorEmission, colorKR, new Ray3D(intersection.getSurfaceIntersectionPoint(), Vector3D.directionNormalized(u, v, w, s))));
+			return Optional.of(new Result(colorEmission, colorKR, new Ray3D(intersection.getSurfaceIntersectionPointWS(), Vector3D.directionNormalized(u, v, w, s))));
 		}
 	}
 	
@@ -838,10 +838,10 @@ public abstract class Material {
 				
 				final MicrofacetDistribution microfacetDistribution = new TrowbridgeReitzMicrofacetDistribution(true, false, roughnessU, roughnessV);
 				
-				final OrthonormalBasis33D orthonormalBasis = intersection.getOrthonormalBasis();
+				final OrthonormalBasis33D orthonormalBasis = intersection.getOrthonormalBasisWS();
 				
-				final Vector3D nWS = intersection.getSurfaceNormalCorrectlyOriented();
-				final Vector3D oWS = Vector3D.negate(intersection.getRay().getDirection());
+				final Vector3D nWS = intersection.getSurfaceNormalWSCorrectlyOriented();
+				final Vector3D oWS = Vector3D.negate(intersection.getRayWS().getDirection());
 				final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, orthonormalBasis);
 				
 				if(Math.isZero(oLS.z)) {
@@ -908,7 +908,7 @@ public abstract class Material {
 				final Color3D emission = this.textureEmission.compute(intersection);
 				final Color3D reflectance = new Color3D(reflectanceR, reflectanceG, reflectanceB);
 				
-				final Ray3D ray = new Ray3D(intersection.getSurfaceIntersectionPoint(), iWS);
+				final Ray3D ray = new Ray3D(intersection.getSurfaceIntersectionPointWS(), iWS);
 				
 				return Optional.of(new Result(emission, reflectance, ray));
 			}

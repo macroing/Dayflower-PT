@@ -40,4 +40,14 @@ public final class Ray3D {
 	public Vector3D getDirection() {
 		return this.direction;
 	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public static Ray3D transform(final Matrix44D mLHS, final Ray3D rRHS) {
+		return new Ray3D(Point3D.transformAndDivide(mLHS, rRHS.origin), Vector3D.transform(mLHS, rRHS.direction));
+	}
+	
+	public static double transformT(final Matrix44D m, final Ray3D rOldSpace, final Ray3D rNewSpace, final double t) {
+		return !Math.isNaN(t) && !Math.isZero(t) && t < Math.MAX_VALUE ? Math.abs(Point3D.distance(rNewSpace.getOrigin(), Point3D.transformAndDivide(m, Point3D.add(rOldSpace.getOrigin(), rOldSpace.getDirection(), t)))) : t;
+	}
 }

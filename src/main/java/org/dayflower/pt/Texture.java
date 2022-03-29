@@ -38,7 +38,7 @@ public interface Texture {
 		Objects.requireNonNull(origin, "origin == null");
 		
 		return intersection -> {
-			final Vector3D direction = Vector3D.direction(origin, intersection.getSurfaceIntersectionPoint());
+			final Vector3D direction = Vector3D.direction(origin, intersection.getSurfaceIntersectionPointOS());
 			
 			final boolean isTextureA = Math.remainder(direction.length() * scale, 1.0D) > 0.5D;
 			

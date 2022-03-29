@@ -264,6 +264,10 @@ public final class Vector3D {
 		return new Vector3D(vLHS.x - vRHS.x, vLHS.y - vRHS.y, vLHS.z - vRHS.z);
 	}
 	
+	public static Vector3D transform(final Matrix44D mLHS, final Vector3D vRHS) {
+		return new Vector3D(mLHS.element11 * vRHS.x + mLHS.element12 * vRHS.y + mLHS.element13 * vRHS.z, mLHS.element21 * vRHS.x + mLHS.element22 * vRHS.y + mLHS.element23 * vRHS.z, mLHS.element31 * vRHS.x + mLHS.element32 * vRHS.y + mLHS.element33 * vRHS.z);
+	}
+	
 	public static Vector3D transform(final Vector3D v, final OrthonormalBasis33D o) {
 		return new Vector3D(v.x * o.u.x + v.y * o.v.x + v.z * o.w.x, v.x * o.u.y + v.y * o.v.y + v.z * o.w.y, v.x * o.u.z + v.y * o.v.z + v.z * o.w.z);
 	}
@@ -278,6 +282,10 @@ public final class Vector3D {
 	
 	public static Vector3D transformReverseNormalize(final Vector3D v, final OrthonormalBasis33D o) {
 		return normalize(transformReverse(v, o));
+	}
+	
+	public static Vector3D transformTranspose(final Matrix44D mLHS, final Vector3D vRHS) {
+		return new Vector3D(mLHS.element11 * vRHS.x + mLHS.element21 * vRHS.y + mLHS.element31 * vRHS.z, mLHS.element12 * vRHS.x + mLHS.element22 * vRHS.y + mLHS.element32 * vRHS.z, mLHS.element13 * vRHS.x + mLHS.element23 * vRHS.y + mLHS.element33 * vRHS.z);
 	}
 	
 	public static Vector3D x() {
