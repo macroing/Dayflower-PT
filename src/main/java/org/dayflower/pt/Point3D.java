@@ -51,6 +51,10 @@ public final class Point3D {
 		return new Point3D(p.x + v.x * s, p.y + v.y * s, p.z + v.z * s);
 	}
 	
+	public static Point3D lerp(final Point3D a, final Point3D b, final double t) {
+		return new Point3D(Math.lerp(a.x, b.x, t), Math.lerp(a.y, b.y, t), Math.lerp(a.z, b.z, t));
+	}
+	
 	public static Point3D transform(final Matrix44D mLHS, final Point3D pRHS) {
 		final double x = mLHS.element11 * pRHS.x + mLHS.element12 * pRHS.y + mLHS.element13 * pRHS.z + mLHS.element14;
 		final double y = mLHS.element21 * pRHS.x + mLHS.element22 * pRHS.y + mLHS.element23 * pRHS.z + mLHS.element24;

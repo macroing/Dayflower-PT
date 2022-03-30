@@ -91,6 +91,45 @@ public abstract class Shape {
 		return new Disk(Math.toRadians(phiMax), radiusInner, radiusOuter, zMax);
 	}
 	
+	public static Shape hyperboloid() {
+		return hyperboloid(new Point3D(0.0001D, 0.0001D, 0.0D));
+	}
+	
+	public static Shape hyperboloid(final Point3D a) {
+		return hyperboloid(a, new Point3D(1.0D, 1.0D, 1.0D));
+	}
+	
+	public static Shape hyperboloid(final Point3D a, final Point3D b) {
+		return hyperboloid(a, b, 360.0D);
+	}
+	
+	public static Shape hyperboloid(final Point3D a, final Point3D b, final double phiMax) {
+		Objects.requireNonNull(a, "a == null");
+		Objects.requireNonNull(b, "b == null");
+		
+		return Hyperboloid.create(a, b, Math.toRadians(phiMax));
+	}
+	
+	public static Shape paraboloid() {
+		return paraboloid(360.0D);
+	}
+	
+	public static Shape paraboloid(final double phiMax) {
+		return paraboloid(phiMax, 1.0D);
+	}
+	
+	public static Shape paraboloid(final double phiMax, final double radius) {
+		return paraboloid(phiMax, radius, 1.0D);
+	}
+	
+	public static Shape paraboloid(final double phiMax, final double radius, final double zMax) {
+		return paraboloid(phiMax, radius, zMax, 0.0D);
+	}
+	
+	public static Shape paraboloid(final double phiMax, final double radius, final double zMax, final double zMin) {
+		return new Paraboloid(Math.toRadians(phiMax), radius, zMax, zMin);
+	}
+	
 	public static Shape sphere() {
 		return sphere(new Point3D());
 	}
@@ -343,6 +382,225 @@ public abstract class Shape {
 			}
 			
 			return t;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class Hyperboloid extends Shape {
+		private final Point3D a;
+		private final Point3D b;
+		private final double aH;
+		private final double cH;
+		private final double phiMax;
+		private final double zMax;
+		private final double zMin;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public Hyperboloid(final Point3D a, final Point3D b, final double aH, final double cH, final double phiMax, final double zMax, final double zMin) {
+			this.a = Objects.requireNonNull(a, "a == null");
+			this.b = Objects.requireNonNull(b, "b == null");
+			this.aH = aH;
+			this.cH = cH;
+			this.phiMax = phiMax;
+			this.zMax = zMax;
+			this.zMin = zMin;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final double phi = doComputePhi(p);
+			final double phiCos = Math.cos(phi);
+			final double phiSin = Math.sin(phi);
+			
+			final double uX = -this.phiMax * p.y;
+			final double uY = +this.phiMax * p.x;
+			final double uZ = +0.0D;
+			
+			final double vX = (this.b.x - this.a.x) * phiCos - (this.b.y - this.a.y) * phiSin;
+			final double vY = (this.b.x - this.a.x) * phiSin + (this.b.y - this.a.y) * phiCos;
+			final double vZ = this.b.z - this.a.z;
+			
+			final Vector3D u = Vector3D.normalize(new Vector3D(uX, uY, uZ));
+			final Vector3D v = Vector3D.normalize(new Vector3D(vX, vY, vZ));
+			final Vector3D w = Vector3D.crossProduct(u, v);
+			
+			return new OrthonormalBasis33D(w, v, u);
+		}
+		
+		@Override
+		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final double v = (p.z - this.a.z) / (this.b.z - this.a.z);
+			final double u = doComputePhi(p, v) / this.phiMax;
+			
+			return new Point2D(u, v);
+		}
+		
+		@Override
+		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
+			final Point3D o = ray.getOrigin();
+			
+			final Vector3D d = ray.getDirection();
+			
+			final double a = this.aH * d.x * d.x + this.aH * d.y * d.y - this.cH * d.z * d.z;
+			final double b = 2.0D * (this.aH * d.x * o.x + this.aH * d.y * o.y - this.cH * d.z * o.z);
+			final double c = this.aH * o.x * o.x + this.aH * o.y * o.y - this.cH * o.z * o.z - 1.0D;
+			
+			final double[] ts = Math.solveQuadraticSystem(a, b, c);
+			
+			for(int i = 0; i < ts.length; i++) {
+				final double t = ts[i];
+				
+				if(Math.isNaN(t)) {
+					return Math.NaN;
+				}
+				
+				if(t > tMinimum && t < tMaximum) {
+					final Point3D p = Point3D.add(o, d, t);
+					
+					if(p.z >= this.zMin && p.z <= this.zMax && doComputePhi(p) <= this.phiMax) {
+						return t;
+					}
+				}
+			}
+			
+			return Math.NaN;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public static Hyperboloid create(final Point3D initialA, final Point3D initialB, final double phiMax) {
+			Objects.requireNonNull(initialA, "initialA == null");
+			Objects.requireNonNull(initialA, "initialA == null");
+			
+			Point3D a = Math.isZero(initialA.z) ? initialA : Math.isZero(initialB.z) ? initialB : initialA;
+			Point3D b = Math.isZero(initialA.z) ? initialB : Math.isZero(initialB.z) ? initialA : initialB;
+			Point3D c = a;
+			
+			double aH = Math.POSITIVE_INFINITY;
+			double cH = Math.POSITIVE_INFINITY;
+			
+			for(int i = 0; i < 10 && (Math.isInfinite(aH) || Math.isNaN(aH)); i++) {
+				c = Point3D.add(c, Vector3D.multiply(Vector3D.direction(a, b), 2.0D));
+				
+				final double d = c.x * c.x + c.y * c.y;
+				final double e = b.x * b.x + b.y * b.y;
+				
+				aH = (1.0D / d - (c.z * c.z) / (d * b.z * b.z)) / (1.0D - (e * c.z * c.z) / (d * b.z * b.z));
+				cH = (aH * e - 1.0D) / (b.z * b.z);
+			}
+			
+			if(Math.isInfinite(aH) || Math.isNaN(aH)) {
+				throw new IllegalArgumentException();
+			}
+			
+//			final double rMax = Math.max(Math.sqrt(initialA.x * initialA.x + initialA.y * initialA.y), Math.sqrt(initialB.x * initialB.x + initialB.y * initialB.y));
+			final double zMax = Math.max(initialA.z, initialB.z);
+			final double zMin = Math.min(initialA.z, initialB.z);
+			
+			return new Hyperboloid(a, b, aH, cH, phiMax, zMax, zMin);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private double doComputePhi(final Point3D p) {
+			return doComputePhi(p, (p.z - this.a.z) / (this.b.z - this.a.z));
+		}
+		
+		private double doComputePhi(final Point3D p, final double v) {
+			final Point3D a = Point3D.lerp(this.a, this.b, v);
+			final Point3D b = new Point3D(p.x * a.x + p.y * a.y, p.y * a.x - p.x * a.y, 0.0D);
+			
+			return b.sphericalPhi();
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class Paraboloid extends Shape {
+		private final double phiMax;
+		private final double radius;
+		private final double zMax;
+		private final double zMin;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public Paraboloid(final double phiMax, final double radius, final double zMax, final double zMin) {
+			this.phiMax = phiMax;
+			this.radius = radius;
+			this.zMax = zMax;
+			this.zMin = zMin;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final double uX = -this.phiMax * p.y;
+			final double uY = +this.phiMax * p.x;
+			final double uZ = +0.0D;
+			
+			final double vX = (this.zMax - this.zMin) * (p.x / (2.0D * p.z));
+			final double vY = (this.zMax - this.zMin) * (p.y / (2.0D * p.z));
+			final double vZ = this.zMax - this.zMin;
+			
+			final Vector3D u = Vector3D.normalize(new Vector3D(uX, uY, uZ));
+			final Vector3D v = Vector3D.normalize(new Vector3D(vX, vY, vZ));
+			final Vector3D w = Vector3D.crossProduct(u, v);
+			
+			return new OrthonormalBasis33D(w, v, u);
+		}
+		
+		@Override
+		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final double u = p.sphericalPhi() / this.phiMax;
+			final double v = (p.z - this.zMin) / (this.zMax - this.zMin);
+			
+			return new Point2D(u, v);
+		}
+		
+		@Override
+		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
+			final Point3D o = ray.getOrigin();
+			
+			final Vector3D d = ray.getDirection();
+			
+			final double k = this.zMax / (this.radius * this.radius);
+			
+			final double a = k * (d.x * d.x + d.y * d.y);
+			final double b = 2.0D * k * (d.x * o.x + d.y * o.y) - d.z;
+			final double c = k * (o.x * o.x + o.y * o.y) - o.z;
+			
+			final double[] ts = Math.solveQuadraticSystem(a, b, c);
+			
+			for(int i = 0; i < ts.length; i++) {
+				final double t = ts[i];
+				
+				if(Math.isNaN(t)) {
+					return Math.NaN;
+				}
+				
+				if(t > tMinimum && t < tMaximum) {
+					final Point3D p = Point3D.add(o, d, t);
+					
+					if(p.z >= this.zMin && p.z <= this.zMax && p.sphericalPhi() <= this.phiMax) {
+						return t;
+					}
+				}
+			}
+			
+			return Math.NaN;
 		}
 	}
 	

@@ -24,6 +24,7 @@ public final class Math {
 	public static final double EPSILON = 1.0e-4D;
 	public static final double MAX_VALUE = Double.MAX_VALUE;
 	public static final double NaN = Double.NaN;
+	public static final double POSITIVE_INFINITY = Double.POSITIVE_INFINITY;
 	public static final double PI = java.lang.Math.PI;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
