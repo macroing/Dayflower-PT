@@ -104,9 +104,6 @@ public abstract class Shape {
 	}
 	
 	public static Shape hyperboloid(final Point3D a, final Point3D b, final double phiMax) {
-		Objects.requireNonNull(a, "a == null");
-		Objects.requireNonNull(b, "b == null");
-		
 		return Hyperboloid.create(a, b, Math.toRadians(phiMax));
 	}
 	
@@ -130,6 +127,18 @@ public abstract class Shape {
 		return new Paraboloid(Math.toRadians(phiMax), radius, zMax, zMin);
 	}
 	
+	public static Shape plane() {
+		return plane(new Point3D(0.0D, 0.0D, 0.0D), new Point3D(0.0D, 0.0D, 1.0D), new Point3D(1.0D, 0.0D, 0.0D));
+	}
+	
+	public static Shape plane(final Point3D a, final Point3D b, final Point3D c) {
+		return new Plane(a, b, c);
+	}
+	
+	public static Shape polygon(final Point3D... points) {
+		return Polygon.create(points);
+	}
+	
 	public static Shape sphere() {
 		return sphere(new Point3D());
 	}
@@ -139,8 +148,6 @@ public abstract class Shape {
 	}
 	
 	public static Shape sphere(final Point3D center, final double radius) {
-		Objects.requireNonNull(center, "center == null");
-		
 		return new Sphere(center, radius);
 	}
 	
@@ -601,6 +608,253 @@ public abstract class Shape {
 			}
 			
 			return Math.NaN;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class Plane extends Shape {
+		private final Point3D a;
+		private final Point3D b;
+		private final Point3D c;
+		private final Vector3D n;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public Plane(final Point3D a, final Point3D b, final Point3D c) {
+			this.a = Objects.requireNonNull(a, "a == null");
+			this.b = Objects.requireNonNull(b, "b == null");
+			this.c = Objects.requireNonNull(c, "c == null");
+			this.n = Vector3D.normalNormalized(a, b, c);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
+			return new OrthonormalBasis33D(this.n);
+		}
+		
+		@Override
+		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
+			final Point3D a = this.a;
+			final Point3D b = this.b;
+			final Point3D c = this.c;
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final Vector3D n = this.n;
+			final Vector3D nAbs = Vector3D.abs(n);
+			
+			final boolean isX = nAbs.x > nAbs.y && nAbs.x > nAbs.z;
+			final boolean isY = nAbs.y > nAbs.z;
+			
+			final Vector2D vA = isX ? Vector2D.directionYZ(a) : isY ? Vector2D.directionZX(a) : Vector2D.directionXY(a);
+			final Vector2D vB = isX ? Vector2D.directionYZ(b) : isY ? Vector2D.directionZX(b) : Vector2D.directionXY(b);
+			final Vector2D vC = isX ? Vector2D.directionYZ(c) : isY ? Vector2D.directionZX(c) : Vector2D.directionXY(c);
+			final Vector2D vAB = Vector2D.subtract(vB, vA);
+			final Vector2D vAC = Vector2D.subtract(vC, vA);
+			
+			final double determinant = Vector2D.crossProduct(vAC, vAB);
+			final double determinantReciprocal = 1.0D / determinant;
+			
+			final double hU = isX ? p.y : isY ? p.z : p.x;
+			final double hV = isX ? p.z : isY ? p.x : p.y;
+			
+			final double u = hU * (-vAC.y * determinantReciprocal) + hV * (+vAC.x * determinantReciprocal) + Vector2D.crossProduct(vAC, vA) * determinantReciprocal;
+			final double v = hU * (+vAB.y * determinantReciprocal) + hV * (-vAB.x * determinantReciprocal) + Vector2D.crossProduct(vAB, vA) * determinantReciprocal;
+			
+			return new Point2D(u, v);
+		}
+		
+		@Override
+		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
+			final Point3D a = this.a;
+			final Point3D o = ray.getOrigin();
+			
+			final Vector3D d = ray.getDirection();
+			final Vector3D n = this.n;
+			
+			final double nDotD = Vector3D.dotProduct(n, d);
+			
+			if(Math.isZero(nDotD)) {
+				return Math.NaN;
+			}
+			
+			final double t = Vector3D.dotProduct(Vector3D.direction(o, a), n) / nDotD;
+			
+			if(t > tMinimum && t < tMaximum) {
+				return t;
+			}
+			
+			return Math.NaN;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class Polygon extends Shape {
+		private final Point2D[] point2Ds;
+		private final Point3D[] point3Ds;
+		private final Vector3D n;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public Polygon(final Point2D[] point2Ds, final Point3D[] point3Ds, final Vector3D n) {
+			this.point2Ds = ParameterArguments.requireNonNullArray(point2Ds, "point2Ds");
+			this.point3Ds = ParameterArguments.requireNonNullArray(point3Ds, "point3Ds");
+			this.n = Objects.requireNonNull(n, "n == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
+			return new OrthonormalBasis33D(this.n);
+		}
+		
+		@Override
+		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
+			final Point3D a = this.point3Ds[0];
+			final Point3D b = this.point3Ds[1];
+			final Point3D c = this.point3Ds[this.point3Ds.length - 1];
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final Vector3D n = this.n;
+			final Vector3D nAbs = Vector3D.abs(n);
+			
+			final boolean isX = nAbs.x > nAbs.y && nAbs.x > nAbs.z;
+			final boolean isY = nAbs.y > nAbs.z;
+			
+			final Vector2D vA = isX ? Vector2D.directionYZ(a) : isY ? Vector2D.directionZX(a) : Vector2D.directionXY(a);
+			final Vector2D vB = isX ? Vector2D.directionYZ(c) : isY ? Vector2D.directionZX(c) : Vector2D.directionXY(c);
+			final Vector2D vC = isX ? Vector2D.directionYZ(b) : isY ? Vector2D.directionZX(b) : Vector2D.directionXY(b);
+			final Vector2D vAB = Vector2D.subtract(vB, vA);
+			final Vector2D vAC = Vector2D.subtract(vC, vA);
+			
+			final double determinant = Vector2D.crossProduct(vAB, vAC);
+			final double determinantReciprocal = 1.0D / determinant;
+			
+			final double hU = isX ? p.y : isY ? p.z : p.x;
+			final double hV = isX ? p.z : isY ? p.x : p.y;
+			
+			final double u = hU * (-vAB.y * determinantReciprocal) + hV * (+vAB.x * determinantReciprocal) + Vector2D.crossProduct(vA, vAB) * determinantReciprocal;
+			final double v = hU * (+vAC.y * determinantReciprocal) + hV * (-vAC.x * determinantReciprocal) + Vector2D.crossProduct(vAC, vA) * determinantReciprocal;
+			
+			return new Point2D(u, v);
+		}
+		
+		public boolean contains(final Point3D p) {
+			final Point3D a = this.point3Ds[0];
+			final Point3D b = this.point3Ds[1];
+			
+			final Vector3D w = this.n;
+			final Vector3D u = Vector3D.directionNormalized(a, b);
+			final Vector3D v = Vector3D.crossProduct(w, u);
+			
+			final Point2D q = Point2D.project(a, p, u, v);
+			
+			/*
+			 * Check whether q is contained inside the polygon in 2D:
+			 */
+			
+			boolean isInside = false;
+			
+			for(int i = 0, j = this.point2Ds.length - 1; i < this.point2Ds.length; j = i++) {
+				final Point2D pI = this.point2Ds[i];
+				final Point2D pJ = this.point2Ds[j];
+				
+				if((pI.y > p.y) != (pJ.y > p.y) && p.x < (pJ.x - pI.x) * (p.y - pI.y) / (pJ.y - pI.y) + pI.x) {
+					isInside = !isInside;
+				}
+			}
+			
+			if(isInside) {
+				return true;
+			}
+			
+			/*
+			 * Check whether q is contained on the line segments of the polygon in 2D:
+			 */
+			
+			for(int i = 0, j = 1; i < this.point2Ds.length; i++, j = (j + 1) % this.point2Ds.length) {
+				final Point2D pI = this.point2Ds[i];
+				final Point2D pJ = this.point2Ds[j];
+				
+				if(!Math.isZero((q.x - pI.x) * (pJ.y - pI.y) - (q.y - pI.y) * (pJ.x - pI.x))) {
+					continue;
+				} else if(Math.abs(pJ.x - pI.x) >= Math.abs(pJ.y - pI.y) && pJ.x - pI.x > 0.0D ? pI.x <= q.x && q.x <= pJ.x : pJ.x <= q.x && q.x <= pI.x) {
+					return true;
+				} else if(Math.abs(pJ.y - pI.y) >= Math.abs(pJ.x - pI.x) && pJ.y - pI.y > 0.0D ? pI.y <= q.y && q.y <= pJ.y : pJ.y <= q.y && q.y <= pI.y) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		@Override
+		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
+			final Point3D a = this.point3Ds[0];
+			final Point3D o = ray.getOrigin();
+			
+			final Vector3D d = ray.getDirection();
+			final Vector3D n = this.n;
+			
+			final double nDotD = Vector3D.dotProduct(n, d);
+			
+			if(Math.isZero(nDotD)) {
+				return Math.NaN;
+			}
+			
+			final double t = Vector3D.dotProduct(Vector3D.direction(o, a), n) / nDotD;
+			
+			if(t > tMinimum && t < tMaximum && contains(Point3D.add(o, d, t))) {
+				return t;
+			}
+			
+			return Math.NaN;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public static Polygon create(final Point3D... points) {
+			final Point3D[] point3Ds = doRequireValidPoints(points);
+			
+			final Vector3D n = Vector3D.normalNormalized(point3Ds[0], point3Ds[1], point3Ds[2]);
+			
+			final Point2D[] point2Ds = doCreateProjectedPoints(point3Ds, n);
+			
+			return new Polygon(point2Ds, point3Ds, n);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private static Point2D[] doCreateProjectedPoints(final Point3D[] points, final Vector3D n) {
+			final Point3D a = points[0];
+			final Point3D b = points[1];
+			
+			final Vector3D w = n;
+			final Vector3D u = Vector3D.directionNormalized(a, b);
+			final Vector3D v = Vector3D.crossProduct(w, u);
+			
+			final Point2D[] point2Ds = new Point2D[points.length];
+			
+			for(int i = 0; i < points.length; i++) {
+				point2Ds[i] = Point2D.project(a, points[i], u, v);
+			}
+			
+			return point2Ds;
+		}
+		
+		private static Point3D[] doRequireValidPoints(final Point3D[] points) {
+			ParameterArguments.requireNonNullArray(points, "points");
+			ParameterArguments.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
+			
+			if(Point3D.coplanar(points)) {
+				return points.clone();
+			}
+			
+			throw new IllegalArgumentException("The provided Point3D instances are not coplanar.");
 		}
 	}
 	

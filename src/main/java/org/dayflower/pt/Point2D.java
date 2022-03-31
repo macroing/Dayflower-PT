@@ -19,8 +19,8 @@
 package org.dayflower.pt;
 
 public final class Point2D {
-	public final double u;
-	public final double v;
+	public final double x;
+	public final double y;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -28,18 +28,27 @@ public final class Point2D {
 		this(0.0D, 0.0D);
 	}
 	
-	public Point2D(final double u, final double v) {
-		this.u = u;
-		this.v = v;
+	public Point2D(final double x, final double y) {
+		this.x = x;
+		this.y = y;
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public boolean isZero() {
-		return Math.isZero(this.u) && Math.isZero(this.v); 
+		return Math.isZero(this.x) && Math.isZero(this.y); 
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public static Point2D project(final Point3D a, final Point3D b, final Vector3D u, final Vector3D v) {
+		final Vector3D directionAB = Vector3D.direction(a, b);
+		
+		final double x = Vector3D.dotProduct(directionAB, u);
+		final double y = Vector3D.dotProduct(directionAB, v);
+		
+		return new Point2D(x, y);
+	}
 	
 	public static Point2D sampleDiskUniformDistributionByConcentricMapping() {
 		return sampleDiskUniformDistributionByConcentricMapping(sampleRandom());
@@ -54,8 +63,8 @@ public final class Point2D {
 			return p;
 		}
 		
-		final double a = p.u * 2.0D - 1.0D;
-		final double b = p.v * 2.0D - 1.0D;
+		final double a = p.x * 2.0D - 1.0D;
+		final double b = p.y * 2.0D - 1.0D;
 		
 		if(a * a > b * b) {
 			final double phi = Math.PI / 4.0D * (b / a);
@@ -75,13 +84,13 @@ public final class Point2D {
 	}
 	
 	public static Point2D sampleExactInverseTentFilter(final Point2D p) {
-		final double x = p.u * 2.0D;
-		final double y = p.v * 2.0D;
+		final double a = p.x * 2.0D;
+		final double b = p.y * 2.0D;
 		
-		final double u = x < 1.0D ? Math.sqrt(x) - 1.0D : 1.0D - Math.sqrt(2.0D - x);
-		final double v = y < 1.0D ? Math.sqrt(y) - 1.0D : 1.0D - Math.sqrt(2.0D - y);
+		final double x = a < 1.0D ? Math.sqrt(a) - 1.0D : 1.0D - Math.sqrt(2.0D - a);
+		final double y = b < 1.0D ? Math.sqrt(b) - 1.0D : 1.0D - Math.sqrt(2.0D - b);
 		
-		return new Point2D(u, v);
+		return new Point2D(x, y);
 	}
 	
 	public static Point2D sampleRandom() {

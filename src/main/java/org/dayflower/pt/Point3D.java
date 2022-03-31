@@ -72,6 +72,30 @@ public final class Point3D {
 		return Math.equal(w, 1.0D) || Math.isZero(w) ? new Point3D(x, y, z) : new Point3D(x / w, y / w, z / w);
 	}
 	
+	public static boolean coplanar(final Point3D... points) {
+		ParameterArguments.requireNonNullArray(points, "points");
+		ParameterArguments.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
+		
+		final Point3D p0 = points[0];
+		final Point3D p1 = points[1];
+		final Point3D p2 = points[2];
+		
+		final Vector3D v0 = Vector3D.directionNormalized(p0, p1);
+		final Vector3D v1 = Vector3D.directionNormalized(p0, p2);
+		
+		for(int i = 3; i < points.length; i++) {
+			final Point3D pI = points[i];
+			
+			final Vector3D v2 = Vector3D.directionNormalized(p0, pI);
+			
+			if(!Math.isZero(Vector3D.tripleProduct(v0, v2, v1))) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	public static double distance(final Point3D eye, final Point3D lookAt) {
 		return Vector3D.direction(eye, lookAt).length();
 	}

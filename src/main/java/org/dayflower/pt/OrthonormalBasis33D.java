@@ -29,8 +29,8 @@ public final class OrthonormalBasis33D {
 	
 	public OrthonormalBasis33D(final Vector3D w) {
 		this.w = Vector3D.normalize(w);
-		this.v = Vector3D.orthogonal(w);
-		this.u = Vector3D.crossProduct(this.v, this.w);
+		this.u = Vector3D.orthogonal(w);
+		this.v = Vector3D.crossProduct(this.w, this.u);
 	}
 	
 	public OrthonormalBasis33D(final Vector3D w, final Vector3D v) {

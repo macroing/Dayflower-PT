@@ -198,6 +198,14 @@ public final class Vector3D {
 		return new Vector3D(v.x, v.y, -v.z);
 	}
 	
+	public static Vector3D normal(final Point3D a, final Point3D b, final Point3D c) {
+		return crossProduct(directionNormalized(a, b), directionNormalized(a, c));
+	}
+	
+	public static Vector3D normalNormalized(final Point3D a, final Point3D b, final Point3D c) {
+		return normalize(normal(a, b, c));
+	}
+	
 	public static Vector3D normalize(final Vector3D v) {
 		return divide(v, v.length());
 	}
@@ -214,9 +222,9 @@ public final class Vector3D {
 		final Vector3D v0 = normalize(v);
 		final Vector3D v1 = abs(v0);
 		
-		if(v1.x < v1.y && v1.x < v1.z) {
-			return normalize(new Vector3D(+0.0D, +v0.y, -v0.y));
-		} else if(v1.y < v1.z) {
+		if(v1.x > v1.y && v1.x > v1.z) {
+			return normalize(new Vector3D(+0.0D, +v0.z, -v0.y));
+		} else if(v1.y > v1.z) {
 			return normalize(new Vector3D(+v0.z, +0.0D, -v0.x));
 		} else {
 			return normalize(new Vector3D(+v0.y, -v0.x, +0.0D));
@@ -237,11 +245,11 @@ public final class Vector3D {
 	
 	public static Vector3D sampleHemisphereCosineDistribution(final Point2D p) {
 //		This version is similar to the one in SmallPT:
-//		return directionSpherical(Math.sqrt(p.v), Math.sqrt(1.0D - p.v), 2.0D * Math.PI * p.u);
+//		return directionSpherical(Math.sqrt(p.y), Math.sqrt(1.0D - p.y), 2.0D * Math.PI * p.x);
 		
 		final Point2D q = Point2D.sampleDiskUniformDistributionByConcentricMapping(p);
 		
-		return new Vector3D(q.u, q.v, Math.sqrt(Math.max(0.0D, 1.0D - q.u * q.u - q.v * q.v)));
+		return new Vector3D(q.x, q.y, Math.sqrt(Math.max(0.0D, 1.0D - q.x * q.x - q.y * q.y)));
 	}
 	
 	public static Vector3D sampleHemispherePowerCosineDistribution() {
@@ -253,9 +261,9 @@ public final class Vector3D {
 	}
 	
 	public static Vector3D sampleHemispherePowerCosineDistribution(final Point2D p, final double exponent) {
-		final double cosTheta = Math.pow(1.0D - p.v, 1.0D / (exponent + 1.0D));
+		final double cosTheta = Math.pow(1.0D - p.y, 1.0D / (exponent + 1.0D));
 		final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
-		final double phi = 2.0D * Math.PI * p.u;
+		final double phi = 2.0D * Math.PI * p.x;
 		
 		return directionSpherical(sinTheta, cosTheta, phi);
 	}
@@ -310,5 +318,9 @@ public final class Vector3D {
 	
 	public static double dotProductAbs(final Vector3D vLHS, final Vector3D vRHS) {
 		return Math.abs(dotProduct(vLHS, vRHS));
+	}
+	
+	public static double tripleProduct(final Vector3D vLHSDP, final Vector3D vLHSCP, final Vector3D vRHSCP) {
+		return dotProduct(vLHSDP, crossProduct(vLHSCP, vRHSCP));
 	}
 }

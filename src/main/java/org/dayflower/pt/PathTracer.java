@@ -60,7 +60,7 @@ public final class PathTracer {
 			}
 		}
 		
-		this.image.save("./PT.png");
+		this.image.save(String.format("./PT-%s.png", Long.toString(System.currentTimeMillis())));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

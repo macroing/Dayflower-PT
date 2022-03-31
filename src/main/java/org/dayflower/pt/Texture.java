@@ -55,8 +55,8 @@ public interface Texture {
 		final double angleRadiansSin = Math.sin(angleRadians);
 		
 		return intersection -> {
-			final double u = intersection.getTextureCoordinates().u;
-			final double v = intersection.getTextureCoordinates().v;
+			final double u = intersection.getTextureCoordinates().x;
+			final double v = intersection.getTextureCoordinates().y;
 			
 			final boolean isU = Math.fractionalPart((u * angleRadiansCos - v * angleRadiansSin) * scaleU) > 0.5D;
 			final boolean isV = Math.fractionalPart((v * angleRadiansCos + u * angleRadiansSin) * scaleV) > 0.5D;

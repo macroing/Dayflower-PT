@@ -27,6 +27,8 @@ Supported Features
 * Shape - Disk
 * Shape - Hyperboloid
 * Shape - Paraboloid
+* Shape - Plane
+* Shape - Polygon
 * Shape - Sphere
 * Texture - Blend
 * Texture - Bullseye

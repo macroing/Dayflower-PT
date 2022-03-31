@@ -190,6 +190,10 @@ public final class Math {
 		return result;
 	}
 	
+	public static int max(final int a, final int b) {
+		return java.lang.Math.max(a, b);
+	}
+	
 	public static int min(final int a, final int b) {
 		return java.lang.Math.min(a, b);
 	}

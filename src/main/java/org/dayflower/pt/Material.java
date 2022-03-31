@@ -313,8 +313,8 @@ public abstract class Material {
 		
 		@Override
 		public Optional<Result> compute(final Intersection intersection) {
-			final double u = intersection.getTextureCoordinates().u;
-			final double v = intersection.getTextureCoordinates().v;
+			final double u = intersection.getTextureCoordinates().x;
+			final double v = intersection.getTextureCoordinates().y;
 			
 			final boolean isU = Math.fractionalPart((u * this.angleRadiansCos - v * this.angleRadiansSin) * this.scaleU) > 0.5D;
 			final boolean isV = Math.fractionalPart((v * this.angleRadiansCos + u * this.angleRadiansSin) * this.scaleV) > 0.5D;
@@ -742,8 +742,8 @@ public abstract class Material {
 		public Optional<Result> compute(final Intersection intersection) {
 			final Vector3D s = Vector3D.sampleHemispherePowerCosineDistribution();
 			final Vector3D w = Vector3D.normalize(Vector3D.reflection(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS(), true));
-			final Vector3D v = Vector3D.orthogonal(w);
-			final Vector3D u = Vector3D.normalize(Vector3D.crossProduct(v, w));
+			final Vector3D u = Vector3D.orthogonal(w);
+			final Vector3D v = Vector3D.normalize(Vector3D.crossProduct(w, u));
 			
 			final Color3D colorEmission = this.textureEmission.compute(intersection);
 			final Color3D colorKR = this.textureKR.compute(intersection);
@@ -1022,14 +1022,14 @@ public abstract class Material {
 			if(isSamplingVisibleArea()) {
 				return o.z >= 0.0D ? doSample(o, p) : Vector3D.negate(doSample(Vector3D.negate(o), p));
 			} else if(Math.equal(this.alphaX, this.alphaY)) {
-				final double phi = p.v * 2.0D * Math.PI;
-				final double cosTheta = 1.0D / Math.sqrt(1.0D + (this.alphaX * this.alphaX * p.u / (1.0D - p.u)));
+				final double phi = p.y * 2.0D * Math.PI;
+				final double cosTheta = 1.0D / Math.sqrt(1.0D + (this.alphaX * this.alphaX * p.x / (1.0D - p.x)));
 				final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
 				
 				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
 			} else {
-				final double phi = Math.atan(this.alphaY / this.alphaX * Math.tan(2.0D * Math.PI * p.v + 0.5D * Math.PI)) + (p.v > 0.5D ? Math.PI : 0.0D);
-				final double cosTheta = 1.0D / Math.sqrt(1.0D + ((1.0D / (Math.pow2(Math.cos(phi)) / (this.alphaX * this.alphaX) + Math.pow2(Math.sin(phi)) / (this.alphaY * this.alphaY))) * p.u / (1.0D - p.u)));
+				final double phi = Math.atan(this.alphaY / this.alphaX * Math.tan(2.0D * Math.PI * p.y + 0.5D * Math.PI)) + (p.y > 0.5D ? Math.PI : 0.0D);
+				final double cosTheta = 1.0D / Math.sqrt(1.0D + ((1.0D / (Math.pow2(Math.cos(phi)) / (this.alphaX * this.alphaX) + Math.pow2(Math.sin(phi)) / (this.alphaY * this.alphaY))) * p.x / (1.0D - p.x)));
 				final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
 				
 				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
@@ -1068,8 +1068,8 @@ public abstract class Material {
 			final double sinPhi = iStretched.sinPhi();
 			
 			if(cosTheta > 0.9999D) {
-				final double r = Math.sqrt(p.u / (1.0D - p.u));
-				final double phi = 2.0D * Math.PI * p.v;
+				final double r = Math.sqrt(p.x / (1.0D - p.x));
+				final double phi = 2.0D * Math.PI * p.y;
 				
 				final double slopeX = r * Math.cos(phi);
 				final double slopeY = r * Math.sin(phi);
@@ -1078,14 +1078,14 @@ public abstract class Material {
 			}
 			
 			final double a = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta)) / cosTheta;
-			final double b = 2.0D * p.u / (2.0D / (1.0D + Math.sqrt(1.0D + a * a))) - 1.0D;
+			final double b = 2.0D * p.x / (2.0D / (1.0D + Math.sqrt(1.0D + a * a))) - 1.0D;
 			final double c = Math.min(1.0D / (b * b - 1.0D), 1.0e10D);
 			final double d = Math.sqrt(Math.max(a * a * c * c - (b * b - a * a) * c, 0.0D));
 			final double e = a * c + d;
-			final double f = p.v > 0.5D ? 2.0D * (p.v - 0.5D) : 2.0D * (0.5D - p.v);
+			final double f = p.y > 0.5D ? 2.0D * (p.y - 0.5D) : 2.0D * (0.5D - p.y);
 			
 			final double slopeX = b < 0.0D || e > 1.0D / a ? a * c - d : e;
-			final double slopeY = (p.v > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Math.sqrt(1.0D + this.alphaX * this.alphaX);
+			final double slopeY = (p.y > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Math.sqrt(1.0D + this.alphaX * this.alphaX);
 			
 			return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * this.alphaX), -((sinPhi * slopeX + cosPhi * slopeY) * this.alphaY), 1.0D));
 		}
