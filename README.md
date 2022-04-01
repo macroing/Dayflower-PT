@@ -29,6 +29,7 @@ Supported Features
 * Shape - Paraboloid
 * Shape - Plane
 * Shape - Polygon
+* Shape - Rectangle
 * Shape - Sphere
 * Texture - Blend
 * Texture - Bullseye

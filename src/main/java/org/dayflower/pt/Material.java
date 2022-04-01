@@ -46,6 +46,10 @@ public abstract class Material {
 		return new GlassMaterial();
 	}
 	
+	public static Material matte() {
+		return matte(new Color3D(0.5D));
+	}
+	
 	public static Material matte(final Color3D colorKD) {
 		return matte(colorKD, Color3D.BLACK);
 	}
@@ -116,6 +120,18 @@ public abstract class Material {
 		Objects.requireNonNull(textureEmission, "textureEmission == null");
 		
 		return new MirrorMaterial(textureKR, textureEmission);
+	}
+	
+	public static Material phong() {
+		return phong(new Color3D(0.5D));
+	}
+	
+	public static Material phong(final Color3D colorKR) {
+		return phong(colorKR, Color3D.BLACK);
+	}
+	
+	public static Material phong(final Color3D colorKR, final Color3D colorEmission) {
+		return new PhongMaterial(Texture.constant(colorKR), Texture.constant(colorEmission));
 	}
 	
 	public static Material phong(final Texture textureKR) {
