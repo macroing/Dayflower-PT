@@ -27,6 +27,10 @@ public final class Vector3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public Vector3D(final Point3D p) {
+		this(p.x, p.y, p.z);
+	}
+	
 	public Vector3D(final double x, final double y, final double z) {
 		this.x = x;
 		this.y = y;

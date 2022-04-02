@@ -31,6 +31,7 @@ Supported Features
 * Shape - Polygon
 * Shape - Rectangle
 * Shape - Sphere
+* Shape - Torus
 * Texture - Blend
 * Texture - Bullseye
 * Texture - Checkerboard

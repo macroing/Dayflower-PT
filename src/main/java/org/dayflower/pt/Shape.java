@@ -166,6 +166,14 @@ public abstract class Shape {
 		return new Sphere(center, radius);
 	}
 	
+	public static Shape torus() {
+		return torus(0.25D, 1.0D);
+	}
+	
+	public static Shape torus(final double radiusInner, final double radiusOuter) {
+		return new Torus(radiusInner, radiusOuter);
+	}
+	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private static final class Cone extends Shape {
@@ -1083,6 +1091,92 @@ public abstract class Shape {
 			
 			if(!Math.isNaN(t1) && t1 > tMinimum && t1 < tMaximum) {
 				return t1;
+			}
+			
+			return Math.NaN;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class Torus extends Shape {
+		private final double radiusInner;
+		private final double radiusOuter;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public Torus(final double radiusInner, final double radiusOuter) {
+			this.radiusInner = radiusInner;
+			this.radiusOuter = radiusOuter;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final Vector3D d = new Vector3D(p);
+			
+			final double derivative = d.lengthSquared() - this.radiusInner * this.radiusInner - this.radiusOuter * this.radiusOuter;
+			
+			final double x = p.x * derivative;
+			final double y = p.y * derivative;
+			final double z = p.z * derivative + 2.0D * (this.radiusOuter * this.radiusOuter) * p.z;
+			
+			final Vector3D w = Vector3D.normalize(new Vector3D(x, y, z));
+			
+			return new OrthonormalBasis33D(w);
+		}
+		
+		@Override
+		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			
+			final double phi = Math.asin(Math.saturate(p.z / this.radiusInner, -1.0D, 1.0D));
+			final double theta = Math.getOrAdd(Math.atan2(p.y, p.x), 0.0D, Math.PI * 2.0D);
+			
+			final double u = theta / (Math.PI * 2.0D);
+			final double v = (phi + Math.PI / 2.0D) / Math.PI;
+			
+			return new Point2D(u, v);
+		}
+		
+		@Override
+		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
+			final Point3D o = ray.getOrigin();
+			
+			final Vector3D vD = ray.getDirection();
+			final Vector3D vO = new Vector3D(o);
+			
+			final double f0 = vD.lengthSquared();
+			final double f1 = Vector3D.dotProduct(vO, vD) * 2.0D;
+			final double f2 = this.radiusInner * this.radiusInner;
+			final double f3 = this.radiusOuter * this.radiusOuter;
+			final double f4 = vO.lengthSquared() - f2 - f3;
+			final double f5 = vD.z;
+			final double f6 = vO.z;
+			
+			final double a = f0 * f0;
+			final double b = f0 * 2.0D * f1;
+			final double c = f1 * f1 + 2.0D * f0 * f4 + 4.0D * f3 * f5 * f5;
+			final double d = f1 * 2.0D * f4 + 8.0D * f3 * f6 * f5;
+			final double e = f4 * f4 + 4.0D * f3 * f6 * f6 - 4.0D * f3 * f2;
+			
+			final double[] ts = Math.solveQuartic(a, b, c, d, e);
+			
+			if(ts.length == 0) {
+				return Math.NaN;
+			}
+			
+			if(ts[0] >= tMaximum || ts[ts.length - 1] <= tMinimum) {
+				return Math.NaN;
+			}
+			
+			for(int i = 0; i < ts.length; i++) {
+				if(ts[i] > tMinimum) {
+					return ts[i];
+				}
 			}
 			
 			return Math.NaN;
