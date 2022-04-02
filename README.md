@@ -12,30 +12,36 @@ To clone this repository, you can type the following in Git Bash.
 git clone https://github.com/macroing/Dayflower-PT.git
 ```
 
-Supported Features
+Supported Materials
+-------------------
+* Checkerboard
+* Glass
+* Matte
+* Metal
+* Mirror
+* Phong
+* Plastic
+* Substrate
+
+Supported Shapes
+----------------
+* Cone
+* Cylinder
+* Disk
+* Hyperboloid
+* Paraboloid
+* Plane
+* Polygon
+* Rectangle
+* Sphere
+* Torus
+
+Supported Textures
 ------------------
-* Material - Checkerboard
-* Material - Glass
-* Material - Matte
-* Material - Metal
-* Material - Mirror
-* Material - Phong
-* Material - Plastic
-* Material - Substrate
-* Shape - Cone
-* Shape - Cylinder
-* Shape - Disk
-* Shape - Hyperboloid
-* Shape - Paraboloid
-* Shape - Plane
-* Shape - Polygon
-* Shape - Rectangle
-* Shape - Sphere
-* Shape - Torus
-* Texture - Blend
-* Texture - Bullseye
-* Texture - Checkerboard
-* Texture - Constant
+* Blend
+* Bullseye
+* Checkerboard
+* Constant
 
 Dependencies
 ------------
