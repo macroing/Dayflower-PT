@@ -14,6 +14,7 @@ git clone https://github.com/macroing/Dayflower-PT.git
 
 Supported Materials
 -------------------
+* Bullseye
 * Checkerboard
 * Glass
 * Matte

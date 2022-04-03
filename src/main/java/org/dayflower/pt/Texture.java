@@ -40,7 +40,7 @@ public interface Texture {
 		return intersection -> {
 			final Vector3D direction = Vector3D.direction(origin, intersection.getSurfaceIntersectionPointOS());
 			
-			final boolean isTextureA = Math.remainder(direction.length() * scale, 1.0D) > 0.5D;
+			final boolean isTextureA = (direction.length() * scale) % 1.0D > 0.5D;
 			
 			return isTextureA ? textureA.compute(intersection) : textureB.compute(intersection);
 		};

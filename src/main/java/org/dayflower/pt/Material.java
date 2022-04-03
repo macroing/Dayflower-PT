@@ -35,10 +35,19 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public static Material bullseye(final Material materialA, final Material materialB) {
+		return bullseye(materialA, materialB, new Point3D(0.0D, 10.0D, 0.0D));
+	}
+	
+	public static Material bullseye(final Material materialA, final Material materialB, final Point3D origin) {
+		return bullseye(materialA, materialB, origin, 1.0D);
+	}
+	
+	public static Material bullseye(final Material materialA, final Material materialB, final Point3D origin, final double scale) {
+		return new BullseyeMaterial(materialA, materialB, origin, scale);
+	}
+	
 	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees, final double scaleU, final double scaleV) {
-		Objects.requireNonNull(materialA, "materialA == null");
-		Objects.requireNonNull(materialB, "materialB == null");
-		
 		return new CheckerboardMaterial(materialA, materialB, angleDegrees, scaleU, scaleV);
 	}
 	
@@ -63,9 +72,6 @@ public abstract class Material {
 	}
 	
 	public static Material matte(final Texture textureKD, final Texture textureEmission) {
-		Objects.requireNonNull(textureKD, "textureKD == null");
-		Objects.requireNonNull(textureEmission, "textureEmission == null");
-		
 		return new MatteMaterial(textureKD, textureEmission);
 	}
 	
@@ -94,12 +100,6 @@ public abstract class Material {
 	}
 	
 	public static Material metal(final Texture textureK, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness, final Texture textureEmission) {
-		Objects.requireNonNull(textureK, "textureK == null");
-		Objects.requireNonNull(textureEta, "textureEta == null");
-		Objects.requireNonNull(textureRoughnessU, "textureRoughnessU == null");
-		Objects.requireNonNull(textureRoughnessV, "textureRoughnessV == null");
-		Objects.requireNonNull(textureEmission, "textureEmission == null");
-		
 		return new MetalMaterial(textureK, textureEta, textureRoughnessU, textureRoughnessV, isRemappingRoughness, textureEmission);
 	}
 	
@@ -116,9 +116,6 @@ public abstract class Material {
 	}
 	
 	public static Material mirror(final Texture textureKR, final Texture textureEmission) {
-		Objects.requireNonNull(textureKR, "textureKR == null");
-		Objects.requireNonNull(textureEmission, "textureEmission == null");
-		
 		return new MirrorMaterial(textureKR, textureEmission);
 	}
 	
@@ -139,9 +136,6 @@ public abstract class Material {
 	}
 	
 	public static Material phong(final Texture textureKR, final Texture textureEmission) {
-		Objects.requireNonNull(textureKR, "textureKR == null");
-		Objects.requireNonNull(textureEmission, "textureEmission == null");
-		
 		return new PhongMaterial(textureKR, textureEmission);
 	}
 	
@@ -152,11 +146,6 @@ public abstract class Material {
 	}
 	
 	public static Material plastic(final Texture textureKD, final Texture textureKS, final Texture textureRoughness, final boolean isRemappingRoughness, final Texture textureEmission) {
-		Objects.requireNonNull(textureKD, "textureKD == null");
-		Objects.requireNonNull(textureKS, "textureKS == null");
-		Objects.requireNonNull(textureRoughness, "textureRoughness == null");
-		Objects.requireNonNull(textureEmission, "textureEmission == null");
-		
 		return new PlasticMaterial(textureKD, textureKS, textureRoughness, isRemappingRoughness, textureEmission);
 	}
 	
@@ -165,12 +154,6 @@ public abstract class Material {
 	}
 	
 	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness, final Texture textureEmission) {
-		Objects.requireNonNull(textureKD, "textureKD == null");
-		Objects.requireNonNull(textureKS, "textureKS == null");
-		Objects.requireNonNull(textureRoughnessU, "textureRoughnessU == null");
-		Objects.requireNonNull(textureRoughnessV, "textureRoughnessV == null");
-		Objects.requireNonNull(textureEmission, "textureEmission == null");
-		
 		return new SubstrateMaterial(textureKD, textureKS, textureRoughnessU, textureRoughnessV, isRemappingRoughness, textureEmission);
 	}
 	
@@ -298,6 +281,35 @@ public abstract class Material {
 		Optional<Vector3D> sampleDF(final Vector3D o, final Point2D p);
 		
 		double evaluatePDF(final Vector3D o, final Vector3D i);
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class BullseyeMaterial extends Material {
+		private final Material materialA;
+		private final Material materialB;
+		private final Point3D origin;
+		private final double scale;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public BullseyeMaterial(final Material materialA, final Material materialB, final Point3D origin, final double scale) {
+			this.materialA = Objects.requireNonNull(materialA, "materialA == null");
+			this.materialB = Objects.requireNonNull(materialB, "materialB == null");
+			this.origin = Objects.requireNonNull(origin, "origin == null");
+			this.scale = scale;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Optional<Result> compute(final Intersection intersection) {
+			final Vector3D direction = Vector3D.direction(this.origin, intersection.getSurfaceIntersectionPointOS());
+			
+			final boolean isTextureA = (direction.length() * this.scale) % 1.0D > 0.5D;
+			
+			return isTextureA ? this.materialA.compute(intersection) : this.materialB.compute(intersection);
+		}
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
