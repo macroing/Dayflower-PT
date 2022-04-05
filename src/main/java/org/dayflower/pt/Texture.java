@@ -71,4 +71,56 @@ public interface Texture {
 		
 		return intersection -> color;
 	}
+	
+	static Texture image(final Image image, final double angleDegrees, final double scaleU, final double scaleV) {
+		Objects.requireNonNull(image, "image == null");
+		
+		final double angleRadians = Math.toRadians(angleDegrees);
+		final double angleRadiansCos = Math.cos(angleRadians);
+		final double angleRadiansSin = Math.sin(angleRadians);
+		
+		return intersection -> {
+			final int resolutionX = image.getResolutionX();
+			final int resolutionY = image.getResolutionY();
+			
+			final double aU = intersection.getTextureCoordinates().x;
+			final double aV = intersection.getTextureCoordinates().y;
+			
+			final double bU = aU * angleRadiansCos - aV * angleRadiansSin;
+			final double bV = aV * angleRadiansCos + aU * angleRadiansSin;
+			
+			final double cU = bU * scaleU;
+			final double cV = bV * scaleV;
+			
+			final double dU = Math.positiveModulo(cU * resolutionX - 0.5D, resolutionX);
+			final double dV = Math.positiveModulo(cV * resolutionY - 0.5D, resolutionY);
+			
+			return image.getColor(dU, dV, true);
+		};
+	}
+	
+	static Texture polkaDot(final Texture textureA, final Texture textureB, final double angleDegrees, final double cellResolution, final double polkaDotRadius) {
+		Objects.requireNonNull(textureA, "textureA == null");
+		Objects.requireNonNull(textureB, "textureB == null");
+		
+		final double angleRadians = Math.toRadians(angleDegrees);
+		final double angleRadiansCos = Math.cos(angleRadians);
+		final double angleRadiansSin = Math.sin(angleRadians);
+		
+		final double polkaDotRadiusSquared = polkaDotRadius * polkaDotRadius;
+		
+		return intersection -> {
+			final double aU = intersection.getTextureCoordinates().x;
+			final double aV = intersection.getTextureCoordinates().y;
+			
+			final double bU = Math.fractionalPart((aU * angleRadiansCos - aV * angleRadiansSin) * cellResolution) - 0.5D;
+			final double bV = Math.fractionalPart((aV * angleRadiansCos + aU * angleRadiansSin) * cellResolution) - 0.5D;
+			
+			final double distanceSquared = bU * bU + bV * bV;
+			
+			final boolean isTextureA = distanceSquared < polkaDotRadiusSquared;
+			
+			return isTextureA ? textureA.compute(intersection) : textureB.compute(intersection);
+		};
+	}
 }

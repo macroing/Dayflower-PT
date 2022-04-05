@@ -18,58 +18,41 @@
  */
 package org.dayflower.pt;
 
-public final class Vector2D {
-	public final double x;
-	public final double y;
+import java.text.DecimalFormat;
+
+public final class Strings {
+	private static final DecimalFormat DECIMAL_FORMAT_DOUBLE = doCreateDecimalFormat(16);
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public Vector2D() {
-		this(0.0D, 0.0D);
-	}
-	
-	public Vector2D(final Point3D p) {
-		this(p.x, p.y);
-	}
-	
-	public Vector2D(final double x, final double y) {
-		this.x = x;
-		this.y = y;
+	private Strings() {
+		
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public double length() {
-		return Math.sqrt(lengthSquared());
-	}
-	
-	public double lengthSquared() {
-		return this.x * this.x + this.y * this.y;
+	public static String toNonScientificNotationJava(final double value) {
+		if(Double.isNaN(value)) {
+			return "Double.NaN";
+		} else if(value == Double.NEGATIVE_INFINITY) {
+			return "Double.NEGATIVE_INFINITY";
+		} else if(value == Double.POSITIVE_INFINITY) {
+			return "Double.POSITIVE_INFINITY";
+		} else {
+			return DECIMAL_FORMAT_DOUBLE.format(value).replace(',', '.') + "D";
+		}
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public static Vector2D direction(final Point2D eye, final Point2D lookAt) {
-		return new Vector2D(lookAt.x - eye.x, lookAt.y - eye.y);
-	}
-	
-	public static Vector2D directionXY(final Point3D p) {
-		return new Vector2D(p.x, p.y);
-	}
-	
-	public static Vector2D directionYZ(final Point3D p) {
-		return new Vector2D(p.y, p.z);
-	}
-	
-	public static Vector2D directionZX(final Point3D p) {
-		return new Vector2D(p.z, p.x);
-	}
-	
-	public static Vector2D subtract(final Vector2D vLHS, final Vector2D vRHS) {
-		return new Vector2D(vLHS.x - vRHS.x, vLHS.y - vRHS.y);
-	}
-	
-	public static double crossProduct(final Vector2D vLHS, final Vector2D vRHS) {
-		return vLHS.x * vRHS.y - vLHS.y * vRHS.x;
+	private static DecimalFormat doCreateDecimalFormat(final int maximumFractionDigits) {
+		final
+		DecimalFormat decimalFormat = new DecimalFormat("#");
+		decimalFormat.setDecimalSeparatorAlwaysShown(true);
+		decimalFormat.setMaximumFractionDigits(maximumFractionDigits);
+		decimalFormat.setMinimumFractionDigits(1);
+		decimalFormat.setMinimumIntegerDigits(1);
+		
+		return decimalFormat;
 	}
 }

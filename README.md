@@ -34,8 +34,10 @@ Supported Shapes
 * Plane
 * Polygon
 * Rectangle
+* Rectangular Cuboid
 * Sphere
 * Torus
+* Triangle
 
 Supported Textures
 ------------------
@@ -43,6 +45,8 @@ Supported Textures
 * Bullseye
 * Checkerboard
 * Constant
+* Image
+* Polka Dot
 
 Dependencies
 ------------

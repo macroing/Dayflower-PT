@@ -55,6 +55,18 @@ public final class Point3D {
 		return new Point3D(Math.lerp(a.x, b.x, t), Math.lerp(a.y, b.y, t), Math.lerp(a.z, b.z, t));
 	}
 	
+	public static Point3D max(final Point3D a, final Point3D b) {
+		return new Point3D(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
+	}
+	
+	public static Point3D midpoint(final Point3D a, final Point3D b) {
+		return new Point3D((a.x + b.x) / 2.0D, (a.y + b.y) / 2.0D, (a.z + b.z) / 2.0D);
+	}
+	
+	public static Point3D min(final Point3D a, final Point3D b) {
+		return new Point3D(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
+	}
+	
 	public static Point3D transform(final Matrix44D mLHS, final Point3D pRHS) {
 		final double x = mLHS.element11 * pRHS.x + mLHS.element12 * pRHS.y + mLHS.element13 * pRHS.z + mLHS.element14;
 		final double y = mLHS.element21 * pRHS.x + mLHS.element22 * pRHS.y + mLHS.element23 * pRHS.z + mLHS.element24;

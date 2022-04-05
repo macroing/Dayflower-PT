@@ -27,6 +27,12 @@ public final class OrthonormalBasis33D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public OrthonormalBasis33D() {
+		this.w = Vector3D.z();
+		this.v = Vector3D.y();
+		this.u = Vector3D.x();
+	}
+	
 	public OrthonormalBasis33D(final Vector3D w) {
 		this.w = Vector3D.normalize(w);
 		this.u = Vector3D.orthogonal(w);

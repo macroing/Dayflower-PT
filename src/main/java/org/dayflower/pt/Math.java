@@ -115,6 +115,22 @@ public final class Math {
 		return java.lang.Math.min(a, b);
 	}
 	
+	public static double min(final double a, final double b, final double c) {
+		return min(min(a, b), c);
+	}
+	
+	public static double normalize(final double value, final double a, final double b) {
+		final double maximum = max(a, b);
+		final double minimum = min(a, b);
+		final double valueNormalized = (value - minimum) / (maximum - minimum);
+		
+		return valueNormalized;
+	}
+	
+	public static double positiveModulo(final double x, final double y) {
+		return x < 0.0D ? (x % y + y) % y : x % y;
+	}
+	
 	public static double pow(final double base, final double exponent) {
 		return java.lang.Math.pow(base, exponent);
 	}
@@ -300,6 +316,21 @@ public final class Math {
 	
 	public static int min(final int a, final int b) {
 		return java.lang.Math.min(a, b);
+	}
+	
+	public static int positiveModulo(final int x, final int y) {
+		return x < 0 ? (x % y + y) % y : x % y;
+	}
+	
+	public static int saturate(final int value) {
+		return saturate(value, 0, 255);
+	}
+	
+	public static int saturate(final int value, final int valueIntervalA, final int valueIntervalB) {
+		final int valueMaximum = max(valueIntervalA, valueIntervalB);
+		final int valueMinimum = min(valueIntervalA, valueIntervalB);
+		
+		return value < valueMinimum ? valueMinimum : value > valueMaximum ? valueMaximum : value;
 	}
 	
 	public static int toInt(final double value) {

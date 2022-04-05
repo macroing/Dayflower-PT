@@ -31,12 +31,7 @@ public abstract class Shape {
 	
 	public abstract Point2D computeTextureCoordinates(final Ray3D ray, final double t);
 	
-	@SuppressWarnings("static-method")
-	public boolean contains(final Point3D p) {
-		Objects.requireNonNull(p, "p == null");
-		
-		return false;
-	}
+	public abstract boolean contains(final Point3D p);
 	
 	public abstract double intersection(final Ray3D ray, final double tMinimum, final double tMaximum);
 	
@@ -154,6 +149,14 @@ public abstract class Shape {
 		return Rectangle.create(a, b, c, d);
 	}
 	
+	public static Shape rectangularCuboid() {
+		return rectangularCuboid(new Point3D(-0.5D, -0.5D, -0.5D), new Point3D(0.5D, 0.5D, 0.5D));
+	}
+	
+	public static Shape rectangularCuboid(final Point3D a, final Point3D b) {
+		return RectangularCuboid.create(a, b);
+	}
+	
 	public static Shape sphere() {
 		return sphere(new Point3D());
 	}
@@ -172,6 +175,14 @@ public abstract class Shape {
 	
 	public static Shape torus(final double radiusInner, final double radiusOuter) {
 		return new Torus(radiusInner, radiusOuter);
+	}
+	
+	public static Shape triangle() {
+		return triangle(new Point3D(0.0D, 1.0D, 0.0D), new Point3D(1.0D, -1.0D, 0.0D), new Point3D(-1.0D, -1.0D, 0.0D));
+	}
+	
+	public static Shape triangle(final Point3D a, final Point3D b, final Point3D c) {
+		return new Triangle(a, b, c);
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,6 +231,11 @@ public abstract class Shape {
 			final double v = p.z / this.zMax;
 			
 			return new Point2D(u, v);
+		}
+		
+		@Override
+		public boolean contains(final Point3D p) {
+			return p.z >= 0.0D && p.z <= this.zMax && p.sphericalPhi() <= this.phiMax;
 		}
 		
 		@Override
@@ -301,6 +317,11 @@ public abstract class Shape {
 			final double v = (p.z - this.zMin) / (this.zMax - this.zMin);
 			
 			return new Point2D(u, v);
+		}
+		
+		@Override
+		public boolean contains(final Point3D p) {
+			return p.z >= this.zMin && p.z <= this.zMax && p.sphericalPhi() <= this.phiMax;
 		}
 		
 		@Override
@@ -388,6 +409,11 @@ public abstract class Shape {
 		}
 		
 		@Override
+		public boolean contains(final Point3D p) {
+			return p.x * p.x + p.y * p.y <= this.radiusOuter * this.radiusOuter && p.x * p.x + p.y * p.y >= this.radiusInner * this.radiusInner && p.sphericalPhi() <= this.phiMax;
+		}
+		
+		@Override
 		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
 			final Point3D o = ray.getOrigin();
 			
@@ -471,6 +497,11 @@ public abstract class Shape {
 			final double u = doComputePhi(p, v) / this.phiMax;
 			
 			return new Point2D(u, v);
+		}
+		
+		@Override
+		public boolean contains(final Point3D p) {
+			return p.z >= this.zMin && p.z <= this.zMax && doComputePhi(p) <= this.phiMax;
 		}
 		
 		@Override
@@ -601,6 +632,11 @@ public abstract class Shape {
 		}
 		
 		@Override
+		public boolean contains(final Point3D p) {
+			return p.z >= this.zMin && p.z <= this.zMax && p.sphericalPhi() <= this.phiMax;
+		}
+		
+		@Override
 		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
 			final Point3D o = ray.getOrigin();
 			
@@ -687,6 +723,11 @@ public abstract class Shape {
 			final double v = hU * (+vAB.y * determinantReciprocal) + hV * (-vAB.x * determinantReciprocal) + Vector2D.crossProduct(vAB, vA) * determinantReciprocal;
 			
 			return new Point2D(u, v);
+		}
+		
+		@Override
+		public boolean contains(final Point3D p) {
+			return Point3D.coplanar(this.a, this.b, this.c, p);
 		}
 		
 		@Override
@@ -1034,6 +1075,119 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	private static final class RectangularCuboid extends Shape {
+		private final Point3D maximum;
+		private final Point3D minimum;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private RectangularCuboid(final Point3D maximum, final Point3D minimum) {
+			this.maximum = Objects.requireNonNull(maximum, "maximum == null");
+			this.minimum = Objects.requireNonNull(minimum, "minimum == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			final Point3D q = Point3D.midpoint(this.maximum, this.minimum);
+			
+			final Vector3D v = Vector3D.multiply(Vector3D.direction(this.minimum, this.maximum), 0.5D);
+			
+			if(p.x + v.x - 0.0001D < q.x) {
+				return new OrthonormalBasis33D(Vector3D.x(-1.0D));
+			}
+			
+			if(p.x - v.x + 0.0001D > q.x) {
+				return new OrthonormalBasis33D(Vector3D.x(+1.0D));
+			}
+			
+			if(p.y + v.y - 0.0001D < q.y) {
+				return new OrthonormalBasis33D(Vector3D.y(-1.0D));
+			}
+			
+			if(p.y - v.y + 0.0001D > q.y) {
+				return new OrthonormalBasis33D(Vector3D.y(+1.0D));
+			}
+			
+			if(p.z + v.z - 0.0001D < q.z) {
+				return new OrthonormalBasis33D(Vector3D.z(-1.0D));
+			}
+			
+			if(p.z - v.z + 0.0001D > q.z) {
+				return new OrthonormalBasis33D(Vector3D.z(+1.0D));
+			}
+			
+			return new OrthonormalBasis33D();
+		}
+		
+		@Override
+		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
+			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
+			final Point3D q = Point3D.midpoint(this.maximum, this.minimum);
+			
+			final Vector3D v = Vector3D.multiply(Vector3D.direction(this.minimum, this.maximum), 0.5D);
+			
+			if(p.x + v.x - 0.0001D < q.x || p.x - v.x + 0.0001D > q.x) {
+				return new Point2D(Math.normalize(p.z, this.minimum.z, this.maximum.z), Math.normalize(p.y, this.minimum.y, this.maximum.y));
+			}
+			
+			if(p.y + v.y - 0.0001D < q.y || p.y - v.y + 0.0001D > q.y) {
+				return new Point2D(Math.normalize(p.x, this.minimum.x, this.maximum.x), Math.normalize(p.z, this.minimum.z, this.maximum.z));
+			}
+			
+			if(p.z + v.z - 0.0001D < q.z || p.z - v.z + 0.0001D > q.z) {
+				return new Point2D(Math.normalize(p.x, this.minimum.x, this.maximum.x), Math.normalize(p.y, this.minimum.y, this.maximum.y));
+			}
+			
+			return new Point2D();
+		}
+		
+		@Override
+		public boolean contains(final Point3D p) {
+			return p.x >= this.minimum.x && p.x <= this.maximum.x && p.y >= this.minimum.y && p.y <= this.maximum.y && p.z >= this.minimum.z && p.z <= this.maximum.z;
+		}
+		
+		@Override
+		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
+			final Vector3D v0 = Vector3D.reciprocal(ray.getDirection());
+			final Vector3D v1 = Vector3D.hadamardProduct(Vector3D.direction(ray.getOrigin(), this.minimum), v0);
+			final Vector3D v2 = Vector3D.hadamardProduct(Vector3D.direction(ray.getOrigin(), this.maximum), v0);
+			
+			final double t0 = Math.max(Math.min(v1.x, v2.x), Math.min(v1.y, v2.y), Math.min(v1.z, v2.z));
+			final double t1 = Math.min(Math.max(v1.x, v2.x), Math.max(v1.y, v2.y), Math.max(v1.z, v2.z));
+			
+			if(t0 > t1) {
+				return Math.NaN;
+			}
+			
+			if(t0 > tMinimum && t0 < tMaximum) {
+				return t0;
+			}
+			
+			if(t1 > tMinimum && t1 < tMaximum) {
+				return t1;
+			}
+			
+			return Math.NaN;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public static RectangularCuboid create(final Point3D a, final Point3D b) {
+			Objects.requireNonNull(a, "a == null");
+			Objects.requireNonNull(b, "b == null");
+			
+			final Point3D maximum = Point3D.max(a, b);
+			final Point3D minimum = Point3D.min(a, b);
+			
+			return new RectangularCuboid(maximum, minimum);
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	private static final class Sphere extends Shape {
 		private final Point3D center;
 		private final double radius;
@@ -1067,6 +1221,11 @@ public abstract class Shape {
 			final double v = Math.acos(Math.max(Math.min(n.z, 1.0D), -1.0D)) / Math.PI;
 			
 			return new Point2D(u, v);
+		}
+		
+		@Override
+		public boolean contains(final Point3D p) {
+			return Point3D.distanceSquared(this.center, p) <= this.radius * this.radius;
 		}
 		
 		@Override
@@ -1142,6 +1301,12 @@ public abstract class Shape {
 			return new Point2D(u, v);
 		}
 		
+//		TODO: Implement!
+		@Override
+		public boolean contains(final Point3D p) {
+			return false;
+		}
+		
 		@Override
 		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
 			final Point3D o = ray.getOrigin();
@@ -1180,6 +1345,177 @@ public abstract class Shape {
 			}
 			
 			return Math.NaN;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class Triangle extends Shape {
+		private final Point3D a;
+		private final Point3D b;
+		private final Point3D c;
+		private final Vector3D n;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public Triangle(final Point3D a, final Point3D b, final Point3D c) {
+			this.a = Objects.requireNonNull(a, "a == null");
+			this.b = Objects.requireNonNull(b, "b == null");
+			this.c = Objects.requireNonNull(c, "c == null");
+			this.n = Vector3D.normalNormalized(a, b, c);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
+			final Point2D pTA = new Point2D(0.5D, 0.0D);
+			final Point2D pTB = new Point2D(1.0D, 1.0D);
+			final Point2D pTC = new Point2D(0.0D, 1.0D);
+			
+			final Vector2D vTCA = Vector2D.direction(pTC, pTA);
+			final Vector2D vTCB = Vector2D.direction(pTC, pTB);
+			
+			final Point3D pPA = this.a;
+			final Point3D pPB = this.b;
+			final Point3D pPC = this.c;
+			
+			final Vector3D vPCA = Vector3D.direction(pPC, pPA);
+			final Vector3D vPCB = Vector3D.direction(pPC, pPB);
+			
+			final Vector3D w = this.n;
+			
+			final double determinant = Vector2D.crossProduct(vTCA, vTCB);
+			
+			if(Math.isZero(determinant)) {
+				return new OrthonormalBasis33D(w);
+			}
+			
+			final double determinantReciprocal = 1.0D / determinant;
+			
+			final double x = (-vTCB.x * vPCA.x + vTCA.x * vPCB.x) * determinantReciprocal;
+			final double y = (-vTCB.x * vPCA.y + vTCA.x * vPCB.y) * determinantReciprocal;
+			final double z = (-vTCB.x * vPCA.z + vTCA.x * vPCB.z) * determinantReciprocal;
+			
+			final Vector3D v = new Vector3D(x, y, z);
+			
+			return new OrthonormalBasis33D(w, v);
+		}
+		
+		@Override
+		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
+			final Point3D pBC = doCreateBarycentricCoordinates(ray);
+			
+			final Point2D pTA = new Point2D(0.5D, 0.0D);
+			final Point2D pTB = new Point2D(1.0D, 1.0D);
+			final Point2D pTC = new Point2D(0.0D, 1.0D);
+			
+			final double u = pTA.x * pBC.x + pTB.x * pBC.y + pTC.x * pBC.z;
+			final double v = pTA.y * pBC.x + pTB.y * pBC.y + pTC.y * pBC.z;
+			
+			return new Point2D(u, v);
+		}
+		
+		@Override
+		public boolean contains(final Point3D p) {
+			final Point3D a = this.a;
+			final Point3D b = this.b;
+			final Point3D c = this.c;
+			
+			if(Point3D.coplanar(a, b, c, p)) {
+				final Vector3D n = this.n;
+				
+				final Vector3D edgeAB = Vector3D.direction(a, b);
+				final Vector3D edgeBC = Vector3D.direction(b, c);
+				final Vector3D edgeCA = Vector3D.direction(c, a);
+				
+				final Vector3D edgeAP = Vector3D.direction(a, p);
+				final Vector3D edgeBP = Vector3D.direction(b, p);
+				final Vector3D edgeCP = Vector3D.direction(c, p);
+				
+				final boolean isInsideA = Vector3D.tripleProduct(n, edgeAB, edgeAP) > 0.0D;
+				final boolean isInsideB = Vector3D.tripleProduct(n, edgeBC, edgeBP) > 0.0D;
+				final boolean isInsideC = Vector3D.tripleProduct(n, edgeCA, edgeCP) > 0.0D;
+				final boolean isInside = isInsideA && isInsideB && isInsideC;
+				
+				return isInside;
+			}
+			
+			return false;
+		}
+		
+		@Override
+		public double intersection(final Ray3D ray, final double tMinimum, final double tMaximum) {
+			final Point3D a = this.a;
+			final Point3D b = this.b;
+			final Point3D c = this.c;
+			
+			final Vector3D v0 = Vector3D.direction(a, b);
+			final Vector3D v1 = Vector3D.direction(c, a);
+			final Vector3D v2 = ray.getDirection();
+			final Vector3D v3 = Vector3D.crossProduct(v0, v1);
+			
+			final double determinant = Vector3D.dotProduct(v2, v3);
+			final double determinantReciprocal = 1.0D / determinant;
+			
+			final Point3D o = ray.getOrigin();
+			
+			final Vector3D v4 = Vector3D.direction(o, a);
+			
+			final double t = Vector3D.dotProduct(v3, v4) * determinantReciprocal;
+			
+			if(t <= tMinimum || t >= tMaximum) {
+				return Math.NaN;
+			}
+			
+			final Vector3D v5 = Vector3D.crossProduct(v4, v2);
+			
+			final double uDot = Vector3D.dotProduct(v5, v1);
+			final double u = uDot * determinantReciprocal;
+			
+			if(u < 0.0D) {
+				return Math.NaN;
+			}
+			
+			final double vDot = Vector3D.dotProduct(v5, v0);
+			final double v = vDot * determinantReciprocal;
+			
+			if(v < 0.0D) {
+				return Math.NaN;
+			}
+			
+			if((uDot + vDot) * determinant > determinant * determinant) {
+				return Math.NaN;
+			}
+			
+			return t;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private Point3D doCreateBarycentricCoordinates(final Ray3D ray) {
+			final Point3D a = this.a;
+			final Point3D b = this.b;
+			final Point3D c = this.c;
+			
+			final Vector3D v0 = Vector3D.direction(a, b);
+			final Vector3D v1 = Vector3D.direction(c, a);
+			final Vector3D v2 = ray.getDirection();
+			final Vector3D v3 = Vector3D.crossProduct(v0, v1);
+			
+			final double determinant = Vector3D.dotProduct(v2, v3);
+			final double determinantReciprocal = 1.0D / determinant;
+			
+			final Point3D o = ray.getOrigin();
+			
+			final Vector3D v4 = Vector3D.direction(o, a);
+			final Vector3D v5 = Vector3D.crossProduct(v4, v2);
+			
+			final double u = Vector3D.dotProduct(v5, v1) * determinantReciprocal;
+			final double v = Vector3D.dotProduct(v5, v0) * determinantReciprocal;
+			final double w = 1.0D - u - v;
+			
+			return new Point3D(w, u, v);
 		}
 	}
 }

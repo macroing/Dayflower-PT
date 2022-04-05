@@ -18,6 +18,10 @@
  */
 package org.dayflower.pt;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.Objects;
+
 public final class Color3D {
 	public static final Color3D AU_ETA = new Color3D(0.1428431083584272D, 0.3741312033192202D, 1.4392239236981954D);
 	public static final Color3D AU_K = new Color3D(3.975360769687202D, 2.380584839029059D, 1.5995662411380493D);
@@ -46,7 +50,45 @@ public final class Color3D {
 		this.b = b;
 	}
 	
+	public Color3D(final int r, final int g, final int b) {
+		this.r = Math.saturate(r) / 255.0D;
+		this.g = Math.saturate(g) / 255.0D;
+		this.b = Math.saturate(b) / 255.0D;
+	}
+	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@Override
+	public String toString() {
+		return String.format("new Color3D(%s, %s, %s)", Strings.toNonScientificNotationJava(this.r), Strings.toNonScientificNotationJava(this.g), Strings.toNonScientificNotationJava(this.b));
+	}
+	
+	public boolean equals(final Color3D c) {
+		if(c == this) {
+			return true;
+		} else if(c == null) {
+			return false;
+		} else if(!Math.equal(this.b, c.b)) {
+			return false;
+		} else if(!Math.equal(this.g, c.g)) {
+			return false;
+		} else if(!Math.equal(this.r, c.r)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Color3D)) {
+			return false;
+		} else {
+			return equals(Color3D.class.cast(object));
+		}
+	}
 	
 	public boolean isBlack() {
 		return Math.isZero(this.r) && Math.isZero(this.g) && Math.isZero(this.b);  
@@ -58,6 +100,11 @@ public final class Color3D {
 	
 	public double max() {
 		return Math.max(this.r, this.g, this.b);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(Double.valueOf(this.b), Double.valueOf(this.g), Double.valueOf(this.r));
 	}
 	
 	public int toARGB() {
@@ -73,6 +120,14 @@ public final class Color3D {
 	
 	public static Color3D add(final Color3D cLHS, final Color3D cRHS) {
 		return new Color3D(cLHS.r + cRHS.r, cLHS.g + cRHS.g, cLHS.b + cRHS.b);
+	}
+	
+	public static Color3D blend(final Color3D cLHS, final Color3D cRHS) {
+		return blend(cLHS, cRHS, 0.5D);
+	}
+	
+	public static Color3D blend(final Color3D cLHS, final Color3D cRHS, final double t) {
+		return blend(cLHS, cRHS, t, t, t);
 	}
 	
 	public static Color3D blend(final Color3D cLHS, final Color3D cRHS, final double tR, final double tG, final double tB) {
@@ -101,5 +156,49 @@ public final class Color3D {
 	
 	public static Color3D subtract(final Color3D cLHS, final Color3D cRHS) {
 		return new Color3D(cLHS.r - cRHS.r, cLHS.g - cRHS.g, cLHS.b - cRHS.b);
+	}
+	
+	public static Color3D[] toArray(final BufferedImage bufferedImage) {
+		final BufferedImage compatibleBufferedImage = doGetCompatibleBufferedImage(bufferedImage);
+		
+		final int resolutionX = compatibleBufferedImage.getWidth();
+		final int resolutionY = compatibleBufferedImage.getHeight();
+		
+		final Color3D[] array = new Color3D[resolutionX * resolutionY];
+		
+		for(int index = 0; index < array.length; index++) {
+			final int x = index % resolutionX;
+			final int y = index / resolutionX;
+			
+			final int colorRGB = compatibleBufferedImage.getRGB(x, y);
+			
+			final int r = (colorRGB >> 16) & 0xFF;
+			final int g = (colorRGB >>  8) & 0xFF;
+			final int b = (colorRGB >>  0) & 0xFF;
+			
+			array[index] = new Color3D(r, g, b);
+		}
+		
+		return array;
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static BufferedImage doGetCompatibleBufferedImage(final BufferedImage bufferedImage) {
+		return doGetCompatibleBufferedImage(bufferedImage, BufferedImage.TYPE_INT_ARGB);
+	}
+	
+	private static BufferedImage doGetCompatibleBufferedImage(final BufferedImage bufferedImage, final int type) {
+		if(bufferedImage.getType() == type) {
+			return bufferedImage;
+		}
+		
+		final BufferedImage compatibleBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), type);
+		
+		final
+		Graphics2D graphics2D = compatibleBufferedImage.createGraphics();
+		graphics2D.drawImage(bufferedImage, 0, 0, null);
+		
+		return compatibleBufferedImage;
 	}
 }

@@ -50,6 +50,17 @@ public final class Point2D {
 		return new Point2D(x, y);
 	}
 	
+	public static Point2D rotate(final Point2D p, final double angle, final boolean isRadians) {
+		final double angleRadians = isRadians ? angle : Math.toRadians(angle);
+		final double angleRadiansCos = Math.cos(angleRadians);
+		final double angleRadiansSin = Math.sin(angleRadians);
+		
+		final double x = p.x * angleRadiansCos - p.y * angleRadiansSin;
+		final double y = p.y * angleRadiansCos + p.x * angleRadiansSin;
+		
+		return new Point2D(x, y);
+	}
+	
 	public static Point2D sampleDiskUniformDistributionByConcentricMapping() {
 		return sampleDiskUniformDistributionByConcentricMapping(sampleRandom());
 	}

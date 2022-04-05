@@ -190,6 +190,10 @@ public final class Vector3D {
 		return vLHS.z < 0.0D ? negateZ(vRHS) : vRHS;
 	}
 	
+	public static Vector3D hadamardProduct(final Vector3D vLHS, final Vector3D vRHS) {
+		return new Vector3D(vLHS.x * vRHS.x, vLHS.y * vRHS.y, vLHS.z * vRHS.z);
+	}
+	
 	public static Vector3D multiply(final Vector3D v, final double s) {
 		return new Vector3D(v.x * s, v.y * s, v.z * s);
 	}
@@ -233,6 +237,10 @@ public final class Vector3D {
 		} else {
 			return normalize(new Vector3D(+v0.y, -v0.x, +0.0D));
 		}
+	}
+	
+	public static Vector3D reciprocal(final Vector3D v) {
+		return new Vector3D(1.0D / v.x, 1.0D / v.y, 1.0D / v.z);
 	}
 	
 	public static Vector3D reflection(final Vector3D direction, final Vector3D normal) {
@@ -301,15 +309,27 @@ public final class Vector3D {
 	}
 	
 	public static Vector3D x() {
-		return new Vector3D(1.0D, 0.0D, 0.0D);
+		return x(1.0D);
+	}
+	
+	public static Vector3D x(final double x) {
+		return new Vector3D(x, 0.0D, 0.0D);
 	}
 	
 	public static Vector3D y() {
-		return new Vector3D(0.0D, 1.0D, 0.0D);
+		return y(1.0D);
+	}
+	
+	public static Vector3D y(final double y) {
+		return new Vector3D(0.0D, y, 0.0D);
 	}
 	
 	public static Vector3D z() {
-		return new Vector3D(0.0D, 0.0D, 1.0D);
+		return z(1.0D);
+	}
+	
+	public static Vector3D z(final double z) {
+		return new Vector3D(0.0D, 0.0D, z);
 	}
 	
 	public static boolean sameHemisphereZ(final Vector3D vLHS, final Vector3D vRHS) {
