@@ -85,11 +85,11 @@ public final class Color3D {
 			return true;
 		} else if(c == null) {
 			return false;
-		} else if(!Math.equal(this.b, c.b)) {
+		} else if(!Math.equals(this.b, c.b)) {
 			return false;
-		} else if(!Math.equal(this.g, c.g)) {
+		} else if(!Math.equals(this.g, c.g)) {
 			return false;
-		} else if(!Math.equal(this.r, c.r)) {
+		} else if(!Math.equals(this.r, c.r)) {
 			return false;
 		} else {
 			return true;

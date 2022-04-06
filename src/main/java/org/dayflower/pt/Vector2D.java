@@ -18,6 +18,8 @@
  */
 package org.dayflower.pt;
 
+import java.util.Objects;
+
 public final class Vector2D {
 	public final double x;
 	public final double y;
@@ -39,12 +41,47 @@ public final class Vector2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@Override
+	public String toString() {
+		return String.format("new Vector2D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y));
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Vector2D)) {
+			return false;
+		} else {
+			return equals(Vector2D.class.cast(object));
+		}
+	}
+	
+	public boolean equals(final Vector2D v) {
+		if(v == this) {
+			return true;
+		} else if(v == null) {
+			return false;
+		} else if(!Math.equals(this.x, v.x)) {
+			return false;
+		} else if(!Math.equals(this.y, v.y)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	public double length() {
 		return Math.sqrt(lengthSquared());
 	}
 	
 	public double lengthSquared() {
 		return this.x * this.x + this.y * this.y;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(Double.valueOf(this.x), Double.valueOf(this.y));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

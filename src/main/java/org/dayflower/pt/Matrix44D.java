@@ -18,6 +18,8 @@
  */
 package org.dayflower.pt;
 
+import java.util.Objects;
+
 public final class Matrix44D {
 	public final double element11;
 	public final double element12;
@@ -63,6 +65,69 @@ public final class Matrix44D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@Override
+	public String toString() {
+		final String row1 = String.format("%s, %s, %s, %s", Utilities.toNonScientificNotationJava(this.element11), Utilities.toNonScientificNotationJava(this.element12), Utilities.toNonScientificNotationJava(this.element13), Utilities.toNonScientificNotationJava(this.element14));
+		final String row2 = String.format("%s, %s, %s, %s", Utilities.toNonScientificNotationJava(this.element21), Utilities.toNonScientificNotationJava(this.element22), Utilities.toNonScientificNotationJava(this.element23), Utilities.toNonScientificNotationJava(this.element24));
+		final String row3 = String.format("%s, %s, %s, %s", Utilities.toNonScientificNotationJava(this.element31), Utilities.toNonScientificNotationJava(this.element32), Utilities.toNonScientificNotationJava(this.element33), Utilities.toNonScientificNotationJava(this.element34));
+		final String row4 = String.format("%s, %s, %s, %s", Utilities.toNonScientificNotationJava(this.element41), Utilities.toNonScientificNotationJava(this.element42), Utilities.toNonScientificNotationJava(this.element43), Utilities.toNonScientificNotationJava(this.element44));
+		
+		return String.format("new Matrix44D(%s, %s, %s, %s)", row1, row2, row3, row4);
+	}
+	
+	public boolean equals(final Matrix44D m) {
+		if(m == this) {
+			return true;
+		} else if(m == null) {
+			return false;
+		} else if(!Math.equals(this.element11, m.element11)) {
+			return false;
+		} else if(!Math.equals(this.element12, m.element12)) {
+			return false;
+		} else if(!Math.equals(this.element13, m.element13)) {
+			return false;
+		} else if(!Math.equals(this.element14, m.element14)) {
+			return false;
+		} else if(!Math.equals(this.element21, m.element21)) {
+			return false;
+		} else if(!Math.equals(this.element22, m.element22)) {
+			return false;
+		} else if(!Math.equals(this.element23, m.element23)) {
+			return false;
+		} else if(!Math.equals(this.element24, m.element24)) {
+			return false;
+		} else if(!Math.equals(this.element31, m.element31)) {
+			return false;
+		} else if(!Math.equals(this.element32, m.element32)) {
+			return false;
+		} else if(!Math.equals(this.element33, m.element33)) {
+			return false;
+		} else if(!Math.equals(this.element34, m.element34)) {
+			return false;
+		} else if(!Math.equals(this.element41, m.element41)) {
+			return false;
+		} else if(!Math.equals(this.element42, m.element42)) {
+			return false;
+		} else if(!Math.equals(this.element43, m.element43)) {
+			return false;
+		} else if(!Math.equals(this.element44, m.element44)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Matrix44D)) {
+			return false;
+		} else {
+			return equals(Matrix44D.class.cast(object));
+		}
+	}
+	
 	public boolean isInvertible() {
 		return Math.abs(determinant()) >= 1.0e-12D;
 	}
@@ -82,6 +147,16 @@ public final class Matrix44D {
 		final double l = this.element33 * this.element44 - this.element34 * this.element43;
 		
 		return a * l - b * k + c * j + d * i - e * h + f * g;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(new Object[] {
+			Double.valueOf(this.element11), Double.valueOf(this.element12), Double.valueOf(this.element13), Double.valueOf(this.element14),
+			Double.valueOf(this.element21), Double.valueOf(this.element22), Double.valueOf(this.element23), Double.valueOf(this.element24),
+			Double.valueOf(this.element31), Double.valueOf(this.element32), Double.valueOf(this.element33), Double.valueOf(this.element34),
+			Double.valueOf(this.element41), Double.valueOf(this.element42), Double.valueOf(this.element43), Double.valueOf(this.element44)
+		});
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

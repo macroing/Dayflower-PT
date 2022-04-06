@@ -18,6 +18,8 @@
  */
 package org.dayflower.pt;
 
+import java.util.Objects;
+
 public final class Point2D {
 	public final double x;
 	public final double y;
@@ -35,8 +37,43 @@ public final class Point2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@Override
+	public String toString() {
+		return String.format("new Point2D(%s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y));
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Point2D)) {
+			return false;
+		} else {
+			return equals(Point2D.class.cast(object));
+		}
+	}
+	
+	public boolean equals(final Point2D p) {
+		if(p == this) {
+			return true;
+		} else if(p == null) {
+			return false;
+		} else if(!Math.equals(this.x, p.x)) {
+			return false;
+		} else if(!Math.equals(this.y, p.y)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	public boolean isZero() {
 		return Math.isZero(this.x) && Math.isZero(this.y); 
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(Double.valueOf(this.x), Double.valueOf(this.y));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

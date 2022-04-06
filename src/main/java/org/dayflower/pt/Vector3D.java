@@ -18,6 +18,7 @@
  */
 package org.dayflower.pt;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public final class Vector3D {
@@ -39,6 +40,38 @@ public final class Vector3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@Override
+	public String toString() {
+		return String.format("new Vector3D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y), Utilities.toNonScientificNotationJava(this.z));
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Vector3D)) {
+			return false;
+		} else {
+			return equals(Vector3D.class.cast(object));
+		}
+	}
+	
+	public boolean equals(final Vector3D v) {
+		if(v == this) {
+			return true;
+		} else if(v == null) {
+			return false;
+		} else if(!Math.equals(this.x, v.x)) {
+			return false;
+		} else if(!Math.equals(this.y, v.y)) {
+			return false;
+		} else if(!Math.equals(this.z, v.z)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	public boolean isZero() {
 		return Math.isZero(this.x) && Math.isZero(this.y) && Math.isZero(this.z);  
 	}
@@ -46,7 +79,7 @@ public final class Vector3D {
 	public double cosPhi() {
 		final double sinTheta = sinTheta();
 		
-		if(Math.equal(sinTheta, 0.0D)) {
+		if(Math.isZero(sinTheta)) {
 			return 1.0D;
 		}
 		
@@ -113,6 +146,11 @@ public final class Vector3D {
 	
 	public double tanThetaSquared() {
 		return sinThetaSquared() / cosThetaSquared();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(Double.valueOf(this.x), Double.valueOf(this.y), Double.valueOf(this.z));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -37,8 +37,43 @@ public final class Ray3D {
 		return this.origin;
 	}
 	
+	@Override
+	public String toString() {
+		return String.format("new Ray3D(%s, %s)", this.origin, this.direction);
+	}
+	
 	public Vector3D getDirection() {
 		return this.direction;
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Ray3D)) {
+			return false;
+		} else {
+			return equals(Ray3D.class.cast(object));
+		}
+	}
+	
+	public boolean equals(final Ray3D r) {
+		if(r == this) {
+			return true;
+		} else if(r == null) {
+			return false;
+		} else if(!Objects.equals(this.origin, r.origin)) {
+			return false;
+		} else if(!Objects.equals(this.direction, r.direction)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.origin, this.direction);
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

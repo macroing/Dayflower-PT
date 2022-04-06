@@ -18,6 +18,8 @@
  */
 package org.dayflower.pt;
 
+import java.util.Objects;
+
 public final class Point3D {
 	public static final Point3D MAX = max();
 	public static final Point3D MIN = min();
@@ -42,8 +44,45 @@ public final class Point3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@Override
+	public String toString() {
+		return String.format("new Point3D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y), Utilities.toNonScientificNotationJava(this.z));
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Point3D)) {
+			return false;
+		} else {
+			return equals(Point3D.class.cast(object));
+		}
+	}
+	
+	public boolean equals(final Point3D p) {
+		if(p == this) {
+			return true;
+		} else if(p == null) {
+			return false;
+		} else if(!Math.equals(this.x, p.x)) {
+			return false;
+		} else if(!Math.equals(this.y, p.y)) {
+			return false;
+		} else if(!Math.equals(this.z, p.z)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	public double sphericalPhi() {
 		return Math.getOrAdd(Math.atan2(this.y, this.x), 0.0D, Math.PI * 2.0D);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(Double.valueOf(this.x), Double.valueOf(this.y), Double.valueOf(this.z));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +133,7 @@ public final class Point3D {
 		final double z = mLHS.element31 * pRHS.x + mLHS.element32 * pRHS.y + mLHS.element33 * pRHS.z + mLHS.element34;
 		final double w = mLHS.element41 * pRHS.x + mLHS.element42 * pRHS.y + mLHS.element43 * pRHS.z + mLHS.element44;
 		
-		return Math.equal(w, 1.0D) || Math.isZero(w) ? new Point3D(x, y, z) : new Point3D(x / w, y / w, z / w);
+		return Math.equals(w, 1.0D) || Math.isZero(w) ? new Point3D(x, y, z) : new Point3D(x / w, y / w, z / w);
 	}
 	
 	public static boolean coplanar(final Point3D... points) {

@@ -53,6 +53,45 @@ public final class OrthonormalBasis33D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@Override
+	public String toString() {
+		return String.format("new OrthonormalBasis33D(%s, %s, %s)", this.w, this.v, this.u);
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof OrthonormalBasis33D)) {
+			return false;
+		} else {
+			return equals(OrthonormalBasis33D.class.cast(object));
+		}
+	}
+	
+	public boolean equals(final OrthonormalBasis33D o) {
+		if(o == this) {
+			return true;
+		} else if(o == null) {
+			return false;
+		} else if(!Objects.equals(this.u, o.u)) {
+			return false;
+		} else if(!Objects.equals(this.v, o.v)) {
+			return false;
+		} else if(!Objects.equals(this.w, o.w)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.u, this.v, this.w);
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	public static OrthonormalBasis33D transform(final Matrix44D mLHS, final OrthonormalBasis33D oRHS) {
 		final Vector3D u = Vector3D.normalize(Vector3D.transform(mLHS, oRHS.u));
 		final Vector3D v = Vector3D.normalize(Vector3D.transform(mLHS, oRHS.v));

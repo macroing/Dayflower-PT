@@ -36,7 +36,7 @@ public final class Math {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public static boolean equal(final double a, final double b) {
+	public static boolean equals(final double a, final double b) {
 		return Double.compare(a, b) == 0;
 	}
 	

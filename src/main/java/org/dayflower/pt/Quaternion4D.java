@@ -18,6 +18,8 @@
  */
 package org.dayflower.pt;
 
+import java.util.Objects;
+
 public final class Quaternion4D {
 	public final double w;
 	public final double x;
@@ -43,12 +45,51 @@ public final class Quaternion4D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@Override
+	public String toString() {
+		return String.format("new Quaternion4D(%s, %s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y), Utilities.toNonScientificNotationJava(this.w));
+	}
+	
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Quaternion4D)) {
+			return false;
+		} else {
+			return equals(Quaternion4D.class.cast(object));
+		}
+	}
+	
+	public boolean equals(final Quaternion4D q) {
+		if(q == this) {
+			return true;
+		} else if(q == null) {
+			return false;
+		} else if(!Math.equals(this.w, q.w)) {
+			return false;
+		} else if(!Math.equals(this.x, q.x)) {
+			return false;
+		} else if(!Math.equals(this.y, q.y)) {
+			return false;
+		} else if(!Math.equals(this.z, q.z)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
 	public double length() {
 		return Math.sqrt(lengthSquared());
 	}
 	
 	public double lengthSquared() {
 		return this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(Double.valueOf(this.w), Double.valueOf(this.x), Double.valueOf(this.y), Double.valueOf(this.z));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

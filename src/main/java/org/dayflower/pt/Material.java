@@ -1049,7 +1049,7 @@ public abstract class Material {
 		public Vector3D sampleH(final Vector3D o, final Point2D p) {
 			if(isSamplingVisibleArea()) {
 				return o.z >= 0.0D ? doSample(o, p) : Vector3D.negate(doSample(Vector3D.negate(o), p));
-			} else if(Math.equal(this.alphaX, this.alphaY)) {
+			} else if(Math.equals(this.alphaX, this.alphaY)) {
 				final double phi = p.y * 2.0D * Math.PI;
 				final double cosTheta = 1.0D / Math.sqrt(1.0D + (this.alphaX * this.alphaX * p.x / (1.0D - p.x)));
 				final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
