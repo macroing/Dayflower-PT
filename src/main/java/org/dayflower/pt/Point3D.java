@@ -19,6 +19,11 @@
 package org.dayflower.pt;
 
 public final class Point3D {
+	public static final Point3D MAX = max();
+	public static final Point3D MIN = min();
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	public final double x;
 	public final double y;
 	public final double z;
@@ -55,12 +60,20 @@ public final class Point3D {
 		return new Point3D(Math.lerp(a.x, b.x, t), Math.lerp(a.y, b.y, t), Math.lerp(a.z, b.z, t));
 	}
 	
+	public static Point3D max() {
+		return new Point3D(Math.MAX_VALUE, Math.MAX_VALUE, Math.MAX_VALUE);
+	}
+	
 	public static Point3D max(final Point3D a, final Point3D b) {
 		return new Point3D(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
 	}
 	
 	public static Point3D midpoint(final Point3D a, final Point3D b) {
 		return new Point3D((a.x + b.x) / 2.0D, (a.y + b.y) / 2.0D, (a.z + b.z) / 2.0D);
+	}
+	
+	public static Point3D min() {
+		return new Point3D(Math.MIN_VALUE, Math.MIN_VALUE, Math.MIN_VALUE);
 	}
 	
 	public static Point3D min(final Point3D a, final Point3D b) {
@@ -85,8 +98,8 @@ public final class Point3D {
 	}
 	
 	public static boolean coplanar(final Point3D... points) {
-		ParameterArguments.requireNonNullArray(points, "points");
-		ParameterArguments.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
+		Utilities.requireNonNullArray(points, "points");
+		Utilities.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
 		
 		final Point3D p0 = points[0];
 		final Point3D p1 = points[1];

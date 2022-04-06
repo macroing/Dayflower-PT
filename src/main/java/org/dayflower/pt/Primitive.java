@@ -22,6 +22,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class Primitive {
+	private final BoundingVolume boundingVolume;
 	private final Material material;
 	private final Shape shape;
 	private final Transform transform;
@@ -36,6 +37,7 @@ public final class Primitive {
 		this.material = Objects.requireNonNull(material, "material == null");
 		this.shape = Objects.requireNonNull(shape, "shape == null");
 		this.transform = Objects.requireNonNull(transform, "transform == null");
+		this.boundingVolume = this.shape.getBoundingVolume().transform(this.transform.getObjectToWorld());
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,14 +47,16 @@ public final class Primitive {
 	}
 	
 	public Optional<Intersection> intersection(final Ray3D rayWS, final double tMinimum, final double tMaximum) {
-		final Matrix44D worldToObject = this.transform.getWorldToObject();
-		
-		final Ray3D rayOS = Ray3D.transform(worldToObject, rayWS);
-		
-		final double tOS = this.shape.intersection(rayOS, tMinimum, Ray3D.transformT(worldToObject, rayWS, rayOS, tMaximum));
-		
-		if(!Math.isNaN(tOS)) {
-			return Optional.of(new Intersection(this, rayOS, tOS));
+		if(this.boundingVolume.contains(rayWS.getOrigin()) || this.boundingVolume.intersects(rayWS, tMinimum, tMaximum)) {
+			final Matrix44D worldToObject = this.transform.getWorldToObject();
+			
+			final Ray3D rayOS = Ray3D.transform(worldToObject, rayWS);
+			
+			final double tOS = this.shape.intersection(rayOS, tMinimum, Ray3D.transformT(worldToObject, rayWS, rayOS, tMaximum));
+			
+			if(!Math.isNaN(tOS)) {
+				return Optional.of(new Intersection(this, rayOS, tOS));
+			}
 		}
 		
 		return Optional.empty();

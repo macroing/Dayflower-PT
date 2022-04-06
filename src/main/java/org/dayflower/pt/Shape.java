@@ -27,6 +27,8 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public abstract BoundingVolume getBoundingVolume();
+	
 	public abstract OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t);
 	
 	public abstract Point2D computeTextureCoordinates(final Ray3D ray, final double t);
@@ -203,6 +205,11 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.radius, -this.radius, 0.0D), new Point3D(this.radius, this.radius, this.zMax));
+		}
+		
+		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
@@ -291,6 +298,11 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.radius, -this.radius, this.zMin), new Point3D(this.radius, this.radius, this.zMax));
+		}
+		
+		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
@@ -376,6 +388,11 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.radiusOuter, -this.radiusOuter, this.zMax), new Point3D(this.radiusOuter, this.radiusOuter, this.zMax));
+		}
+		
+		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
@@ -449,22 +466,29 @@ public abstract class Shape {
 		private final double aH;
 		private final double cH;
 		private final double phiMax;
+		private final double rMax;
 		private final double zMax;
 		private final double zMin;
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		private Hyperboloid(final Point3D a, final Point3D b, final double aH, final double cH, final double phiMax, final double zMax, final double zMin) {
+		private Hyperboloid(final Point3D a, final Point3D b, final double aH, final double cH, final double phiMax, final double rMax, final double zMax, final double zMin) {
 			this.a = Objects.requireNonNull(a, "a == null");
 			this.b = Objects.requireNonNull(b, "b == null");
 			this.aH = aH;
 			this.cH = cH;
 			this.phiMax = phiMax;
+			this.rMax = rMax;
 			this.zMax = zMax;
 			this.zMin = zMin;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.rMax, -this.rMax, this.zMin), new Point3D(this.rMax, this.rMax, this.zMax));
+		}
 		
 		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
@@ -562,11 +586,11 @@ public abstract class Shape {
 				throw new IllegalArgumentException();
 			}
 			
-//			final double rMax = Math.max(Math.sqrt(initialA.x * initialA.x + initialA.y * initialA.y), Math.sqrt(initialB.x * initialB.x + initialB.y * initialB.y));
+			final double rMax = Math.max(Math.sqrt(initialA.x * initialA.x + initialA.y * initialA.y), Math.sqrt(initialB.x * initialB.x + initialB.y * initialB.y));
 			final double zMax = Math.max(initialA.z, initialB.z);
 			final double zMin = Math.min(initialA.z, initialB.z);
 			
-			return new Hyperboloid(a, b, aH, cH, phiMax, zMax, zMin);
+			return new Hyperboloid(a, b, aH, cH, phiMax, rMax, zMax, zMin);
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -601,6 +625,11 @@ public abstract class Shape {
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.radius, -this.radius, this.zMin), new Point3D(this.radius, this.radius, this.zMax));
+		}
 		
 		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
@@ -690,6 +719,11 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.infiniteBoundingVolume();
+		}
+		
+		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
 			return new OrthonormalBasis33D(this.n);
 		}
@@ -764,12 +798,17 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		private Polygon(final Point2D[] point2Ds, final Point3D[] point3Ds, final Vector3D n) {
-			this.point2Ds = ParameterArguments.requireNonNullArray(point2Ds, "point2Ds");
-			this.point3Ds = ParameterArguments.requireNonNullArray(point3Ds, "point3Ds");
+			this.point2Ds = Utilities.requireNonNullArray(point2Ds, "point2Ds");
+			this.point3Ds = Utilities.requireNonNullArray(point3Ds, "point3Ds");
 			this.n = Objects.requireNonNull(n, "n == null");
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.axisAlignedBoundingBox(this.point3Ds);
+		}
 		
 		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
@@ -912,8 +951,8 @@ public abstract class Shape {
 		}
 		
 		private static Point3D[] doRequireValidPoints(final Point3D[] points) {
-			ParameterArguments.requireNonNullArray(points, "points");
-			ParameterArguments.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
+			Utilities.requireNonNullArray(points, "points");
+			Utilities.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
 			
 			if(Point3D.coplanar(points)) {
 				return points.clone();
@@ -943,6 +982,11 @@ public abstract class Shape {
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.axisAlignedBoundingBox(this.a, this.b, this.c, this.d);
+		}
 		
 		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
@@ -1089,6 +1133,11 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.axisAlignedBoundingBox(this.maximum, this.minimum);
+		}
+		
+		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			final Point3D q = Point3D.midpoint(this.maximum, this.minimum);
@@ -1202,6 +1251,11 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.boundingSphere(this.center, this.radius);
+		}
+		
+		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
@@ -1270,6 +1324,11 @@ public abstract class Shape {
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.boundingSphere(new Point3D(), this.radiusInner + this.radiusOuter);
+		}
 		
 		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
@@ -1366,6 +1425,11 @@ public abstract class Shape {
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BoundingVolume getBoundingVolume() {
+			return BoundingVolume.axisAlignedBoundingBox(this.a, this.b, this.c);
+		}
 		
 		@Override
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {

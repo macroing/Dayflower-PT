@@ -18,7 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.Objects;
 
@@ -30,9 +29,27 @@ public final class Color3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	private static final double SRGB_BREAK_POINT;
+	private static final double SRGB_GAMMA;
+	private static final double SRGB_SEGMENT_OFFSET;
+	private static final double SRGB_SLOPE;
+	private static final double SRGB_SLOPE_MATCH;
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	public final double b;
 	public final double g;
 	public final double r;
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	static {
+		SRGB_BREAK_POINT = 0.00304D;
+		SRGB_GAMMA = 2.4D;
+		SRGB_SLOPE = SRGB_BREAK_POINT > 0.0D ? 1.0D / (SRGB_GAMMA / Math.pow(SRGB_BREAK_POINT, 1.0D / SRGB_GAMMA - 1.0D) - SRGB_GAMMA * SRGB_BREAK_POINT + SRGB_BREAK_POINT) : 1.0D;
+		SRGB_SLOPE_MATCH = SRGB_BREAK_POINT > 0.0D ? SRGB_GAMMA * SRGB_SLOPE / Math.pow(SRGB_BREAK_POINT, 1.0D / SRGB_GAMMA - 1.0D) : 1.0D;
+		SRGB_SEGMENT_OFFSET = SRGB_BREAK_POINT > 0.0D ? SRGB_SLOPE_MATCH * Math.pow(SRGB_BREAK_POINT, 1.0D / SRGB_GAMMA) - SRGB_SLOPE * SRGB_BREAK_POINT : 0.0D;
+	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -60,7 +77,7 @@ public final class Color3D {
 	
 	@Override
 	public String toString() {
-		return String.format("new Color3D(%s, %s, %s)", Strings.toNonScientificNotationJava(this.r), Strings.toNonScientificNotationJava(this.g), Strings.toNonScientificNotationJava(this.b));
+		return String.format("new Color3D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.r), Utilities.toNonScientificNotationJava(this.g), Utilities.toNonScientificNotationJava(this.b));
 	}
 	
 	public boolean equals(final Color3D c) {
@@ -109,9 +126,9 @@ public final class Color3D {
 	
 	public int toARGB() {
 		final int a = 255;
-		final int r = Math.toInt(Math.pow(Math.saturate(this.r), 1.0D / 2.2D) * 255.0D + 0.5D);
-		final int g = Math.toInt(Math.pow(Math.saturate(this.g), 1.0D / 2.2D) * 255.0D + 0.5D);
-		final int b = Math.toInt(Math.pow(Math.saturate(this.b), 1.0D / 2.2D) * 255.0D + 0.5D);
+		final int r = Math.saturate(Math.toInt(this.r * 255.0D + 0.5D));
+		final int g = Math.saturate(Math.toInt(this.g * 255.0D + 0.5D));
+		final int b = Math.saturate(Math.toInt(this.b * 255.0D + 0.5D));
 		
 		return ((a & 0xFF) << 24) | ((r & 0xFF) << 16) | ((g & 0xFF) << 8) | ((b & 0xFF));
 	}
@@ -146,6 +163,10 @@ public final class Color3D {
 		return new Color3D(c.r * s, c.g * s, c.b * s);
 	}
 	
+	public static Color3D redoGammaCorrection(final Color3D c) {
+		return new Color3D(doRedoGammaCorrection(c.r), doRedoGammaCorrection(c.g), doRedoGammaCorrection(c.b));
+	}
+	
 	public static Color3D saturate(final Color3D c) {
 		return saturate(c, 0.0D, 1.0D);
 	}
@@ -158,8 +179,12 @@ public final class Color3D {
 		return new Color3D(cLHS.r - cRHS.r, cLHS.g - cRHS.g, cLHS.b - cRHS.b);
 	}
 	
+	public static Color3D undoGammaCorrection(final Color3D c) {
+		return new Color3D(doUndoGammaCorrection(c.r), doUndoGammaCorrection(c.g), doUndoGammaCorrection(c.b));
+	}
+	
 	public static Color3D[] toArray(final BufferedImage bufferedImage) {
-		final BufferedImage compatibleBufferedImage = doGetCompatibleBufferedImage(bufferedImage);
+		final BufferedImage compatibleBufferedImage = Utilities.getCompatibleBufferedImage(bufferedImage);
 		
 		final int resolutionX = compatibleBufferedImage.getWidth();
 		final int resolutionY = compatibleBufferedImage.getHeight();
@@ -184,21 +209,11 @@ public final class Color3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	private static BufferedImage doGetCompatibleBufferedImage(final BufferedImage bufferedImage) {
-		return doGetCompatibleBufferedImage(bufferedImage, BufferedImage.TYPE_INT_ARGB);
+	private static double doRedoGammaCorrection(final double value) {
+		return value <= SRGB_BREAK_POINT ? value * SRGB_SLOPE : SRGB_SLOPE_MATCH * Math.pow(value, 1.0D / SRGB_GAMMA) - SRGB_SEGMENT_OFFSET;
 	}
 	
-	private static BufferedImage doGetCompatibleBufferedImage(final BufferedImage bufferedImage, final int type) {
-		if(bufferedImage.getType() == type) {
-			return bufferedImage;
-		}
-		
-		final BufferedImage compatibleBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), type);
-		
-		final
-		Graphics2D graphics2D = compatibleBufferedImage.createGraphics();
-		graphics2D.drawImage(bufferedImage, 0, 0, null);
-		
-		return compatibleBufferedImage;
+	private static double doUndoGammaCorrection(final double value) {
+		return value <= SRGB_BREAK_POINT * SRGB_SLOPE ? value / SRGB_SLOPE : Math.pow((value + SRGB_SEGMENT_OFFSET) / SRGB_SLOPE_MATCH, SRGB_GAMMA);
 	}
 }

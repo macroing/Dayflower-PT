@@ -113,6 +113,14 @@ public final class Image {
 		return Color3D.BLACK;
 	}
 	
+	public Image redoGammaCorrection() {
+		for(int i = 0; i < this.colors.length; i++) {
+			this.colors[i] = Color3D.redoGammaCorrection(this.colors[i]);
+		}
+		
+		return this;
+	}
+	
 	public Image save(final File file) {
 		return save(file, "png");
 	}
@@ -145,6 +153,14 @@ public final class Image {
 		
 		if(index >= 0 && index < this.colors.length) {
 			this.colors[index] = color;
+		}
+		
+		return this;
+	}
+	
+	public Image undoGammaCorrection() {
+		for(int i = 0; i < this.colors.length; i++) {
+			this.colors[i] = Color3D.undoGammaCorrection(this.colors[i]);
 		}
 		
 		return this;
@@ -198,7 +214,7 @@ public final class Image {
 	}
 	
 	private int[] doToData() {
-		return Stream.of(this.colors).mapToInt(color -> color.toARGB()).toArray();
+		return Stream.of(this.colors).mapToInt(color -> Color3D.redoGammaCorrection(color).toARGB()).toArray();
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

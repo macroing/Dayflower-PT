@@ -12,6 +12,12 @@ To clone this repository, you can type the following in Git Bash.
 git clone https://github.com/macroing/Dayflower-PT.git
 ```
 
+Supported Bounding Volumes
+--------------------------
+* Axis Aligned Bounding Box
+* Bounding Sphere
+* Infinite Bounding Volume
+
 Supported Materials
 -------------------
 * Bullseye

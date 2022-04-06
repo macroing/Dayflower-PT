@@ -105,12 +105,12 @@ public final class Scene {
 	public static Scene createScene(final Camera camera) {
 		final
 		Scene scene = new Scene(camera);
-//		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.25D, 0.25D)), Shape.sphere(new Point3D(1.0e5D + 1.0D, 40.8D, 81.6D), 1.0e5D)));
-//		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.25D, 0.25D, 0.75D)), Shape.sphere(new Point3D(-1.0e5D + 99.0D, 40.8D, 81.6D), 1.0e5D)));
-//		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.75D, 0.75D)), Shape.sphere(new Point3D(50.0D, 40.8D, 1.0e5D), 1.0e5D)));
-//		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.75D, 0.75D)), Shape.sphere(new Point3D(50.0D, 40.8D, -1.0e5D + 170.0D), 1.0e5D)));
-//		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.75D, 0.75D)), Shape.sphere(new Point3D(50.0D, 1.0e5D, 81.6D), 1.0e5D)));
-//		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.75D, 0.75D)), Shape.sphere(new Point3D(50.0D, -1.0e5D + 81.6D, 81.6D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.25D, 0.25D)), Shape.sphere(new Point3D(1.0e5D + 1.0D, 40.8D, 81.6D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.25D, 0.25D, 0.75D)), Shape.sphere(new Point3D(-1.0e5D + 99.0D, 40.8D, 81.6D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.75D, 0.75D)), Shape.sphere(new Point3D(50.0D, 40.8D, 1.0e5D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.75D, 0.75D)), Shape.sphere(new Point3D(50.0D, 40.8D, -1.0e5D + 170.0D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.75D, 0.75D)), Shape.sphere(new Point3D(50.0D, 1.0e5D, 81.6D), 1.0e5D)));
+		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.75D, 0.75D)), Shape.sphere(new Point3D(50.0D, -1.0e5D + 81.6D, 81.6D), 1.0e5D)));
 		
 //		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.25D, 0.25D)), Shape.cone(), new Transform(new Point3D(27.0D, 16.5D, 47.0D), Quaternion4D.from(Matrix44D.rotateX(270.0D)), new Vector3D(16.5D, 16.5D, 16.5D))));
 //		scene.addPrimitive(new Primitive(Material.matte(new Color3D(0.75D, 0.25D, 0.25D)), Shape.cylinder(), new Transform(new Point3D(73.0D, 16.5D, 78.0D), Quaternion4D.from(Matrix44D.rotateX(270.0D)), new Vector3D(16.5D, 16.5D, 16.5D))));
@@ -129,10 +129,10 @@ public final class Scene {
 //		scene.addPrimitive(new Primitive(Material.matte(Texture.checkerboard(Texture.constant(new Color3D(0.75D, 0.25D, 0.25D)), Texture.constant(new Color3D(0.25D, 0.75D, 0.25D)), 0.0D, 1.0D, 1.0D)), Shape.rectangularCuboid(), new Transform(new Point3D(27.0D, 16.5D, 47.0D), new Quaternion4D(), new Vector3D(10.0D, 10.0D, 10.0D))));
 //		scene.addPrimitive(new Primitive(Material.matte(Texture.checkerboard(Texture.constant(new Color3D(0.75D, 0.25D, 0.25D)), Texture.constant(new Color3D(0.25D, 0.75D, 0.25D)), 0.0D, 1.0D, 1.0D)), Shape.triangle(), new Transform(new Point3D(27.0D, 16.5D, 47.0D), new Quaternion4D(), new Vector3D(10.0D, 10.0D, 10.0D))));
 		
-//		scene.addPrimitive(new Primitive(Material.matte(Texture.image(Image.load("./images/Image-001.png"), 0.0D, 1.0D, 1.0D)), Shape.rectangle(), new Transform(new Point3D(27.0D, 16.5D, 47.0D), new Quaternion4D(), new Vector3D(10.0D, 10.0D, 10.0D))));
-		scene.addPrimitive(new Primitive(Material.matte(Texture.polkaDot(Texture.constant(new Color3D(0.75D, 0.25D, 0.25D)), Texture.constant(new Color3D(0.25D, 0.75D, 0.25D)), 0.0D, 10.0D, 0.25D)), Shape.rectangle(), new Transform(new Point3D(27.0D, 16.5D, 47.0D), new Quaternion4D(), new Vector3D(10.0D, 10.0D, 10.0D))));
+		scene.addPrimitive(new Primitive(Material.matte(Texture.image(Image.load("./images/Image-001.png").undoGammaCorrection(), 0.0D, 1.0D, 1.0D)), Shape.rectangle(), new Transform(new Point3D(27.0D, 16.5D, 47.0D), new Quaternion4D(), new Vector3D(10.0D, 10.0D, 10.0D))));
+//		scene.addPrimitive(new Primitive(Material.matte(Texture.polkaDot(Texture.constant(new Color3D(0.75D, 0.25D, 0.25D)), Texture.constant(new Color3D(0.25D, 0.75D, 0.25D)), 0.0D, 10.0D, 0.25D)), Shape.rectangle(), new Transform(new Point3D(27.0D, 16.5D, 47.0D), new Quaternion4D(), new Vector3D(10.0D, 10.0D, 10.0D))));
 		
-		scene.addPrimitive(new Primitive(Material.matte(new Color3D(), new Color3D(1.0D)), Shape.sphere(new Point3D(50.0D, 681.6D - 0.27D, 81.6D), 600.0D)));
+		scene.addPrimitive(new Primitive(Material.matte(new Color3D(), new Color3D(12.0D)), Shape.sphere(new Point3D(50.0D, 681.6D - 0.27D, 81.6D), 600.0D)));
 		
 		return scene;
 	}

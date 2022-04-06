@@ -18,18 +18,39 @@
  */
 package org.dayflower.pt;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
+import java.util.Objects;
 
-public final class Strings {
+public final class Utilities {
 	private static final DecimalFormat DECIMAL_FORMAT_DOUBLE = doCreateDecimalFormat(16);
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	private Strings() {
+	private Utilities() {
 		
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	public static BufferedImage getCompatibleBufferedImage(final BufferedImage bufferedImage) {
+		return getCompatibleBufferedImage(bufferedImage, BufferedImage.TYPE_INT_ARGB);
+	}
+	
+	public static BufferedImage getCompatibleBufferedImage(final BufferedImage bufferedImage, final int type) {
+		if(bufferedImage.getType() == type) {
+			return bufferedImage;
+		}
+		
+		final BufferedImage compatibleBufferedImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(), type);
+		
+		final
+		Graphics2D graphics2D = compatibleBufferedImage.createGraphics();
+		graphics2D.drawImage(bufferedImage, 0, 0, null);
+		
+		return compatibleBufferedImage;
+	}
 	
 	public static String toNonScientificNotationJava(final double value) {
 		if(Double.isNaN(value)) {
@@ -40,6 +61,32 @@ public final class Strings {
 			return "Double.POSITIVE_INFINITY";
 		} else {
 			return DECIMAL_FORMAT_DOUBLE.format(value).replace(',', '.') + "D";
+		}
+	}
+	
+	public static <T> T[] requireNonNullArray(final T[] objects, final String name) {
+		Objects.requireNonNull(name, "name == null");
+		Objects.requireNonNull(objects, String.format("%s == null", name));
+		
+		for(int i = 0; i < objects.length; i++) {
+			Objects.requireNonNull(objects[i], String.format("%s[%s] == null", name, Integer.toString(i)));
+		}
+		
+		return objects;
+	}
+	
+	public static int requireRange(final int value, final int edgeA, final int edgeB, final String name) {
+		Objects.requireNonNull(name, "name == null");
+		
+		final int minimum = Math.min(edgeA, edgeB);
+		final int maximum = Math.max(edgeA, edgeB);
+		
+		if(value < minimum) {
+			throw new IllegalArgumentException(String.format("%s < %d: %s == %d", name, Integer.valueOf(minimum), name, Integer.valueOf(value)));
+		} else if(value > maximum) {
+			throw new IllegalArgumentException(String.format("%s > %d: %s == %d", name, Integer.valueOf(maximum), name, Integer.valueOf(value)));
+		} else {
+			return value;
 		}
 	}
 	

@@ -40,6 +40,8 @@ public final class PathTracer {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public void render() {
+		final long currentTimeMillisA = System.currentTimeMillis();
+		
 		for(int pixelY = 0; pixelY < RESOLUTION_Y; pixelY++) {
 			for(int pixelX = 0, pixelIndex = (RESOLUTION_Y - pixelY - 1) * RESOLUTION_X; pixelX < RESOLUTION_X; pixelX++, pixelIndex++) {
 				Color3D totalRadiance = Color3D.BLACK;
@@ -60,7 +62,12 @@ public final class PathTracer {
 			}
 		}
 		
+		final long currentTimeMillisB = System.currentTimeMillis();
+		final long currentTimeMillisC =  currentTimeMillisB -  currentTimeMillisA;
+		
 		this.image.save(String.format("./PT-%s.png", Long.toString(System.currentTimeMillis())));
+		
+		System.out.println("Rendering completed in " + currentTimeMillisC + " milliseconds.");
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
