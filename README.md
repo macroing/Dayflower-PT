@@ -53,6 +53,7 @@ Supported Textures
 * Constant
 * Image
 * Polka Dot
+* Simplex Fractional Brownian Motion
 
 Dependencies
 ------------

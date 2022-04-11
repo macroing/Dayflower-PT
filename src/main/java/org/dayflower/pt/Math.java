@@ -311,6 +311,10 @@ public final class Math {
 		}
 	}
 	
+	public static int abs(final int value) {
+		return java.lang.Math.abs(value);
+	}
+	
 	public static int max(final int a, final int b) {
 		return java.lang.Math.max(a, b);
 	}

@@ -32,6 +32,34 @@ public interface Texture {
 		return intersection -> Color3D.blend(textureA.compute(intersection), textureB.compute(intersection), tR, tG, tB);
 	}
 	
+	static Texture bullseye() {
+		return bullseye(new Color3D(0.5D));
+	}
+	
+	static Texture bullseye(final Color3D colorA) {
+		return bullseye(colorA, Color3D.WHITE);
+	}
+	
+	static Texture bullseye(final Color3D colorA, final Color3D colorB) {
+		return bullseye(colorA, colorB, new Point3D(0.0D, 10.0D, 0.0D));
+	}
+	
+	static Texture bullseye(final Color3D colorA, final Color3D colorB, final Point3D origin) {
+		return bullseye(colorA, colorB, origin, 1.0D);
+	}
+	
+	static Texture bullseye(final Color3D colorA, final Color3D colorB, final Point3D origin, final double scale) {
+		return bullseye(constant(colorA), constant(colorB), origin, scale);
+	}
+	
+	static Texture bullseye(final Texture textureA, final Texture textureB) {
+		return bullseye(textureA, textureB, new Point3D(0.0D, 10.0D, 0.0D));
+	}
+	
+	static Texture bullseye(final Texture textureA, final Texture textureB, final Point3D origin) {
+		return bullseye(textureA, textureB, origin, 1.0D);
+	}
+	
 	static Texture bullseye(final Texture textureA, final Texture textureB, final Point3D origin, final double scale) {
 		Objects.requireNonNull(textureA, "textureA == null");
 		Objects.requireNonNull(textureB, "textureB == null");
@@ -44,6 +72,42 @@ public interface Texture {
 			
 			return isTextureA ? textureA.compute(intersection) : textureB.compute(intersection);
 		};
+	}
+	
+	static Texture checkerboard() {
+		return checkerboard(new Color3D(0.5D));
+	}
+	
+	static Texture checkerboard(final Color3D colorA) {
+		return checkerboard(colorA, Color3D.WHITE);
+	}
+	
+	static Texture checkerboard(final Color3D colorA, final Color3D colorB) {
+		return checkerboard(colorA, colorB, 0.0D);
+	}
+	
+	static Texture checkerboard(final Color3D colorA, final Color3D colorB, final double angleDegrees) {
+		return checkerboard(colorA, colorB, angleDegrees, 1.0D);
+	}
+	
+	static Texture checkerboard(final Color3D colorA, final Color3D colorB, final double angleDegrees, final double scale) {
+		return checkerboard(colorA, colorB, angleDegrees, scale, scale);
+	}
+	
+	static Texture checkerboard(final Color3D colorA, final Color3D colorB, final double angleDegrees, final double scaleU, final double scaleV) {
+		return checkerboard(constant(colorA), constant(colorB), angleDegrees, scaleU, scaleV);
+	}
+	
+	static Texture checkerboard(final Texture textureA, final Texture textureB) {
+		return checkerboard(textureA, textureB, 0.0D);
+	}
+	
+	static Texture checkerboard(final Texture textureA, final Texture textureB, final double angleDegrees) {
+		return checkerboard(textureA, textureB, angleDegrees, 1.0D);
+	}
+	
+	static Texture checkerboard(final Texture textureA, final Texture textureB, final double angleDegrees, final double scale) {
+		return checkerboard(textureA, textureB, angleDegrees, scale, scale);
 	}
 	
 	static Texture checkerboard(final Texture textureA, final Texture textureB, final double angleDegrees, final double scaleU, final double scaleV) {
@@ -70,6 +134,18 @@ public interface Texture {
 		Objects.requireNonNull(color, "color == null");
 		
 		return intersection -> color;
+	}
+	
+	static Texture image(final Image image) {
+		return image(image, 0.0D);
+	}
+	
+	static Texture image(final Image image, final double angleDegrees) {
+		return image(image, angleDegrees, 1.0D);
+	}
+	
+	static Texture image(final Image image, final double angleDegrees, final double scale) {
+		return image(image, angleDegrees, scale, scale);
 	}
 	
 	static Texture image(final Image image, final double angleDegrees, final double scaleU, final double scaleV) {
@@ -99,6 +175,42 @@ public interface Texture {
 		};
 	}
 	
+	static Texture polkaDot() {
+		return polkaDot(new Color3D(0.5D));
+	}
+	
+	static Texture polkaDot(final Color3D colorA) {
+		return polkaDot(colorA, Color3D.WHITE);
+	}
+	
+	static Texture polkaDot(final Color3D colorA, final Color3D colorB) {
+		return polkaDot(colorA, colorB, 0.0D);
+	}
+	
+	static Texture polkaDot(final Color3D colorA, final Color3D colorB, final double angleDegrees) {
+		return polkaDot(colorA, colorB, angleDegrees, 10.0D);
+	}
+	
+	static Texture polkaDot(final Color3D colorA, final Color3D colorB, final double angleDegrees, final double cellResolution) {
+		return polkaDot(colorA, colorB, angleDegrees, cellResolution, 0.25D);
+	}
+	
+	static Texture polkaDot(final Color3D colorA, final Color3D colorB, final double angleDegrees, final double cellResolution, final double polkaDotRadius) {
+		return polkaDot(constant(colorA), constant(colorB), angleDegrees, cellResolution, polkaDotRadius);
+	}
+	
+	static Texture polkaDot(final Texture textureA, final Texture textureB) {
+		return polkaDot(textureA, textureB, 0.0D);
+	}
+	
+	static Texture polkaDot(final Texture textureA, final Texture textureB, final double angleDegrees) {
+		return polkaDot(textureA, textureB, angleDegrees, 10.0D);
+	}
+	
+	static Texture polkaDot(final Texture textureA, final Texture textureB, final double angleDegrees, final double cellResolution) {
+		return polkaDot(textureA, textureB, angleDegrees, cellResolution, 0.25D);
+	}
+	
 	static Texture polkaDot(final Texture textureA, final Texture textureB, final double angleDegrees, final double cellResolution, final double polkaDotRadius) {
 		Objects.requireNonNull(textureA, "textureA == null");
 		Objects.requireNonNull(textureB, "textureB == null");
@@ -121,6 +233,34 @@ public interface Texture {
 			final boolean isTextureA = distanceSquared < polkaDotRadiusSquared;
 			
 			return isTextureA ? textureA.compute(intersection) : textureB.compute(intersection);
+		};
+	}
+	
+	static Texture simplexFractionalBrownianMotion() {
+		return simplexFractionalBrownianMotion(new Color3D(0.75D, 0.50D, 0.75D));
+	}
+	
+	static Texture simplexFractionalBrownianMotion(final Color3D color) {
+		return simplexFractionalBrownianMotion(color, 5.0D);
+	}
+	
+	static Texture simplexFractionalBrownianMotion(final Color3D color, final double frequency) {
+		return simplexFractionalBrownianMotion(color, frequency, 0.5D);
+	}
+	
+	static Texture simplexFractionalBrownianMotion(final Color3D color, final double frequency, final double gain) {
+		return simplexFractionalBrownianMotion(color, frequency, gain, 16);
+	}
+	
+	static Texture simplexFractionalBrownianMotion(final Color3D color, final double frequency, final double gain, final int octaves) {
+		Objects.requireNonNull(color, "color == null");
+		
+		return intersection -> {
+			final Point3D p = intersection.getSurfaceIntersectionPointWS();
+			
+			final double noise = SimplexNoise.fractionalBrownianMotionXYZ(p.x, p.y, p.z, frequency, gain, 0.0D, 1.0D, octaves);
+			
+			return Color3D.multiply(color, noise);
 		};
 	}
 }
