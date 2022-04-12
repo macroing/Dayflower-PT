@@ -51,9 +51,15 @@ Supported Textures
 * Bullseye
 * Checkerboard
 * Constant
+* Dot Product
+* Function
 * Image
+* Marble
 * Polka Dot
 * Simplex Fractional Brownian Motion
+* Surface Intersection Point
+* Surface Normal
+* Texture Coordinates (UV)
 
 Dependencies
 ------------

@@ -19,6 +19,7 @@
 package org.dayflower.pt;
 
 import java.util.Objects;
+import java.util.function.Function;
 
 public interface Texture {
 	Color3D compute(final Intersection intersection);
@@ -136,6 +137,25 @@ public interface Texture {
 		return intersection -> color;
 	}
 	
+	static Texture dotProduct() {
+		return intersection -> {
+			final Vector3D d = intersection.getRayWS().getDirection();
+			final Vector3D n = intersection.getSurfaceNormalWSCorrectlyOriented();
+			
+			final double nDotD = Vector3D.dotProductAbs(n, d);
+			
+			return new Color3D(nDotD);
+		};
+	}
+	
+	static Texture function(final Function<Intersection, Color3D> function) {
+		Objects.requireNonNull(function, "function == null");
+		
+		return intersection -> {
+			return Objects.requireNonNull(function.apply(intersection));
+		};
+	}
+	
 	static Texture image(final Image image) {
 		return image(image, 0.0D);
 	}
@@ -172,6 +192,54 @@ public interface Texture {
 			final double dV = Math.positiveModulo(cV * resolutionY - 0.5D, resolutionY);
 			
 			return image.getColor(dU, dV, true);
+		};
+	}
+	
+	static Texture marble() {
+		return marble(new Color3D(0.8D));
+	}
+	
+	static Texture marble(final Color3D colorA) {
+		return marble(colorA, new Color3D(0.4D, 0.2D, 0.1D));
+	}
+	
+	static Texture marble(final Color3D colorA, final Color3D colorB) {
+		return marble(colorA, colorB, new Color3D(0.06D, 0.04D, 0.02D));
+	}
+	
+	static Texture marble(final Color3D colorA, final Color3D colorB, final Color3D colorC) {
+		return marble(colorA, colorB, colorC, 5.0D);
+	}
+	
+	static Texture marble(final Color3D colorA, final Color3D colorB, final Color3D colorC, final double scale) {
+		return marble(colorA, colorB, colorC, scale, 0.15D);
+	}
+	
+	static Texture marble(final Color3D colorA, final Color3D colorB, final Color3D colorC, final double scale, final double stripes) {
+		return marble(colorA, colorB, colorC, scale, stripes, 8);
+	}
+	
+	static Texture marble(final Color3D colorA, final Color3D colorB, final Color3D colorC, final double scale, final double stripes, final int octaves) {
+		Objects.requireNonNull(colorA, "colorA == null");
+		Objects.requireNonNull(colorB, "colorB == null");
+		Objects.requireNonNull(colorC, "colorC == null");
+		
+		final double frequency = Math.PI * stripes;
+		
+		return intersection -> {
+			final Point3D p = intersection.getSurfaceIntersectionPointWS();
+			
+			final double x = p.x * frequency;
+			final double y = p.y * frequency;
+			final double z = p.z * frequency;
+			final double r = PerlinNoise.turbulenceXYZ(x, y, z, octaves) * scale;
+			final double s = 2.0D * Math.abs(Math.sin(x + r));
+			final double t = s < 1.0D ? s : s - 1.0D;
+			
+			final Color3D a = s < 1.0D ? colorC : colorB;
+			final Color3D b = s < 1.0D ? colorB : colorA;
+			
+			return Color3D.blend(a, b, t);
 		};
 	}
 	
@@ -261,6 +329,42 @@ public interface Texture {
 			final double noise = SimplexNoise.fractionalBrownianMotionXYZ(p.x, p.y, p.z, frequency, gain, 0.0D, 1.0D, octaves);
 			
 			return Color3D.multiply(color, noise);
+		};
+	}
+	
+	static Texture surfaceIntersectionPoint() {
+		return intersection -> {
+			final Point3D p = intersection.getSurfaceIntersectionPointOS();
+			
+			final double r = Math.saturate(p.x);
+			final double g = Math.saturate(p.y);
+			final double b = Math.saturate(p.z);
+			
+			return new Color3D(r, g, b);
+		};
+	}
+	
+	static Texture surfaceNormal() {
+		return intersection -> {
+			final Vector3D n = intersection.getSurfaceNormalWSCorrectlyOriented();
+			
+			final double r = (n.x + 1.0D) / 2.0D;
+			final double g = (n.y + 1.0D) / 2.0D;
+			final double b = (n.z + 1.0D) / 2.0D;
+			
+			return new Color3D(r, g, b);
+		};
+	}
+	
+	static Texture textureCoordinates() {
+		return intersection -> {
+			final Point2D p = intersection.getTextureCoordinates();
+			
+			final double r = p.x;
+			final double g = p.y;
+			final double b = 0.0D;
+			
+			return new Color3D(r, g, b);
 		};
 	}
 }
