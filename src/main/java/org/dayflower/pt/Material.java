@@ -140,9 +140,43 @@ public abstract class Material {
 	}
 	
 	public static Material plastic() {
-		return plastic(Texture.constant(new Color3D(0.2D, 0.2D, 0.5D)), Texture.constant(new Color3D(0.5D)), Texture.constant(new Color3D(0.025D)), true, Texture.constant(Color3D.BLACK));
-//		return plastic(Texture.constant(new Color3D(0.4D, 0.2D, 0.2D)), Texture.constant(new Color3D(0.5D)), Texture.constant(new Color3D(0.025D)), true, Texture.constant(Color3D.BLACK));
-//		return plastic(Texture.constant(new Color3D(0.4D, 0.5D, 0.4D)), Texture.constant(new Color3D(0.3D)), Texture.constant(new Color3D(0.150D)), true, Texture.constant(Color3D.BLACK));
+		return plastic(new Color3D(0.2D, 0.2D, 0.5D));
+	}
+	
+	public static Material plastic(final Color3D colorKD) {
+		return plastic(colorKD, new Color3D(0.5D));
+	}
+	
+	public static Material plastic(final Color3D colorKD, final Color3D colorKS) {
+		return plastic(colorKD, colorKS, 0.025D);
+	}
+	
+	public static Material plastic(final Color3D colorKD, final Color3D colorKS, final double doubleRoughness) {
+		return plastic(colorKD, colorKS, doubleRoughness, true);
+	}
+	
+	public static Material plastic(final Color3D colorKD, final Color3D colorKS, final double doubleRoughness, final boolean isRemappingRoughness) {
+		return plastic(colorKD, colorKS, doubleRoughness, isRemappingRoughness, Color3D.BLACK);
+	}
+	
+	public static Material plastic(final Color3D colorKD, final Color3D colorKS, final double doubleRoughness, final boolean isRemappingRoughness, final Color3D colorEmission) {
+		return plastic(Texture.constant(colorKD), Texture.constant(colorKS), Texture.constant(new Color3D(doubleRoughness)), isRemappingRoughness, Texture.constant(colorEmission));
+	}
+	
+	public static Material plastic(final Texture textureKD) {
+		return plastic(textureKD, Texture.constant(new Color3D(0.5D)));
+	}
+	
+	public static Material plastic(final Texture textureKD, final Texture textureKS) {
+		return plastic(textureKD, textureKS, Texture.constant(new Color3D(0.025D)));
+	}
+	
+	public static Material plastic(final Texture textureKD, final Texture textureKS, final Texture textureRoughness) {
+		return plastic(textureKD, textureKS, textureRoughness, true);
+	}
+	
+	public static Material plastic(final Texture textureKD, final Texture textureKS, final Texture textureRoughness, final boolean isRemappingRoughness) {
+		return plastic(textureKD, textureKS, textureRoughness, isRemappingRoughness, Texture.constant(Color3D.BLACK));
 	}
 	
 	public static Material plastic(final Texture textureKD, final Texture textureKS, final Texture textureRoughness, final boolean isRemappingRoughness, final Texture textureEmission) {
@@ -150,7 +184,51 @@ public abstract class Material {
 	}
 	
 	public static Material substrate() {
-		return substrate(Texture.constant(new Color3D(1.0D, 0.2D, 0.2D)), Texture.constant(new Color3D(0.5D)), Texture.constant(new Color3D(0.1D)), Texture.constant(new Color3D(0.1D)), true, Texture.constant(Color3D.BLACK));
+		return substrate(new Color3D(1.0D, 0.2D, 0.2D));
+	}
+	
+	public static Material substrate(final Color3D colorKD) {
+		return substrate(colorKD, new Color3D(0.5D));
+	}
+	
+	public static Material substrate(final Color3D colorKD, final Color3D colorKS) {
+		return substrate(colorKD, colorKS, 0.1D);
+	}
+	
+	public static Material substrate(final Color3D colorKD, final Color3D colorKS, final double doubleRoughness) {
+		return substrate(colorKD, colorKS, doubleRoughness, doubleRoughness);
+	}
+	
+	public static Material substrate(final Color3D colorKD, final Color3D colorKS, final double doubleRoughnessU, final double doubleRoughnessV) {
+		return substrate(colorKD, colorKS, doubleRoughnessU, doubleRoughnessV, true);
+	}
+	
+	public static Material substrate(final Color3D colorKD, final Color3D colorKS, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness) {
+		return substrate(colorKD, colorKS, doubleRoughnessU, doubleRoughnessV, isRemappingRoughness, Color3D.BLACK);
+	}
+	
+	public static Material substrate(final Color3D colorKD, final Color3D colorKS, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness, final Color3D colorEmission) {
+		return substrate(Texture.constant(colorKD), Texture.constant(colorKS), Texture.constant(new Color3D(doubleRoughnessU)), Texture.constant(new Color3D(doubleRoughnessV)), isRemappingRoughness, Texture.constant(colorEmission));
+	}
+	
+	public static Material substrate(final Texture textureKD) {
+		return substrate(textureKD, Texture.constant(new Color3D(0.5D)));
+	}
+	
+	public static Material substrate(final Texture textureKD, final Texture textureKS) {
+		return substrate(textureKD, textureKS, Texture.constant(new Color3D(0.1D)));
+	}
+	
+	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughness) {
+		return substrate(textureKD, textureKS, textureRoughness, textureRoughness);
+	}
+	
+	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughnessU, final Texture textureRoughnessV) {
+		return substrate(textureKD, textureKS, textureRoughnessU, textureRoughnessV, true);
+	}
+	
+	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness) {
+		return substrate(textureKD, textureKS, textureRoughnessU, textureRoughnessV, isRemappingRoughness, Texture.constant(Color3D.BLACK));
 	}
 	
 	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness, final Texture textureEmission) {
