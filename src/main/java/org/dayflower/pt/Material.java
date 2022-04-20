@@ -35,6 +35,14 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public static Material bullseye() {
+		return bullseye(matte(new Color3D(0.5D)));
+	}
+	
+	public static Material bullseye(final Material materialA) {
+		return bullseye(materialA, matte(Color3D.WHITE));
+	}
+	
 	public static Material bullseye(final Material materialA, final Material materialB) {
 		return bullseye(materialA, materialB, new Point3D(0.0D, 10.0D, 0.0D));
 	}
