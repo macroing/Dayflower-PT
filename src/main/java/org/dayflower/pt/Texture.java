@@ -26,6 +26,26 @@ public interface Texture {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	static Texture blend(final Color3D colorA, final Color3D colorB) {
+		return blend(colorA, colorB, 0.5D);
+	}
+	
+	static Texture blend(final Color3D colorA, final Color3D colorB, final double t) {
+		return blend(colorA, colorB, t, t, t);
+	}
+	
+	static Texture blend(final Color3D colorA, final Color3D colorB, final double tR, final double tG, final double tB) {
+		return blend(constant(colorA), constant(colorB), tR, tG, tB);
+	}
+	
+	static Texture blend(final Texture textureA, final Texture textureB) {
+		return blend(textureA, textureB, 0.5D);
+	}
+	
+	static Texture blend(final Texture textureA, final Texture textureB, final double t) {
+		return blend(textureA, textureB, t, t, t);
+	}
+	
 	static Texture blend(final Texture textureA, final Texture textureB, final double tR, final double tG, final double tB) {
 		Objects.requireNonNull(textureA, "textureA == null");
 		Objects.requireNonNull(textureB, "textureB == null");
