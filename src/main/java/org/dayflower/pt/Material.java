@@ -104,7 +104,7 @@ public abstract class Material {
 	}
 	
 	public static Material metal(final Color3D colorK, final Color3D colorEta, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness, final Color3D colorEmission) {
-		return metal(Texture.constant(colorK), Texture.constant(colorEta), Texture.constant(new Color3D(doubleRoughnessU)), Texture.constant(new Color3D(doubleRoughnessV)), isRemappingRoughness, Texture.constant(colorEmission));
+		return metal(Texture.constant(colorK), Texture.constant(colorEta), Texture.constant(doubleRoughnessU), Texture.constant(doubleRoughnessV), isRemappingRoughness, Texture.constant(colorEmission));
 	}
 	
 	public static Material metal(final Texture textureK, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness, final Texture textureEmission) {
@@ -168,7 +168,7 @@ public abstract class Material {
 	}
 	
 	public static Material plastic(final Color3D colorKD, final Color3D colorKS, final double doubleRoughness, final boolean isRemappingRoughness, final Color3D colorEmission) {
-		return plastic(Texture.constant(colorKD), Texture.constant(colorKS), Texture.constant(new Color3D(doubleRoughness)), isRemappingRoughness, Texture.constant(colorEmission));
+		return plastic(Texture.constant(colorKD), Texture.constant(colorKS), Texture.constant(doubleRoughness), isRemappingRoughness, Texture.constant(colorEmission));
 	}
 	
 	public static Material plastic(final Texture textureKD) {
@@ -216,7 +216,7 @@ public abstract class Material {
 	}
 	
 	public static Material substrate(final Color3D colorKD, final Color3D colorKS, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness, final Color3D colorEmission) {
-		return substrate(Texture.constant(colorKD), Texture.constant(colorKS), Texture.constant(new Color3D(doubleRoughnessU)), Texture.constant(new Color3D(doubleRoughnessV)), isRemappingRoughness, Texture.constant(colorEmission));
+		return substrate(Texture.constant(colorKD), Texture.constant(colorKS), Texture.constant(doubleRoughnessU), Texture.constant(doubleRoughnessV), isRemappingRoughness, Texture.constant(colorEmission));
 	}
 	
 	public static Material substrate(final Texture textureKD) {

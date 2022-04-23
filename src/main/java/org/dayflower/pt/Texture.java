@@ -157,6 +157,10 @@ public interface Texture {
 		return intersection -> color;
 	}
 	
+	static Texture constant(final double component) {
+		return constant(new Color3D(component));
+	}
+	
 	static Texture dotProduct() {
 		return intersection -> {
 			final Vector3D d = intersection.getRayWS().getDirection();
