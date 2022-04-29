@@ -28,6 +28,10 @@ public final class Camera {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	public Camera() {
+		this(1024.0D, 768.0D);
+	}
+	
 	public Camera(final double resolutionX, final double resolutionY) {
 		this(resolutionX, resolutionY, 2.0D * Math.tan(Math.toRadians(28.799323D) * 0.5D));
 	}
