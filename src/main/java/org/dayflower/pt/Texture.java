@@ -26,6 +26,10 @@ public interface Texture {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	static Texture blend() {
+		return blend(Color3D.BLACK, Color3D.WHITE);
+	}
+	
 	static Texture blend(final Color3D colorA, final Color3D colorB) {
 		return blend(colorA, colorB, 0.5D);
 	}
