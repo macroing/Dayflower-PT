@@ -25,6 +25,7 @@ public final class Color3D {
 	public static final Color3D AU_ETA = new Color3D(0.1428431083584272D, 0.3741312033192202D, 1.4392239236981954D);
 	public static final Color3D AU_K = new Color3D(3.975360769687202D, 2.380584839029059D, 1.5995662411380493D);
 	public static final Color3D BLACK = new Color3D(0.0D, 0.0D, 0.0D);
+	public static final Color3D GREEN = new Color3D(0.0D, 1.0D, 0.0D);
 	public static final Color3D WHITE = new Color3D(1.0D, 1.0D, 1.0D);
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
