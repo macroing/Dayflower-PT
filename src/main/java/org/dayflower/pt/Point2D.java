@@ -138,10 +138,39 @@ public final class Point2D {
 		return new Point2D(r * Math.cos(phi), r * Math.sin(phi));
 	}
 	
+	/**
+	 * Samples a {@code Point2D} instance using the exact inverse CDF of a tent filter.
+	 * <p>
+	 * Returns a {@code Point2D} instance with the result.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Point2D.sampleExactInverseTentFilter(Point2D.sampleRandom());
+	 * }
+	 * </pre>
+	 * 
+	 * @return a {@code Point2D} instance with the result
+	 */
 	public static Point2D sampleExactInverseTentFilter() {
 		return sampleExactInverseTentFilter(sampleRandom());
 	}
 	
+	/**
+	 * Samples a {@code Point2D} instance using the exact inverse CDF of a tent filter.
+	 * <p>
+	 * Returns a {@code Point2D} instance with the result.
+	 * <p>
+	 * If {@code p} is {@code null}, a {@code NullPointerException} will be thrown.
+	 * <p>
+	 * The X-component of the returned {@code Point2D} instance will be in the interval [-1.0, 1.0] if, and only if, {@code p.x} is in the interval [0.0, 1.0]. Otherwise it will be NaN (Not a Number).
+	 * <p>
+	 * The Y-component of the returned {@code Point2D} instance will be in the interval [-1.0, 1.0] if, and only if, {@code p.y} is in the interval [0.0, 1.0]. Otherwise it will be NaN (Not a Number).
+	 * 
+	 * @param p a {@code Point2D} instance with components in the interval [0.0, 1.0]
+	 * @return a {@code Point2D} instance with the result
+	 * @throws NullPointerException thrown if, and only if, {@code p} is {@code null}
+	 */
 	public static Point2D sampleExactInverseTentFilter(final Point2D p) {
 		final double a = p.x * 2.0D;
 		final double b = p.y * 2.0D;
@@ -152,6 +181,17 @@ public final class Point2D {
 		return new Point2D(x, y);
 	}
 	
+	/**
+	 * Samples a {@code Point2D} instance using a PRNG.
+	 * <p>
+	 * Returns a {@code Point2D} instance with the result.
+	 * <p>
+	 * The X-component of the returned {@code Point2D} instance will be in the interval [0.0, 1.0).
+	 * <p>
+	 * The Y-component of the returned {@code Point2D} instance will be in the interval [0.0, 1.0).
+	 * 
+	 * @return a {@code Point2D} instance with the result
+	 */
 	public static Point2D sampleRandom() {
 		return new Point2D(Math.random(), Math.random());
 	}
