@@ -18,33 +18,41 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class OrthonormalBasis33D {
+//	TODO: Add unit tests!
 	public final Vector3D u;
+//	TODO: Add unit tests!
 	public final Vector3D v;
+//	TODO: Add unit tests!
 	public final Vector3D w;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public OrthonormalBasis33D() {
 		this.w = Vector3D.z();
 		this.v = Vector3D.y();
 		this.u = Vector3D.x();
 	}
 	
+//	TODO: Add unit tests!
 	public OrthonormalBasis33D(final Vector3D w) {
 		this.w = Vector3D.normalize(w);
 		this.u = Vector3D.orthogonal(w);
 		this.v = Vector3D.crossProduct(this.w, this.u);
 	}
 	
+//	TODO: Add unit tests!
 	public OrthonormalBasis33D(final Vector3D w, final Vector3D v) {
 		this.w = Vector3D.normalize(w);
 		this.u = Vector3D.normalize(Vector3D.crossProduct(Vector3D.normalize(v), this.w));
 		this.v = Vector3D.crossProduct(this.w, this.u);
 	}
 	
+//	TODO: Add unit tests!
 	public OrthonormalBasis33D(final Vector3D w, final Vector3D v, final Vector3D u) {
 		this.w = Objects.requireNonNull(w, "w == null");
 		this.v = Objects.requireNonNull(v, "v == null");
@@ -53,11 +61,13 @@ public final class OrthonormalBasis33D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		return String.format("new OrthonormalBasis33D(%s, %s, %s)", this.w, this.v, this.u);
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -69,6 +79,7 @@ public final class OrthonormalBasis33D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public boolean equals(final OrthonormalBasis33D o) {
 		if(o == this) {
 			return true;
@@ -85,6 +96,7 @@ public final class OrthonormalBasis33D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.u, this.v, this.w);
@@ -92,6 +104,7 @@ public final class OrthonormalBasis33D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public static OrthonormalBasis33D transform(final Matrix44D mLHS, final OrthonormalBasis33D oRHS) {
 		final Vector3D u = Vector3D.normalize(Vector3D.transform(mLHS, oRHS.u));
 		final Vector3D v = Vector3D.normalize(Vector3D.transform(mLHS, oRHS.v));
@@ -100,6 +113,7 @@ public final class OrthonormalBasis33D {
 		return new OrthonormalBasis33D(w, v, u);
 	}
 	
+//	TODO: Add unit tests!
 	public static OrthonormalBasis33D transformTranspose(final Matrix44D mLHS, final OrthonormalBasis33D oRHS) {
 		final Vector3D u = Vector3D.normalize(Vector3D.transformTranspose(mLHS, oRHS.u));
 		final Vector3D v = Vector3D.normalize(Vector3D.transformTranspose(mLHS, oRHS.v));

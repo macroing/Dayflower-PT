@@ -18,6 +18,7 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public abstract class BoundingVolume {
@@ -31,6 +32,7 @@ public abstract class BoundingVolume {
 	
 	public abstract boolean contains(final Point3D p);
 	
+//	TODO: Add unit tests!
 	public final boolean intersects(final Ray3D r, final double tMin, final double tMax) {
 		return !Math.isNaN(intersection(r, tMin, tMax));
 	}
@@ -39,14 +41,17 @@ public abstract class BoundingVolume {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public static BoundingVolume axisAlignedBoundingBox(final Point3D... points) {
 		return AxisAlignedBoundingBox.create(points);
 	}
 	
+//	TODO: Add unit tests!
 	public static BoundingVolume boundingSphere(final Point3D center, final double radius) {
 		return new BoundingSphere(center, radius);
 	}
 	
+//	TODO: Add unit tests!
 	public static BoundingVolume infiniteBoundingVolume() {
 		return new InfiniteBoundingVolume();
 	}
@@ -66,6 +71,7 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
+//		TODO: Add unit tests!
 		@Override
 		public AxisAlignedBoundingBox transform(final Matrix44D m) {
 			final Point3D[] points = new Point3D[] {
@@ -90,11 +96,13 @@ public abstract class BoundingVolume {
 			return new AxisAlignedBoundingBox(maximum, minimum);
 		}
 		
+//		TODO: Add unit tests!
 		@Override
 		public boolean contains(final Point3D p) {
 			return p.x >= this.minimum.x && p.x <= this.maximum.x && p.y >= this.minimum.y && p.y <= this.maximum.y && p.z >= this.minimum.z && p.z <= this.maximum.z;
 		}
 		
+//		TODO: Add unit tests!
 		@Override
 		public double intersection(final Ray3D r, final double tMin, final double tMax) {
 			final Point3D o = r.getOrigin();
@@ -112,6 +120,7 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
+//		TODO: Add unit tests!
 		public static AxisAlignedBoundingBox create(final Point3D... points) {
 			Utilities.requireNonNullArray(points, "points");
 			Utilities.requireRange(points.length, 1, Integer.MAX_VALUE, "points.length");
@@ -136,6 +145,7 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
+//		TODO: Add unit tests!
 		public BoundingSphere(final Point3D center, final double radius) {
 			this.center = Objects.requireNonNull(center, "center == null");
 			this.radius = radius;
@@ -143,6 +153,7 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
+//		TODO: Add unit tests!
 		@Override
 		public BoundingSphere transform(final Matrix44D m) {
 			final Point3D c = Point3D.transformAndDivide(m, this.center);
@@ -155,11 +166,13 @@ public abstract class BoundingVolume {
 			return new BoundingSphere(c, r);
 		}
 		
+//		TODO: Add unit tests!
 		@Override
 		public boolean contains(final Point3D p) {
 			return Point3D.distanceSquared(this.center, p) <= this.radius * this.radius;
 		}
 		
+//		TODO: Add unit tests!
 		@Override
 		public double intersection(final Ray3D r, final double tMin, final double tMax) {
 			final Point3D o = r.getOrigin();
@@ -197,6 +210,7 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
+//		TODO: Add unit tests!
 		@Override
 		public InfiniteBoundingVolume transform(final Matrix44D m) {
 			Objects.requireNonNull(m, "m == null");
@@ -204,6 +218,7 @@ public abstract class BoundingVolume {
 			return this;
 		}
 		
+//		TODO: Add unit tests!
 		@Override
 		public boolean contains(final Point3D p) {
 			Objects.requireNonNull(p, "p == null");
@@ -211,6 +226,7 @@ public abstract class BoundingVolume {
 			return true;
 		}
 		
+//		TODO: Add unit tests!
 		@Override
 		public double intersection(final Ray3D r, final double tMin, final double tMax) {
 			Objects.requireNonNull(r, "r == null");

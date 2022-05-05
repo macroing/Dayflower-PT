@@ -18,6 +18,8 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
+
 public final class PerlinNoise {
 	private static final int[] PERMUTATIONS_B = doCreatePermutationsB();
 	
@@ -29,6 +31,7 @@ public final class PerlinNoise {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public static double fractalXYZ(final double x, final double y, final double z, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double result = 0.0D;
 		
@@ -45,6 +48,7 @@ public final class PerlinNoise {
 		return result;
 	}
 	
+//	TODO: Add unit tests!
 	public static double fractionalBrownianMotionXYZ(final double x, final double y, final double z, final double frequency, final double gain, final double minimum, final double maximum, final int octaves) {
 		double currentAmplitude = 1.0D;
 		double maximumAmplitude = 0.0D;
@@ -68,6 +72,7 @@ public final class PerlinNoise {
 		return noise;
 	}
 	
+//	TODO: Add unit tests!
 	public static double noiseXYZ(final double x, final double y, final double z) {
 		final double floorX = Math.floor(x);
 		final double floorY = Math.floor(y);
@@ -136,6 +141,7 @@ public final class PerlinNoise {
 		return lerp6;
 	}
 	
+//	TODO: Add unit tests!
 	public static double turbulenceXYZ(final double x, final double y, final double z, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double currentAmplitude = amplitude;
 		double currentFrequency = frequency;
@@ -152,6 +158,7 @@ public final class PerlinNoise {
 		return noise;
 	}
 	
+//	TODO: Add unit tests!
 	public static double turbulenceXYZ(final double x, final double y, final double z, final int octaves) {
 		double currentX = x;
 		double currentY = y;

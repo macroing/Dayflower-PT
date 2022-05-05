@@ -18,6 +18,8 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
+
 public final class Camera {
 	private final Point3D eye;
 	private final Vector3D u;
@@ -28,14 +30,17 @@ public final class Camera {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Camera() {
 		this(1024.0D, 768.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public Camera(final double resolutionX, final double resolutionY) {
 		this(resolutionX, resolutionY, 2.0D * Math.tan(Math.toRadians(28.799323D) * 0.5D));
 	}
 	
+//	TODO: Add unit tests!
 	public Camera(final double resolutionX, final double resolutionY, final double fieldOfViewX) {
 		this.eye = new Point3D(50.0D, 50.0D, 295.6D);
 		this.w = Vector3D.normalize(new Vector3D(0.0D, -0.042612D, -1.0D));
@@ -47,6 +52,7 @@ public final class Camera {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Ray3D generatePrimaryRay(final double pixelX, final double pixelY, final double sampleU, final double sampleV) {
 		final Point2D sample = doSample(pixelX, pixelY, sampleU, sampleV);
 		
@@ -63,14 +69,17 @@ public final class Camera {
 		return new Ray3D(origin, directionNormalized);
 	}
 	
+//	TODO: Add unit tests!
 	public Vector3D getU() {
 		return this.u;
 	}
 	
+//	TODO: Add unit tests!
 	public Vector3D getV() {
 		return this.v;
 	}
 	
+//	TODO: Add unit tests!
 	public Vector3D getW() {
 		return this.w;
 	}

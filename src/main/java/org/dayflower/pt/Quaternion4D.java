@@ -18,24 +18,32 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class Quaternion4D {
+//	TODO: Add unit tests!
 	public final double w;
+//	TODO: Add unit tests!
 	public final double x;
+//	TODO: Add unit tests!
 	public final double y;
+//	TODO: Add unit tests!
 	public final double z;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Quaternion4D() {
 		this(0.0D, 0.0D, 0.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public Quaternion4D(final double x, final double y, final double z) {
 		this(x, y, z, 1.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public Quaternion4D(final double x, final double y, final double z, final double w) {
 		this.x = x;
 		this.y = y;
@@ -45,11 +53,13 @@ public final class Quaternion4D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		return String.format("new Quaternion4D(%s, %s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y), Utilities.toNonScientificNotationJava(this.w));
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -61,6 +71,7 @@ public final class Quaternion4D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public boolean equals(final Quaternion4D q) {
 		if(q == this) {
 			return true;
@@ -79,14 +90,17 @@ public final class Quaternion4D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public double length() {
 		return Math.sqrt(lengthSquared());
 	}
 	
+//	TODO: Add unit tests!
 	public double lengthSquared() {
 		return this.x * this.x + this.y * this.y + this.z * this.z + this.w * this.w;
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(Double.valueOf(this.w), Double.valueOf(this.x), Double.valueOf(this.y), Double.valueOf(this.z));
@@ -94,18 +108,22 @@ public final class Quaternion4D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D add(final Quaternion4D qLHS, final Quaternion4D qRHS) {
 		return new Quaternion4D(qLHS.x + qRHS.x, qLHS.y + qRHS.y, qLHS.z + qRHS.z, qLHS.w + qRHS.w);
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D conjugate(final Quaternion4D q) {
 		return new Quaternion4D(-q.x, -q.y, -q.z, +q.w);
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D divide(final Quaternion4D qLHS, final double sRHS) {
 		return new Quaternion4D(qLHS.x / sRHS, qLHS.y / sRHS, qLHS.z / sRHS, qLHS.w / sRHS);
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D from(final Matrix44D m) {
 		if(m.element11 + m.element22 + m.element33 > 0.0D) {
 			final double scalar = 0.5D / Math.sqrt(m.element11 + m.element22 + m.element33 + 1.0D);
@@ -126,34 +144,42 @@ public final class Quaternion4D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D from(final Vector3D direction) {
 		return from(Matrix44D.rotate(new OrthonormalBasis33D(direction)));
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D multiply(final Quaternion4D qLHS, final Quaternion4D qRHS) {
 		return new Quaternion4D(qLHS.x * qRHS.w + qLHS.w * qRHS.x + qLHS.y * qRHS.z - qLHS.z * qRHS.y, qLHS.y * qRHS.w + qLHS.w * qRHS.y + qLHS.z * qRHS.x - qLHS.x * qRHS.z, qLHS.z * qRHS.w + qLHS.w * qRHS.z + qLHS.x * qRHS.y - qLHS.y * qRHS.x, qLHS.w * qRHS.w - qLHS.x * qRHS.x - qLHS.y * qRHS.y - qLHS.z * qRHS.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D multiply(final Quaternion4D qLHS, final Vector3D vRHS) {
 		return new Quaternion4D(+qLHS.w * vRHS.x + qLHS.y * vRHS.z - qLHS.z * vRHS.y, +qLHS.w * vRHS.y + qLHS.z * vRHS.x - qLHS.x * vRHS.z, +qLHS.w * vRHS.z + qLHS.x * vRHS.y - qLHS.y * vRHS.x, -qLHS.x * vRHS.x - qLHS.y * vRHS.y - qLHS.z * vRHS.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D multiply(final Quaternion4D qLHS, final double sRHS) {
 		return new Quaternion4D(qLHS.x * sRHS, qLHS.y * sRHS, qLHS.z * sRHS, qLHS.w * sRHS);
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D negate(final Quaternion4D q) {
 		return new Quaternion4D(-q.x, -q.y, -q.z, -q.w);
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D normalize(final Quaternion4D q) {
 		return divide(q, q.length());
 	}
 	
+//	TODO: Add unit tests!
 	public static Quaternion4D subtract(final Quaternion4D qLHS, final Quaternion4D qRHS) {
 		return new Quaternion4D(qLHS.x - qRHS.x, qLHS.y - qRHS.y, qLHS.z - qRHS.z, qLHS.w - qRHS.w);
 	}
 	
+//	TODO: Add unit tests!
 	public static double dotProduct(final Quaternion4D qLHS, final Quaternion4D qRHS) {
 		return qLHS.x * qRHS.x + qLHS.y * qRHS.y + qLHS.z * qRHS.z + qLHS.w * qRHS.w;
 	}

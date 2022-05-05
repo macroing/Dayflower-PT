@@ -18,20 +18,26 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 import java.util.Optional;
 
 public final class Vector3D {
+//	TODO: Add unit tests!
 	public final double x;
+//	TODO: Add unit tests!
 	public final double y;
+//	TODO: Add unit tests!
 	public final double z;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Vector3D(final Point3D p) {
 		this(p.x, p.y, p.z);
 	}
 	
+//	TODO: Add unit tests!
 	public Vector3D(final double x, final double y, final double z) {
 		this.x = x;
 		this.y = y;
@@ -40,11 +46,13 @@ public final class Vector3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		return String.format("new Vector3D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y), Utilities.toNonScientificNotationJava(this.z));
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -56,6 +64,7 @@ public final class Vector3D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public boolean equals(final Vector3D v) {
 		if(v == this) {
 			return true;
@@ -72,10 +81,12 @@ public final class Vector3D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public boolean isZero() {
 		return Math.isZero(this.x) && Math.isZero(this.y) && Math.isZero(this.z);  
 	}
 	
+//	TODO: Add unit tests!
 	public double cosPhi() {
 		final double sinTheta = sinTheta();
 		
@@ -86,34 +97,42 @@ public final class Vector3D {
 		return Math.saturate(this.x / sinTheta, -1.0D, 1.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public double cosPhiSquared() {
 		return cosPhi() * cosPhi();
 	}
 	
+//	TODO: Add unit tests!
 	public double cosTheta() {
 		return this.z;
 	}
 	
+//	TODO: Add unit tests!
 	public double cosThetaAbs() {
 		return Math.abs(cosTheta());
 	}
 	
+//	TODO: Add unit tests!
 	public double cosThetaQuartic() {
 		return cosThetaSquared() * cosThetaSquared();
 	}
 	
+//	TODO: Add unit tests!
 	public double cosThetaSquared() {
 		return cosTheta() * cosTheta();
 	}
 	
+//	TODO: Add unit tests!
 	public double length() {
 		return Math.sqrt(lengthSquared());
 	}
 	
+//	TODO: Add unit tests!
 	public double lengthSquared() {
 		return this.x * this.x + this.y * this.y + this.z * this.z;
 	}
 	
+//	TODO: Add unit tests!
 	public double sinPhi() {
 		final double sinTheta = sinTheta();
 		
@@ -124,30 +143,37 @@ public final class Vector3D {
 		return Math.saturate(this.y / sinTheta, -1.0D, 1.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public double sinPhiSquared() {
 		return sinPhi() * sinPhi();
 	}
 	
+//	TODO: Add unit tests!
 	public double sinTheta() {
 		return Math.sqrt(sinThetaSquared());
 	}
 	
+//	TODO: Add unit tests!
 	public double sinThetaSquared() {
 		return Math.max(0.0D, 1.0D - cosThetaSquared());
 	}
 	
+//	TODO: Add unit tests!
 	public double tanTheta() {
 		return sinTheta() / cosTheta();
 	}
 	
+//	TODO: Add unit tests!
 	public double tanThetaAbs() {
 		return Math.abs(tanTheta());
 	}
 	
+//	TODO: Add unit tests!
 	public double tanThetaSquared() {
 		return sinThetaSquared() / cosThetaSquared();
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(Double.valueOf(this.x), Double.valueOf(this.y), Double.valueOf(this.z));
@@ -155,6 +181,7 @@ public final class Vector3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public static Optional<Vector3D> refraction(final Vector3D direction, final Vector3D normal, final double eta) {
 		final double cosThetaI = dotProduct(direction, normal);
 		final double sinThetaISquared = 1.0D - cosThetaI * cosThetaI;
@@ -168,102 +195,127 @@ public final class Vector3D {
 		return Optional.of(subtract(multiply(direction, eta), multiply(normal, eta * cosThetaI + cosThetaT)));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D abs(final Vector3D v) {
 		return new Vector3D(Math.abs(v.x), Math.abs(v.y), Math.abs(v.z));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D add(final Vector3D vLHS, final Vector3D vRHS) {
 		return new Vector3D(vLHS.x + vRHS.x, vLHS.y + vRHS.y, vLHS.z + vRHS.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D crossProduct(final Vector3D vLHS, final Vector3D vRHS) {
 		return new Vector3D(vLHS.y * vRHS.z - vLHS.z * vRHS.y, vLHS.z * vRHS.x - vLHS.x * vRHS.z, vLHS.x * vRHS.y - vLHS.y * vRHS.x);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D direction(final Point3D eye, final Point3D lookAt) {
 		return new Vector3D(lookAt.x - eye.x, lookAt.y - eye.y, lookAt.z - eye.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D direction(final Vector3D u, final Vector3D v, final Vector3D w) {
 		return new Vector3D(u.x + v.x + w.x, u.y + v.y + w.y, u.z + v.z + w.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D direction(final Vector3D u, final Vector3D v, final Vector3D w, final Vector3D s) {
 		return new Vector3D(u.x * s.x + v.x * s.y + w.x * s.z, u.y * s.x + v.y * s.y + w.y * s.z, u.z * s.x + v.z * s.y + w.z * s.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D directionNormalized(final Point3D eye, final Point3D lookAt) {
 		return normalize(direction(eye, lookAt));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D directionNormalized(final Vector3D u, final Vector3D v, final Vector3D w) {
 		return normalize(direction(u, v, w));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D directionNormalized(final Vector3D u, final Vector3D v, final Vector3D w, final Vector3D s) {
 		return normalize(direction(u, v, w, s));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D directionSpherical(final double sinTheta, final double cosTheta, final double phi) {
 		return new Vector3D(sinTheta * Math.cos(phi), sinTheta * Math.sin(phi), cosTheta);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D directionSphericalNormalized(final double sinTheta, final double cosTheta, final double phi) {
 		return normalize(directionSpherical(sinTheta, cosTheta, phi));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D divide(final Vector3D v, final double s) {
 		return new Vector3D(v.x / s, v.y / s, v.z / s);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D faceForwardLHS(final Vector3D vLHS, final Vector3D vRHS) {
 		return dotProduct(vLHS, vRHS) < 0.0D ? negate(vLHS) : vLHS;
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D faceForwardLHSNegated(final Vector3D vLHS, final Vector3D vRHS) {
 		return dotProduct(vLHS, vRHS) > 0.0D ? negate(vLHS) : vLHS;
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D faceForwardRHSZ(final Vector3D vLHS, final Vector3D vRHS) {
 		return vLHS.z < 0.0D ? negateZ(vRHS) : vRHS;
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D hadamardProduct(final Vector3D vLHS, final Vector3D vRHS) {
 		return new Vector3D(vLHS.x * vRHS.x, vLHS.y * vRHS.y, vLHS.z * vRHS.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D multiply(final Vector3D v, final double s) {
 		return new Vector3D(v.x * s, v.y * s, v.z * s);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D negate(final Vector3D v) {
 		return new Vector3D(-v.x, -v.y, -v.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D negateZ(final Vector3D v) {
 		return new Vector3D(v.x, v.y, -v.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D normal(final Point3D a, final Point3D b, final Point3D c) {
 		return crossProduct(directionNormalized(a, b), directionNormalized(a, c));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D normalNormalized(final Point3D a, final Point3D b, final Point3D c) {
 		return normalize(normal(a, b, c));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D normalize(final Vector3D v) {
 		return divide(v, v.length());
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D orientNormal(final Vector3D direction, final Vector3D normal) {
 		return dotProduct(direction, normal) < 0.0D ? normal : negate(normal);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D orientNormalSameHemisphereZ(final Vector3D direction, final Vector3D normal) {
 		return sameHemisphereZ(direction, normal) ? normal : negate(normal);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D orthogonal(final Vector3D v) {
 		final Vector3D v0 = normalize(v);
 		final Vector3D v1 = abs(v0);
@@ -277,22 +329,27 @@ public final class Vector3D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D reciprocal(final Vector3D v) {
 		return new Vector3D(1.0D / v.x, 1.0D / v.y, 1.0D / v.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D reflection(final Vector3D direction, final Vector3D normal) {
 		return reflection(direction, normal, false);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D reflection(final Vector3D direction, final Vector3D normal, final boolean isFacingSurface) {
 		return isFacingSurface ? subtract(direction, multiply(normal, dotProduct(direction, normal) * 2.0D)) : subtract(multiply(normal, dotProduct(direction, normal) * 2.0D), direction);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D sampleHemisphereCosineDistribution() {
 		return sampleHemisphereCosineDistribution(Point2D.sampleRandom());
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D sampleHemisphereCosineDistribution(final Point2D p) {
 //		This version is similar to the one in SmallPT:
 //		return directionSpherical(Math.sqrt(p.y), Math.sqrt(1.0D - p.y), 2.0D * Math.PI * p.x);
@@ -302,14 +359,17 @@ public final class Vector3D {
 		return new Vector3D(q.x, q.y, Math.sqrt(Math.max(0.0D, 1.0D - q.x * q.x - q.y * q.y)));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D sampleHemispherePowerCosineDistribution() {
 		return sampleHemispherePowerCosineDistribution(Point2D.sampleRandom());
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D sampleHemispherePowerCosineDistribution(final Point2D p) {
 		return sampleHemispherePowerCosineDistribution(p, 20.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D sampleHemispherePowerCosineDistribution(final Point2D p, final double exponent) {
 		final double cosTheta = Math.pow(1.0D - p.y, 1.0D / (exponent + 1.0D));
 		final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
@@ -318,70 +378,87 @@ public final class Vector3D {
 		return directionSpherical(sinTheta, cosTheta, phi);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D subtract(final Vector3D vLHS, final Vector3D vRHS) {
 		return new Vector3D(vLHS.x - vRHS.x, vLHS.y - vRHS.y, vLHS.z - vRHS.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D transform(final Matrix44D mLHS, final Vector3D vRHS) {
 		return new Vector3D(mLHS.element11 * vRHS.x + mLHS.element12 * vRHS.y + mLHS.element13 * vRHS.z, mLHS.element21 * vRHS.x + mLHS.element22 * vRHS.y + mLHS.element23 * vRHS.z, mLHS.element31 * vRHS.x + mLHS.element32 * vRHS.y + mLHS.element33 * vRHS.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D transform(final Vector3D v, final OrthonormalBasis33D o) {
 		return new Vector3D(v.x * o.u.x + v.y * o.v.x + v.z * o.w.x, v.x * o.u.y + v.y * o.v.y + v.z * o.w.y, v.x * o.u.z + v.y * o.v.z + v.z * o.w.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D transformNormalize(final Vector3D v, final OrthonormalBasis33D o) {
 		return normalize(transform(v, o));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D transformReverse(final Vector3D v, final OrthonormalBasis33D o) {
 		return new Vector3D(dotProduct(v, o.u), dotProduct(v, o.v), dotProduct(v, o.w));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D transformReverseNormalize(final Vector3D v, final OrthonormalBasis33D o) {
 		return normalize(transformReverse(v, o));
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D transformTranspose(final Matrix44D mLHS, final Vector3D vRHS) {
 		return new Vector3D(mLHS.element11 * vRHS.x + mLHS.element21 * vRHS.y + mLHS.element31 * vRHS.z, mLHS.element12 * vRHS.x + mLHS.element22 * vRHS.y + mLHS.element32 * vRHS.z, mLHS.element13 * vRHS.x + mLHS.element23 * vRHS.y + mLHS.element33 * vRHS.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D x() {
 		return x(1.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D x(final double x) {
 		return new Vector3D(x, 0.0D, 0.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D y() {
 		return y(1.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D y(final double y) {
 		return new Vector3D(0.0D, y, 0.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D z() {
 		return z(1.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector3D z(final double z) {
 		return new Vector3D(0.0D, 0.0D, z);
 	}
 	
+//	TODO: Add unit tests!
 	public static boolean sameHemisphereZ(final Vector3D vLHS, final Vector3D vRHS) {
 		return vLHS.z * vRHS.z > 0.0D;
 	}
 	
+//	TODO: Add unit tests!
 	public static double dotProduct(final Vector3D vLHS, final Vector3D vRHS) {
 		return vLHS.x * vRHS.x + vLHS.y * vRHS.y + vLHS.z * vRHS.z;
 	}
 	
+//	TODO: Add unit tests!
 	public static double dotProductAbs(final Vector3D vLHS, final Vector3D vRHS) {
 		return Math.abs(dotProduct(vLHS, vRHS));
 	}
 	
+//	TODO: Add unit tests!
 	public static double tripleProduct(final Vector3D vLHSDP, final Vector3D vLHSCP, final Vector3D vRHSCP) {
 		return dotProduct(vLHSDP, crossProduct(vLHSCP, vRHSCP));
 	}

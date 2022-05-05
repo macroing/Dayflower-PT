@@ -18,6 +18,7 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -36,6 +37,7 @@ public final class Intersection {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Intersection(final Primitive primitive, final Ray3D rayOS, final double tOS) {
 		this.primitive = Objects.requireNonNull(primitive, "primitive == null");
 		this.rayOS = Objects.requireNonNull(rayOS, "rayOS == null");
@@ -51,58 +53,72 @@ public final class Intersection {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public OrthonormalBasis33D getOrthonormalBasisOS() {
 		return this.orthonormalBasisOS.get();
 	}
 	
+//	TODO: Add unit tests!
 	public OrthonormalBasis33D getOrthonormalBasisWS() {
 		return this.orthonormalBasisWS.get();
 	}
 	
+//	TODO: Add unit tests!
 	public Point2D getTextureCoordinates() {
 		return this.textureCoordinates.get();
 	}
 	
+//	TODO: Add unit tests!
 	public Point3D getSurfaceIntersectionPointOS() {
 		return this.surfaceIntersectionPointOS.get();
 	}
 	
+//	TODO: Add unit tests!
 	public Point3D getSurfaceIntersectionPointWS() {
 		return this.surfaceIntersectionPointWS.get();
 	}
 	
+//	TODO: Add unit tests!
 	public Primitive getPrimitive() {
 		return this.primitive;
 	}
 	
+//	TODO: Add unit tests!
 	public Ray3D getRayOS() {
 		return this.rayOS;
 	}
 	
+//	TODO: Add unit tests!
 	public Ray3D getRayWS() {
 		return this.rayWS;
 	}
 	
+//	TODO: Add unit tests!
 	public Vector3D getSurfaceNormalOS() {
 		return getOrthonormalBasisOS().w;
 	}
 	
+//	TODO: Add unit tests!
 	public Vector3D getSurfaceNormalOSCorrectlyOriented() {
 		return Vector3D.faceForwardLHSNegated(getSurfaceNormalOS(), getRayOS().getDirection());
 	}
 	
+//	TODO: Add unit tests!
 	public Vector3D getSurfaceNormalWS() {
 		return getOrthonormalBasisWS().w;
 	}
 	
+//	TODO: Add unit tests!
 	public Vector3D getSurfaceNormalWSCorrectlyOriented() {
 		return Vector3D.faceForwardLHSNegated(getSurfaceNormalWS(), getRayWS().getDirection());
 	}
 	
+//	TODO: Add unit tests!
 	public double getTOS() {
 		return this.tOS;
 	}
 	
+//	TODO: Add unit tests!
 	public double getTWS() {
 		return this.tWS;
 	}

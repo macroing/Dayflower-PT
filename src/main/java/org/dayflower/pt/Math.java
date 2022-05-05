@@ -18,6 +18,7 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class Math {
@@ -25,8 +26,8 @@ public final class Math {
 	public static final double MAX_VALUE = +Double.MAX_VALUE;
 	public static final double MIN_VALUE = -Double.MAX_VALUE;
 	public static final double NaN = Double.NaN;
-	public static final double POSITIVE_INFINITY = Double.POSITIVE_INFINITY;
 	public static final double PI = java.lang.Math.PI;
+	public static final double POSITIVE_INFINITY = Double.POSITIVE_INFINITY;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
@@ -128,6 +129,7 @@ public final class Math {
 		return valueNormalized;
 	}
 	
+//	TODO: Add unit tests!
 	public static double positiveModulo(final double x, final double y) {
 		return x < 0.0D ? (x % y + y) % y : x % y;
 	}
@@ -148,10 +150,6 @@ public final class Math {
 		return ThreadLocalRandom.current().nextDouble();
 	}
 	
-	public static double remainder(final double x, final double y) {
-		return x - toInt(x / y) * y;
-	}
-	
 	public static double saturate(final double value) {
 		return saturate(value, 0.0D, 1.0D);
 	}
@@ -167,6 +165,7 @@ public final class Math {
 		return java.lang.Math.sin(a);
 	}
 	
+//	TODO: Add unit tests!
 	public static double solveCubicForQuartic(final double p, final double q, final double r) {
 		final double pSquared = p * p;
 		final double q0 = (pSquared - 3.0D * q) / 9.0D;
@@ -235,6 +234,7 @@ public final class Math {
 		return result;
 	}
 	
+//	TODO: Add unit tests!
 	public static double[] solveQuartic(final double a, final double b, final double c, final double d, final double e) {
 		final double aReciprocal = 1.0D / a;
 		final double bA = b * aReciprocal;
@@ -323,6 +323,7 @@ public final class Math {
 		return java.lang.Math.min(a, b);
 	}
 	
+//	TODO: Add unit tests!
 	public static int positiveModulo(final int x, final int y) {
 		return x < 0 ? (x % y + y) % y : x % y;
 	}

@@ -18,22 +18,28 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class Vector2D {
+//	TODO: Add unit tests!
 	public final double x;
+//	TODO: Add unit tests!
 	public final double y;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Vector2D() {
 		this(0.0D, 0.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public Vector2D(final Point3D p) {
 		this(p.x, p.y);
 	}
 	
+//	TODO: Add unit tests!
 	public Vector2D(final double x, final double y) {
 		this.x = x;
 		this.y = y;
@@ -41,11 +47,13 @@ public final class Vector2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		return String.format("new Vector2D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y));
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -57,6 +65,7 @@ public final class Vector2D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public boolean equals(final Vector2D v) {
 		if(v == this) {
 			return true;
@@ -71,14 +80,17 @@ public final class Vector2D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public double length() {
 		return Math.sqrt(lengthSquared());
 	}
 	
+//	TODO: Add unit tests!
 	public double lengthSquared() {
 		return this.x * this.x + this.y * this.y;
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(Double.valueOf(this.x), Double.valueOf(this.y));
@@ -86,26 +98,32 @@ public final class Vector2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public static Vector2D direction(final Point2D eye, final Point2D lookAt) {
 		return new Vector2D(lookAt.x - eye.x, lookAt.y - eye.y);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector2D directionXY(final Point3D p) {
 		return new Vector2D(p.x, p.y);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector2D directionYZ(final Point3D p) {
 		return new Vector2D(p.y, p.z);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector2D directionZX(final Point3D p) {
 		return new Vector2D(p.z, p.x);
 	}
 	
+//	TODO: Add unit tests!
 	public static Vector2D subtract(final Vector2D vLHS, final Vector2D vRHS) {
 		return new Vector2D(vLHS.x - vRHS.x, vLHS.y - vRHS.y);
 	}
 	
+//	TODO: Add unit tests!
 	public static double crossProduct(final Vector2D vLHS, final Vector2D vRHS) {
 		return vLHS.x * vRHS.y - vLHS.y * vRHS.x;
 	}

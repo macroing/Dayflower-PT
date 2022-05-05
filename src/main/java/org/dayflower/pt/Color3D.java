@@ -19,6 +19,7 @@
 package org.dayflower.pt;
 
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class Color3D {
@@ -47,9 +48,9 @@ public final class Color3D {
 	static {
 		SRGB_BREAK_POINT = 0.00304D;
 		SRGB_GAMMA = 2.4D;
-		SRGB_SLOPE = SRGB_BREAK_POINT > 0.0D ? 1.0D / (SRGB_GAMMA / Math.pow(SRGB_BREAK_POINT, 1.0D / SRGB_GAMMA - 1.0D) - SRGB_GAMMA * SRGB_BREAK_POINT + SRGB_BREAK_POINT) : 1.0D;
-		SRGB_SLOPE_MATCH = SRGB_BREAK_POINT > 0.0D ? SRGB_GAMMA * SRGB_SLOPE / Math.pow(SRGB_BREAK_POINT, 1.0D / SRGB_GAMMA - 1.0D) : 1.0D;
-		SRGB_SEGMENT_OFFSET = SRGB_BREAK_POINT > 0.0D ? SRGB_SLOPE_MATCH * Math.pow(SRGB_BREAK_POINT, 1.0D / SRGB_GAMMA) - SRGB_SLOPE * SRGB_BREAK_POINT : 0.0D;
+		SRGB_SLOPE = 1.0D / (SRGB_GAMMA / Math.pow(SRGB_BREAK_POINT, 1.0D / SRGB_GAMMA - 1.0D) - SRGB_GAMMA * SRGB_BREAK_POINT + SRGB_BREAK_POINT);
+		SRGB_SLOPE_MATCH = SRGB_GAMMA * SRGB_SLOPE / Math.pow(SRGB_BREAK_POINT, 1.0D / SRGB_GAMMA - 1.0D);
+		SRGB_SEGMENT_OFFSET = SRGB_SLOPE_MATCH * Math.pow(SRGB_BREAK_POINT, 1.0D / SRGB_GAMMA) - SRGB_SLOPE * SRGB_BREAK_POINT;
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,6 +126,7 @@ public final class Color3D {
 		return Objects.hash(Double.valueOf(this.b), Double.valueOf(this.g), Double.valueOf(this.r));
 	}
 	
+//	TODO: Add unit tests!
 	public int toARGB() {
 		final int a = 255;
 		final int r = Math.saturate(Math.toInt(this.r * 255.0D + 0.5D));
@@ -164,6 +166,7 @@ public final class Color3D {
 		return new Color3D(c.r * s, c.g * s, c.b * s);
 	}
 	
+//	TODO: Add unit tests!
 	public static Color3D redoGammaCorrection(final Color3D c) {
 		return new Color3D(doRedoGammaCorrection(c.r), doRedoGammaCorrection(c.g), doRedoGammaCorrection(c.b));
 	}
@@ -180,10 +183,12 @@ public final class Color3D {
 		return new Color3D(cLHS.r - cRHS.r, cLHS.g - cRHS.g, cLHS.b - cRHS.b);
 	}
 	
+//	TODO: Add unit tests!
 	public static Color3D undoGammaCorrection(final Color3D c) {
 		return new Color3D(doUndoGammaCorrection(c.r), doUndoGammaCorrection(c.g), doUndoGammaCorrection(c.b));
 	}
 	
+//	TODO: Add unit tests!
 	public static Color3D[] toArray(final BufferedImage bufferedImage) {
 		final BufferedImage compatibleBufferedImage = Utilities.getCompatibleBufferedImage(bufferedImage);
 		

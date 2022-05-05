@@ -18,6 +18,8 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
+
 public final class SimplexNoise {
 	private static final double SIMPLEX_F2 = 0.3660254037844386D;
 	private static final double SIMPLEX_F3 = 1.0D / 3.0D;
@@ -38,6 +40,7 @@ public final class SimplexNoise {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public static double fractalX(final double x, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double result = 0.0D;
 		
@@ -54,6 +57,7 @@ public final class SimplexNoise {
 		return result;
 	}
 	
+//	TODO: Add unit tests!
 	public static double fractalXY(final double x, final double y, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double result = 0.0D;
 		
@@ -70,6 +74,7 @@ public final class SimplexNoise {
 		return result;
 	}
 	
+//	TODO: Add unit tests!
 	public static double fractalXYZ(final double x, final double y, final double z, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double result = 0.0D;
 		
@@ -86,6 +91,7 @@ public final class SimplexNoise {
 		return result;
 	}
 	
+//	TODO: Add unit tests!
 	public static double fractalXYZW(final double x, final double y, final double z, final double w, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double result = 0.0D;
 		
@@ -102,6 +108,7 @@ public final class SimplexNoise {
 		return result;
 	}
 	
+//	TODO: Add unit tests!
 	public static double fractionalBrownianMotionX(final double x, final double frequency, final double gain, final double minimum, final double maximum, final int octaves) {
 		double currentAmplitude = 1.0D;
 		double maximumAmplitude = 0.0D;
@@ -125,6 +132,7 @@ public final class SimplexNoise {
 		return noise;
 	}
 	
+//	TODO: Add unit tests!
 	public static double fractionalBrownianMotionXY(final double x, final double y, final double frequency, final double gain, final double minimum, final double maximum, final int octaves) {
 		double currentAmplitude = 1.0D;
 		double maximumAmplitude = 0.0D;
@@ -148,6 +156,7 @@ public final class SimplexNoise {
 		return noise;
 	}
 	
+//	TODO: Add unit tests!
 	public static double fractionalBrownianMotionXYZ(final double x, final double y, final double z, final double frequency, final double gain, final double minimum, final double maximum, final int octaves) {
 		double currentAmplitude = 1.0D;
 		double maximumAmplitude = 0.0D;
@@ -171,6 +180,7 @@ public final class SimplexNoise {
 		return noise;
 	}
 	
+//	TODO: Add unit tests!
 	public static double fractionalBrownianMotionXYZW(final double x, final double y, final double z, final double w, final double frequency, final double gain, final double minimum, final double maximum, final int octaves) {
 		double currentAmplitude = 1.0D;
 		double maximumAmplitude = 0.0D;
@@ -194,6 +204,7 @@ public final class SimplexNoise {
 		return noise;
 	}
 	
+//	TODO: Add unit tests!
 	public static double noiseX(final double x) {
 		final int i0 = doFastFloorToInt(x);
 		final int i1 = i0 + 1;
@@ -225,6 +236,7 @@ public final class SimplexNoise {
 		return 0.395D * (n0 + n1);
 	}
 	
+//	TODO: Add unit tests!
 	public static double noiseXY(final double x, final double y) {
 		final double s = (x + y) * SIMPLEX_F2;
 		
@@ -263,6 +275,7 @@ public final class SimplexNoise {
 		return 70.0D * (n0 + n1 + n2);
 	}
 	
+//	TODO: Add unit tests!
 	public static double noiseXYZ(final double x, final double y, final double z) {
 		final double s = (x + y + z) * SIMPLEX_F3;
 		
@@ -365,6 +378,7 @@ public final class SimplexNoise {
 		return 32.0D * (n0 + n1 + n2 + n3);
 	}
 	
+//	TODO: Add unit tests!
 	public static double noiseXYZW(final double x, final double y, final double z, final double w) {
 		final double s = (x + y + z + w) * SIMPLEX_F4;
 		
@@ -480,6 +494,7 @@ public final class SimplexNoise {
 		return 27.0D * (n0 + n1 + n2 + n3 + n4);
 	}
 	
+//	TODO: Add unit tests!
 	public static double turbulenceX(final double x, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double currentAmplitude = amplitude;
 		double currentFrequency = frequency;
@@ -496,6 +511,7 @@ public final class SimplexNoise {
 		return noise;
 	}
 	
+//	TODO: Add unit tests!
 	public static double turbulenceXY(final double x, final double y, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double currentAmplitude = amplitude;
 		double currentFrequency = frequency;
@@ -512,6 +528,7 @@ public final class SimplexNoise {
 		return noise;
 	}
 	
+//	TODO: Add unit tests!
 	public static double turbulenceXYZ(final double x, final double y, final double z, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double currentAmplitude = amplitude;
 		double currentFrequency = frequency;
@@ -528,6 +545,7 @@ public final class SimplexNoise {
 		return noise;
 	}
 	
+//	TODO: Add unit tests!
 	public static double turbulenceXYZW(final double x, final double y, final double z, final double w, final double amplitude, final double frequency, final double gain, final double lacunarity, final int octaves) {
 		double currentAmplitude = amplitude;
 		double currentFrequency = frequency;

@@ -18,6 +18,7 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class Ray3D {
@@ -26,6 +27,7 @@ public final class Ray3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Ray3D(final Point3D origin, final Vector3D direction) {
 		this.origin = Objects.requireNonNull(origin, "origin == null");
 		this.direction = Vector3D.normalize(Objects.requireNonNull(direction, "direction == null"));
@@ -33,19 +35,23 @@ public final class Ray3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Point3D getOrigin() {
 		return this.origin;
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		return String.format("new Ray3D(%s, %s)", this.origin, this.direction);
 	}
 	
+//	TODO: Add unit tests!
 	public Vector3D getDirection() {
 		return this.direction;
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -57,6 +63,7 @@ public final class Ray3D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public boolean equals(final Ray3D r) {
 		if(r == this) {
 			return true;
@@ -71,6 +78,7 @@ public final class Ray3D {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.origin, this.direction);
@@ -78,11 +86,12 @@ public final class Ray3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	
+//	TODO: Add unit tests!
 	public static Ray3D transform(final Matrix44D mLHS, final Ray3D rRHS) {
 		return new Ray3D(Point3D.transformAndDivide(mLHS, rRHS.origin), Vector3D.transform(mLHS, rRHS.direction));
 	}
 	
+//	TODO: Add unit tests!
 	public static double transformT(final Matrix44D m, final Ray3D rOldSpace, final Ray3D rNewSpace, final double t) {
 		return !Math.isNaN(t) && !Math.isZero(t) && t < Math.MAX_VALUE ? Math.abs(Point3D.distance(rNewSpace.origin, Point3D.transformAndDivide(m, Point3D.add(rOldSpace.origin, rOldSpace.direction, t)))) : t;
 	}

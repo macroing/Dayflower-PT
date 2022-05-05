@@ -23,6 +23,7 @@ import java.awt.image.DataBufferInt;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.net.URL;
 import java.util.Objects;
 import java.util.stream.IntStream;
@@ -37,12 +38,14 @@ public final class Image {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Image(final BufferedImage bufferedImage) {
 		this.resolutionX = bufferedImage.getWidth();
 		this.resolutionY = bufferedImage.getHeight();
 		this.colors = Color3D.toArray(bufferedImage);
 	}
 	
+//	TODO: Add unit tests!
 	public Image(final int resolutionX, final int resolutionY) {
 		this.resolutionX = resolutionX;
 		this.resolutionY = resolutionY;
@@ -51,10 +54,12 @@ public final class Image {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public Color3D getColor(final double x, final double y) {
 		return getColor(x, y, false);
 	}
 	
+//	TODO: Add unit tests!
 	public Color3D getColor(final double x, final double y, final boolean isWrappingAround) {
 		final int minimumX = Math.toInt(Math.floor(x));
 		final int maximumX = Math.toInt(Math.ceil(x));
@@ -79,10 +84,12 @@ public final class Image {
 		return color;
 	}
 	
+//	TODO: Add unit tests!
 	public Color3D getColor(final int index) {
 		return getColor(index, false);
 	}
 	
+//	TODO: Add unit tests!
 	public Color3D getColor(final int index, final boolean isWrappingAround) {
 		final int resolution = this.resolutionX * this.resolutionY;
 		
@@ -95,10 +102,12 @@ public final class Image {
 		return Color3D.BLACK;
 	}
 	
+//	TODO: Add unit tests!
 	public Color3D getColor(final int x, final int y) {
 		return getColor(x, y, false);
 	}
 	
+//	TODO: Add unit tests!
 	public Color3D getColor(final int x, final int y, final boolean isWrappingAround) {
 		final int resolutionX = this.resolutionX;
 		final int resolutionY = this.resolutionY;
@@ -113,6 +122,7 @@ public final class Image {
 		return Color3D.BLACK;
 	}
 	
+//	TODO: Add unit tests!
 	public Image redoGammaCorrection() {
 		for(int i = 0; i < this.colors.length; i++) {
 			this.colors[i] = Color3D.redoGammaCorrection(this.colors[i]);
@@ -121,10 +131,12 @@ public final class Image {
 		return this;
 	}
 	
+//	TODO: Add unit tests!
 	public Image save(final File file) {
 		return save(file, "png");
 	}
 	
+//	TODO: Add unit tests!
 	public Image save(final File file, final String formatName) {
 		Objects.requireNonNull(file, "file == null");
 		Objects.requireNonNull(formatName, "formatName == null");
@@ -140,14 +152,17 @@ public final class Image {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public Image save(final String pathname) {
 		return save(pathname, "png");
 	}
 	
+//	TODO: Add unit tests!
 	public Image save(final String pathname, final String formatName) {
 		return save(new File(pathname), formatName);
 	}
 	
+//	TODO: Add unit tests!
 	public Image setColor(final Color3D color, final int index) {
 		Objects.requireNonNull(color, "color == null");
 		
@@ -158,6 +173,7 @@ public final class Image {
 		return this;
 	}
 	
+//	TODO: Add unit tests!
 	public Image undoGammaCorrection() {
 		for(int i = 0; i < this.colors.length; i++) {
 			this.colors[i] = Color3D.undoGammaCorrection(this.colors[i]);
@@ -166,20 +182,24 @@ public final class Image {
 		return this;
 	}
 	
+//	TODO: Add unit tests!
 	public int getResolution() {
 		return this.colors.length;
 	}
 	
+//	TODO: Add unit tests!
 	public int getResolutionX() {
 		return this.resolutionX;
 	}
 	
+//	TODO: Add unit tests!
 	public int getResolutionY() {
 		return this.resolutionY;
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public static Image load(final File file) {
 		try {
 			return new Image(ImageIO.read(Objects.requireNonNull(file, "file == null")));
@@ -188,10 +208,12 @@ public final class Image {
 		}
 	}
 	
+//	TODO: Add unit tests!
 	public static Image load(final String pathname) {
 		return load(new File(pathname));
 	}
 	
+//	TODO: Add unit tests!
 	public static Image load(final URL uRL) {
 		try {
 			return new Image(ImageIO.read(Objects.requireNonNull(uRL, "uRL == null")));

@@ -18,6 +18,7 @@
  */
 package org.dayflower.pt;
 
+import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -35,210 +36,262 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	public static Material bullseye() {
 		return bullseye(matte(new Color3D(0.5D)));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material bullseye(final Material materialA) {
 		return bullseye(materialA, matte(Color3D.WHITE));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material bullseye(final Material materialA, final Material materialB) {
 		return bullseye(materialA, materialB, new Point3D(0.0D, 10.0D, 0.0D));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material bullseye(final Material materialA, final Material materialB, final Point3D origin) {
 		return bullseye(materialA, materialB, origin, 1.0D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material bullseye(final Material materialA, final Material materialB, final Point3D origin, final double scale) {
 		return new BullseyeMaterial(materialA, materialB, origin, scale);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees, final double scaleU, final double scaleV) {
 		return new CheckerboardMaterial(materialA, materialB, angleDegrees, scaleU, scaleV);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material glass() {
 		return new GlassMaterial();
 	}
 	
+//	TODO: Add unit tests!
 	public static Material matte() {
 		return matte(new Color3D(0.5D));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material matte(final Color3D colorKD) {
 		return matte(colorKD, Color3D.BLACK);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material matte(final Color3D colorKD, final Color3D colorEmission) {
 		return matte(Texture.constant(colorKD), Texture.constant(colorEmission));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material matte(final Texture textureKD) {
 		return matte(textureKD, Texture.constant(Color3D.BLACK));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material matte(final Texture textureKD, final Texture textureEmission) {
 		return new MatteMaterial(textureKD, textureEmission);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material metal() {
 		return metal(Color3D.AU_K, Color3D.AU_ETA);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material metal(final Color3D colorK, final Color3D colorEta) {
 		return metal(colorK, colorEta, 0.01D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material metal(final Color3D colorK, final Color3D colorEta, final double doubleRoughness) {
 		return metal(colorK, colorEta, doubleRoughness, doubleRoughness);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material metal(final Color3D colorK, final Color3D colorEta, final double doubleRoughnessU, final double doubleRoughnessV) {
 		return metal(colorK, colorEta, doubleRoughnessU, doubleRoughnessV, true);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material metal(final Color3D colorK, final Color3D colorEta, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness) {
 		return metal(colorK, colorEta, doubleRoughnessU, doubleRoughnessV, isRemappingRoughness, Color3D.BLACK);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material metal(final Color3D colorK, final Color3D colorEta, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness, final Color3D colorEmission) {
 		return metal(Texture.constant(colorK), Texture.constant(colorEta), Texture.constant(doubleRoughnessU), Texture.constant(doubleRoughnessV), isRemappingRoughness, Texture.constant(colorEmission));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material metal(final Texture textureK, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness, final Texture textureEmission) {
 		return new MetalMaterial(textureK, textureEta, textureRoughnessU, textureRoughnessV, isRemappingRoughness, textureEmission);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material mirror(final Color3D colorKR) {
 		return mirror(colorKR, Color3D.BLACK);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material mirror(final Color3D colorKR, final Color3D colorEmission) {
 		return mirror(Texture.constant(colorKR), Texture.constant(colorEmission));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material mirror(final Texture textureKR) {
 		return mirror(textureKR, Texture.constant(Color3D.BLACK));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material mirror(final Texture textureKR, final Texture textureEmission) {
 		return new MirrorMaterial(textureKR, textureEmission);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material phong() {
 		return phong(new Color3D(0.5D));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material phong(final Color3D colorKR) {
 		return phong(colorKR, Color3D.BLACK);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material phong(final Color3D colorKR, final Color3D colorEmission) {
 		return new PhongMaterial(Texture.constant(colorKR), Texture.constant(colorEmission));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material phong(final Texture textureKR) {
 		return phong(textureKR, Texture.constant(Color3D.BLACK));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material phong(final Texture textureKR, final Texture textureEmission) {
 		return new PhongMaterial(textureKR, textureEmission);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic() {
 		return plastic(new Color3D(0.2D, 0.2D, 0.5D));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Color3D colorKD) {
 		return plastic(colorKD, new Color3D(0.5D));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Color3D colorKD, final Color3D colorKS) {
 		return plastic(colorKD, colorKS, 0.025D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Color3D colorKD, final Color3D colorKS, final double doubleRoughness) {
 		return plastic(colorKD, colorKS, doubleRoughness, true);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Color3D colorKD, final Color3D colorKS, final double doubleRoughness, final boolean isRemappingRoughness) {
 		return plastic(colorKD, colorKS, doubleRoughness, isRemappingRoughness, Color3D.BLACK);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Color3D colorKD, final Color3D colorKS, final double doubleRoughness, final boolean isRemappingRoughness, final Color3D colorEmission) {
 		return plastic(Texture.constant(colorKD), Texture.constant(colorKS), Texture.constant(doubleRoughness), isRemappingRoughness, Texture.constant(colorEmission));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Texture textureKD) {
 		return plastic(textureKD, Texture.constant(new Color3D(0.5D)));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Texture textureKD, final Texture textureKS) {
 		return plastic(textureKD, textureKS, Texture.constant(new Color3D(0.025D)));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Texture textureKD, final Texture textureKS, final Texture textureRoughness) {
 		return plastic(textureKD, textureKS, textureRoughness, true);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Texture textureKD, final Texture textureKS, final Texture textureRoughness, final boolean isRemappingRoughness) {
 		return plastic(textureKD, textureKS, textureRoughness, isRemappingRoughness, Texture.constant(Color3D.BLACK));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material plastic(final Texture textureKD, final Texture textureKS, final Texture textureRoughness, final boolean isRemappingRoughness, final Texture textureEmission) {
 		return new PlasticMaterial(textureKD, textureKS, textureRoughness, isRemappingRoughness, textureEmission);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate() {
 		return substrate(new Color3D(1.0D, 0.2D, 0.2D));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Color3D colorKD) {
 		return substrate(colorKD, new Color3D(0.5D));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Color3D colorKD, final Color3D colorKS) {
 		return substrate(colorKD, colorKS, 0.1D);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Color3D colorKD, final Color3D colorKS, final double doubleRoughness) {
 		return substrate(colorKD, colorKS, doubleRoughness, doubleRoughness);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Color3D colorKD, final Color3D colorKS, final double doubleRoughnessU, final double doubleRoughnessV) {
 		return substrate(colorKD, colorKS, doubleRoughnessU, doubleRoughnessV, true);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Color3D colorKD, final Color3D colorKS, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness) {
 		return substrate(colorKD, colorKS, doubleRoughnessU, doubleRoughnessV, isRemappingRoughness, Color3D.BLACK);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Color3D colorKD, final Color3D colorKS, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness, final Color3D colorEmission) {
 		return substrate(Texture.constant(colorKD), Texture.constant(colorKS), Texture.constant(doubleRoughnessU), Texture.constant(doubleRoughnessV), isRemappingRoughness, Texture.constant(colorEmission));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Texture textureKD) {
 		return substrate(textureKD, Texture.constant(new Color3D(0.5D)));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Texture textureKD, final Texture textureKS) {
 		return substrate(textureKD, textureKS, Texture.constant(new Color3D(0.1D)));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughness) {
 		return substrate(textureKD, textureKS, textureRoughness, textureRoughness);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughnessU, final Texture textureRoughnessV) {
 		return substrate(textureKD, textureKS, textureRoughnessU, textureRoughnessV, true);
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness) {
 		return substrate(textureKD, textureKS, textureRoughnessU, textureRoughnessV, isRemappingRoughness, Texture.constant(Color3D.BLACK));
 	}
 	
+//	TODO: Add unit tests!
 	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness, final Texture textureEmission) {
 		return new SubstrateMaterial(textureKD, textureKS, textureRoughnessU, textureRoughnessV, isRemappingRoughness, textureEmission);
 	}
@@ -252,6 +305,7 @@ public abstract class Material {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
+//		TODO: Add unit tests!
 		public Result(final Color3D emission, final Color3D reflectance, final Ray3D ray) {
 			this.emission = Objects.requireNonNull(emission, "emission == null");
 			this.reflectance = Objects.requireNonNull(reflectance, "reflectance == null");
@@ -260,14 +314,17 @@ public abstract class Material {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
+//		TODO: Add unit tests!
 		public Color3D getEmission() {
 			return this.emission;
 		}
 		
+//		TODO: Add unit tests!
 		public Color3D getReflectance() {
 			return this.reflectance;
 		}
 		
+//		TODO: Add unit tests!
 		public Ray3D getRay() {
 			return this.ray;
 		}
@@ -275,6 +332,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class BSDF {
 		private final List<BXDF> bXDFs;
 		
@@ -371,6 +429,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class BullseyeMaterial extends Material {
 		private final Material materialA;
 		private final Material materialB;
@@ -400,6 +459,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class CheckerboardMaterial extends Material {
 		private final Material materialA;
 		private final Material materialB;
@@ -440,6 +500,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class ConductorFresnel extends Fresnel {
 		private final Color3D etaI;
 		private final Color3D etaT;
@@ -463,6 +524,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class DielectricFresnel extends Fresnel {
 		private final double etaI;
 		private final double etaT;
@@ -484,6 +546,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static abstract class Fresnel {
 		protected Fresnel() {
 			
@@ -598,6 +661,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class GlassMaterial extends Material {
 		public GlassMaterial() {
 			
@@ -662,6 +726,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class LambertianBRDF implements BXDF {
 		private final Color3D r;
 		
@@ -691,6 +756,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class MatteMaterial extends Material {
 		private final Texture textureEmission;
 		private final Texture textureKD;
@@ -720,6 +786,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class MetalMaterial extends Material {
 		private final Texture textureEmission;
 		private final Texture textureEta;
@@ -764,6 +831,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static abstract class MicrofacetDistribution {
 		private final boolean isSamplingVisibleArea;
 		private final boolean isSeparableModel;
@@ -815,6 +883,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class MirrorMaterial extends Material {
 		private final Texture textureEmission;
 		private final Texture textureKR;
@@ -839,6 +908,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class PhongMaterial extends Material {
 		private final Texture textureEmission;
 		private final Texture textureKR;
@@ -868,6 +938,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class PlasticMaterial extends Material {
 		private final Texture textureEmission;
 		private final Texture textureKD;
@@ -920,6 +991,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class SubstrateMaterial extends Material {
 		private final Texture textureEmission;
 		private final Texture textureKD;
@@ -1033,6 +1105,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class TorranceSparrowBRDF implements BXDF {
 		private final Color3D r;
 		private final Fresnel fresnel;
@@ -1116,6 +1189,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+//	TODO: Add unit tests!
 	private static final class TrowbridgeReitzMicrofacetDistribution extends MicrofacetDistribution {
 		private final double alphaX;
 		private final double alphaY;
