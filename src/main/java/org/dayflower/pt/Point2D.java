@@ -22,19 +22,15 @@ import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class Point2D {
-//	TODO: Add unit tests!
 	public final double x;
-//	TODO: Add unit tests!
 	public final double y;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public Point2D() {
 		this(0.0D, 0.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public Point2D(final double x, final double y) {
 		this.x = x;
 		this.y = y;
@@ -42,13 +38,11 @@ public final class Point2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		return String.format("new Point2D(%s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y));
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -60,7 +54,6 @@ public final class Point2D {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	public boolean equals(final Point2D p) {
 		if(p == this) {
 			return true;
@@ -75,12 +68,10 @@ public final class Point2D {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	public boolean isZero() {
 		return Math.isZero(this.x) && Math.isZero(this.y); 
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(Double.valueOf(this.x), Double.valueOf(this.y));
@@ -88,7 +79,6 @@ public final class Point2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public static Point2D project(final Point3D a, final Point3D b, final Vector3D u, final Vector3D v) {
 		final Vector3D directionAB = Vector3D.direction(a, b);
 		
@@ -98,7 +88,6 @@ public final class Point2D {
 		return new Point2D(x, y);
 	}
 	
-//	TODO: Add unit tests!
 	public static Point2D rotate(final Point2D p, final double angle, final boolean isRadians) {
 		final double angleRadians = isRadians ? angle : Math.toRadians(angle);
 		final double angleRadiansCos = Math.cos(angleRadians);
@@ -106,6 +95,13 @@ public final class Point2D {
 		
 		final double x = p.x * angleRadiansCos - p.y * angleRadiansSin;
 		final double y = p.y * angleRadiansCos + p.x * angleRadiansSin;
+		
+		/*
+		 * To rotate around a different point than origin (0.0, 0.0):
+		 * 
+		 * x = (p.x - c.x) * angleRadiansCos - (p.y - c.y) * angleRadiansSin + c.x;
+		 * y = (p.y - c.y) * angleRadiansCos + (p.x - c.x) * angleRadiansSin + c.y;
+		 */
 		
 		return new Point2D(x, y);
 	}
@@ -142,12 +138,10 @@ public final class Point2D {
 		return new Point2D(r * Math.cos(phi), r * Math.sin(phi));
 	}
 	
-//	TODO: Add unit tests!
 	public static Point2D sampleExactInverseTentFilter() {
 		return sampleExactInverseTentFilter(sampleRandom());
 	}
 	
-//	TODO: Add unit tests!
 	public static Point2D sampleExactInverseTentFilter(final Point2D p) {
 		final double a = p.x * 2.0D;
 		final double b = p.y * 2.0D;
@@ -158,7 +152,6 @@ public final class Point2D {
 		return new Point2D(x, y);
 	}
 	
-//	TODO: Add unit tests!
 	public static Point2D sampleRandom() {
 		return new Point2D(Math.random(), Math.random());
 	}

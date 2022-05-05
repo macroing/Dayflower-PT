@@ -21,8 +21,11 @@ package org.dayflower.pt;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.awt.image.BufferedImage;
 
 import org.junit.jupiter.api.Test;
 
@@ -269,6 +272,18 @@ public final class Color3DUnitTests {
 	}
 	
 	@Test
+	public void testRedoGammaCorrection() {
+		final Color3D a = new Color3D(0.0D, 0.5D, 1.0D);
+		final Color3D b = Color3D.redoGammaCorrection(a);
+		
+		assertEquals(0.0000000000000000D, b.r);
+		assertEquals(0.7353568526581377D, b.g);
+		assertEquals(1.0000000000000000D, b.b);
+		
+		assertThrows(NullPointerException.class, () -> Color3D.redoGammaCorrection(null));
+	}
+	
+	@Test
 	public void testSaturateColor3D() {
 		final Color3D a = new Color3D(+0.0D, +0.5D, +1.0D);
 		final Color3D b = new Color3D(-1.0D, +0.5D, +2.0D);
@@ -329,9 +344,87 @@ public final class Color3DUnitTests {
 	}
 	
 	@Test
+	public void testToARGB() {
+		final int a = new Color3D(1.0D, 0.0D, 0.0D).toARGB();
+		final int b = new Color3D(2.0D, 0.0D, 0.0D).toARGB();
+		final int c = new Color3D(0.0D, 1.0D, 0.0D).toARGB();
+		final int d = new Color3D(0.0D, 2.0D, 0.0D).toARGB();
+		final int e = new Color3D(0.0D, 0.0D, 1.0D).toARGB();
+		final int f = new Color3D(0.0D, 0.0D, 2.0D).toARGB();
+		
+		assertEquals(a, b);
+		assertEquals(c, d);
+		assertEquals(e, f);
+		
+		assertEquals(255, (a >> 24) & 0xFF);
+		assertEquals(255, (a >> 16) & 0xFF);
+		assertEquals(  0, (a >>  8) & 0xFF);
+		assertEquals(  0, (a >>  0) & 0xFF);
+		
+		assertEquals(255, (c >> 24) & 0xFF);
+		assertEquals(  0, (c >> 16) & 0xFF);
+		assertEquals(255, (c >>  8) & 0xFF);
+		assertEquals(  0, (c >>  0) & 0xFF);
+		
+		assertEquals(255, (e >> 24) & 0xFF);
+		assertEquals(  0, (e >> 16) & 0xFF);
+		assertEquals(  0, (e >>  8) & 0xFF);
+		assertEquals(255, (e >>  0) & 0xFF);
+	}
+	
+	@Test
+	public void testToArray() {
+		final int r = ((255 & 0xFF) << 24) | ((255 & 0xFF) << 16) | ((  0 & 0xFF) << 8) | ((  0 & 0xFF));
+		final int g = ((255 & 0xFF) << 24) | ((  0 & 0xFF) << 16) | ((255 & 0xFF) << 8) | ((  0 & 0xFF));
+		final int b = ((255 & 0xFF) << 24) | ((  0 & 0xFF) << 16) | ((  0 & 0xFF) << 8) | ((255 & 0xFF));
+		
+		final
+		BufferedImage bufferedImage = new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB);
+		bufferedImage.setRGB(0, 0, r);
+		bufferedImage.setRGB(1, 0, r);
+		bufferedImage.setRGB(2, 0, r);
+		bufferedImage.setRGB(0, 1, g);
+		bufferedImage.setRGB(1, 1, g);
+		bufferedImage.setRGB(2, 1, g);
+		bufferedImage.setRGB(0, 2, b);
+		bufferedImage.setRGB(1, 2, b);
+		bufferedImage.setRGB(2, 2, b);
+		
+		final Color3D[] array = Color3D.toArray(bufferedImage);
+		
+		assertNotNull(array);
+		
+		assertEquals(9, array.length);
+		
+		assertEquals(new Color3D(1.0D, 0.0D, 0.0D), array[0]);
+		assertEquals(new Color3D(1.0D, 0.0D, 0.0D), array[1]);
+		assertEquals(new Color3D(1.0D, 0.0D, 0.0D), array[2]);
+		assertEquals(new Color3D(0.0D, 1.0D, 0.0D), array[3]);
+		assertEquals(new Color3D(0.0D, 1.0D, 0.0D), array[4]);
+		assertEquals(new Color3D(0.0D, 1.0D, 0.0D), array[5]);
+		assertEquals(new Color3D(0.0D, 0.0D, 1.0D), array[6]);
+		assertEquals(new Color3D(0.0D, 0.0D, 1.0D), array[7]);
+		assertEquals(new Color3D(0.0D, 0.0D, 1.0D), array[8]);
+		
+		assertThrows(NullPointerException.class, () -> Color3D.toArray(null));
+	}
+	
+	@Test
 	public void testToString() {
 		final Color3D c = new Color3D(0.0D, 0.5D, 1.0D);
 		
 		assertEquals("new Color3D(0.0D, 0.5D, 1.0D)", c.toString());
+	}
+	
+	@Test
+	public void testUndoGammaCorrection() {
+		final Color3D a = new Color3D(0.0D, 0.7353568526581377D, 1.0D);
+		final Color3D b = Color3D.undoGammaCorrection(a);
+		
+		assertEquals(0.0D, b.r);
+		assertEquals(0.5D, b.g);
+		assertEquals(1.0D, b.b);
+		
+		assertThrows(NullPointerException.class, () -> Color3D.undoGammaCorrection(null));
 	}
 }

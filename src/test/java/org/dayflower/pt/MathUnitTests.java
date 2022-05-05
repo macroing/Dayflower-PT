@@ -291,6 +291,7 @@ public final class MathUnitTests {
 		assertArrayEquals(new double[] {-2.0D, -0.3333333333333333D}, Math.solveQuadraticSystem(3.0D, +7.0D, 2.0D));
 		assertArrayEquals(new double[] {+0.3333333333333333D, +2.0D}, Math.solveQuadraticSystem(3.0D, -7.0D, 2.0D));
 		assertArrayEquals(new double[] {-1.0D, -1.0D}, Math.solveQuadraticSystem(1.0D, 2.0D, 1.0D));
+		assertArrayEquals(new double[] {Double.NaN, Double.NaN}, Math.solveQuadraticSystem(0.25D, 0.0D, 1.0D));
 	}
 	
 	@Test

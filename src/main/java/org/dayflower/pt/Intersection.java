@@ -140,7 +140,7 @@ public final class Intersection {
 		
 		@Override
 		public T get() {
-			return this.value.updateAndGet(value -> value != null ? value : this.valueSupplier.get());
+			return this.value.updateAndGet(value -> value != null ? value : Objects.requireNonNull(this.valueSupplier.get(), "valueSupplier.get() == null"));
 		}
 	}
 }
