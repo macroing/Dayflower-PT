@@ -143,6 +143,50 @@ public final class Point2DUnitTests {
 	}
 	
 	@Test
+	public void testSampleDiskUniformDistributionByConcentricMapping() {
+		final Point2D a = Point2D.sampleDiskUniformDistributionByConcentricMapping();
+		
+		assertTrue(a.x >= Math.sin(Math.toRadians(-45.0D)) && a.x <= Math.sin(Math.toRadians(+45.0D)));
+		assertTrue(a.y >= Math.sin(Math.toRadians(-45.0D)) && a.y <= Math.sin(Math.toRadians(+45.0D)));
+	}
+	
+	@Test
+	public void testSampleDiskUniformDistributionByConcentricMappingPoint2D() {
+		final Point2D a = Point2D.sampleDiskUniformDistributionByConcentricMapping(new Point2D(0.0D, 0.0D));
+		final Point2D b = Point2D.sampleDiskUniformDistributionByConcentricMapping(new Point2D(1.0D, 0.5D));
+		final Point2D c = Point2D.sampleDiskUniformDistributionByConcentricMapping(new Point2D(0.5D, 1.0D));
+		
+		assertEquals(0.0D, a.x);
+		assertEquals(0.0D, a.y);
+		
+		assertEquals(1.0D, b.x);
+		assertEquals(0.0D, b.y);
+		
+		assertEquals(0.00000000000000006123233995736766D, c.x);
+		assertEquals(1.00000000000000000000000000000000D, c.y);
+		
+		assertThrows(NullPointerException.class, () -> Point2D.sampleDiskUniformDistributionByConcentricMapping(null));
+	}
+	
+	@Test
+	public void testSampleDiskUniformDistributionByConcentricMappingPoint2DDouble() {
+		final Point2D a = Point2D.sampleDiskUniformDistributionByConcentricMapping(new Point2D(0.0D, 0.0D), 1.0D);
+		final Point2D b = Point2D.sampleDiskUniformDistributionByConcentricMapping(new Point2D(1.0D, 0.5D), 1.0D);
+		final Point2D c = Point2D.sampleDiskUniformDistributionByConcentricMapping(new Point2D(0.5D, 1.0D), 1.0D);
+		
+		assertEquals(0.0D, a.x);
+		assertEquals(0.0D, a.y);
+		
+		assertEquals(1.0D, b.x);
+		assertEquals(0.0D, b.y);
+		
+		assertEquals(0.00000000000000006123233995736766D, c.x);
+		assertEquals(1.00000000000000000000000000000000D, c.y);
+		
+		assertThrows(NullPointerException.class, () -> Point2D.sampleDiskUniformDistributionByConcentricMapping(null, 1.0D));
+	}
+	
+	@Test
 	public void testSampleExactInverseTentFilter() {
 		final Point2D p = Point2D.sampleExactInverseTentFilter();
 		

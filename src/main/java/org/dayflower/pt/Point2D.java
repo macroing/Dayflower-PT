@@ -18,7 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class Point2D {
@@ -106,17 +105,14 @@ public final class Point2D {
 		return new Point2D(x, y);
 	}
 	
-//	TODO: Add unit tests!
 	public static Point2D sampleDiskUniformDistributionByConcentricMapping() {
 		return sampleDiskUniformDistributionByConcentricMapping(sampleRandom());
 	}
 	
-//	TODO: Add unit tests!
 	public static Point2D sampleDiskUniformDistributionByConcentricMapping(final Point2D p) {
 		return sampleDiskUniformDistributionByConcentricMapping(p, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Point2D sampleDiskUniformDistributionByConcentricMapping(final Point2D p, final double radius) {
 		if(p.isZero()) {
 			return p;
