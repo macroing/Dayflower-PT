@@ -26,6 +26,16 @@ public final class Point2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	/**
+	 * Constructs a new {@code Point2D} instance.
+	 * <p>
+	 * Calling this constructor is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * new Point2D(0.0D, 0.0D);
+	 * }
+	 * </pre>
+	 */
 	public Point2D() {
 		this(0.0D, 0.0D);
 	}
