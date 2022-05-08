@@ -23,21 +23,16 @@ import java.util.Objects;
 import java.util.Optional;
 
 public final class Vector3D {
-//	TODO: Add unit tests!
 	public final double x;
-//	TODO: Add unit tests!
 	public final double y;
-//	TODO: Add unit tests!
 	public final double z;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public Vector3D(final Point3D p) {
 		this(p.x, p.y, p.z);
 	}
 	
-//	TODO: Add unit tests!
 	public Vector3D(final double x, final double y, final double z) {
 		this.x = x;
 		this.y = y;
@@ -46,13 +41,11 @@ public final class Vector3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		return String.format("new Vector3D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y), Utilities.toNonScientificNotationJava(this.z));
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -64,7 +57,6 @@ public final class Vector3D {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	public boolean equals(final Vector3D v) {
 		if(v == this) {
 			return true;
@@ -81,7 +73,6 @@ public final class Vector3D {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	public boolean isZero() {
 		return Math.isZero(this.x) && Math.isZero(this.y) && Math.isZero(this.z);  
 	}
@@ -102,32 +93,26 @@ public final class Vector3D {
 		return cosPhi() * cosPhi();
 	}
 	
-//	TODO: Add unit tests!
 	public double cosTheta() {
 		return this.z;
 	}
 	
-//	TODO: Add unit tests!
 	public double cosThetaAbs() {
 		return Math.abs(cosTheta());
 	}
 	
-//	TODO: Add unit tests!
 	public double cosThetaQuartic() {
 		return cosThetaSquared() * cosThetaSquared();
 	}
 	
-//	TODO: Add unit tests!
 	public double cosThetaSquared() {
 		return cosTheta() * cosTheta();
 	}
 	
-//	TODO: Add unit tests!
 	public double length() {
 		return Math.sqrt(lengthSquared());
 	}
 	
-//	TODO: Add unit tests!
 	public double lengthSquared() {
 		return this.x * this.x + this.y * this.y + this.z * this.z;
 	}
@@ -173,7 +158,6 @@ public final class Vector3D {
 		return sinThetaSquared() / cosThetaSquared();
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(Double.valueOf(this.x), Double.valueOf(this.y), Double.valueOf(this.z));
@@ -195,17 +179,14 @@ public final class Vector3D {
 		return Optional.of(subtract(multiply(direction, eta), multiply(normal, eta * cosThetaI + cosThetaT)));
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D abs(final Vector3D v) {
 		return new Vector3D(Math.abs(v.x), Math.abs(v.y), Math.abs(v.z));
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D add(final Vector3D vLHS, final Vector3D vRHS) {
 		return new Vector3D(vLHS.x + vRHS.x, vLHS.y + vRHS.y, vLHS.z + vRHS.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D crossProduct(final Vector3D vLHS, final Vector3D vRHS) {
 		return new Vector3D(vLHS.y * vRHS.z - vLHS.z * vRHS.y, vLHS.z * vRHS.x - vLHS.x * vRHS.z, vLHS.x * vRHS.y - vLHS.y * vRHS.x);
 	}
@@ -413,37 +394,30 @@ public final class Vector3D {
 		return new Vector3D(mLHS.element11 * vRHS.x + mLHS.element21 * vRHS.y + mLHS.element31 * vRHS.z, mLHS.element12 * vRHS.x + mLHS.element22 * vRHS.y + mLHS.element32 * vRHS.z, mLHS.element13 * vRHS.x + mLHS.element23 * vRHS.y + mLHS.element33 * vRHS.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D x() {
 		return x(1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D x(final double x) {
 		return new Vector3D(x, 0.0D, 0.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D y() {
 		return y(1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D y(final double y) {
 		return new Vector3D(0.0D, y, 0.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D z() {
 		return z(1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D z(final double z) {
 		return new Vector3D(0.0D, 0.0D, z);
 	}
 	
-//	TODO: Add unit tests!
 	public static boolean sameHemisphereZ(final Vector3D vLHS, final Vector3D vRHS) {
 		return vLHS.z * vRHS.z > 0.0D;
 	}
