@@ -119,9 +119,17 @@ public final class Color3DUnitTests {
 		assertEquals(0.0D, Color3D.BLACK.g);
 		assertEquals(0.0D, Color3D.BLACK.b);
 		
+		assertEquals(0.0D, Color3D.BLUE.r);
+		assertEquals(0.0D, Color3D.BLUE.g);
+		assertEquals(1.0D, Color3D.BLUE.b);
+		
 		assertEquals(0.0D, Color3D.GREEN.r);
 		assertEquals(1.0D, Color3D.GREEN.g);
 		assertEquals(0.0D, Color3D.GREEN.b);
+		
+		assertEquals(1.0D, Color3D.RED.r);
+		assertEquals(0.0D, Color3D.RED.g);
+		assertEquals(0.0D, Color3D.RED.b);
 		
 		assertEquals(1.0D, Color3D.WHITE.r);
 		assertEquals(1.0D, Color3D.WHITE.g);
