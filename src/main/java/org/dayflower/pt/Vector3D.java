@@ -191,17 +191,14 @@ public final class Vector3D {
 		return new Vector3D(vLHS.y * vRHS.z - vLHS.z * vRHS.y, vLHS.z * vRHS.x - vLHS.x * vRHS.z, vLHS.x * vRHS.y - vLHS.y * vRHS.x);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D direction(final Point3D eye, final Point3D lookAt) {
 		return new Vector3D(lookAt.x - eye.x, lookAt.y - eye.y, lookAt.z - eye.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D direction(final Vector3D u, final Vector3D v, final Vector3D w) {
 		return new Vector3D(u.x + v.x + w.x, u.y + v.y + w.y, u.z + v.z + w.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D direction(final Vector3D u, final Vector3D v, final Vector3D w, final Vector3D s) {
 		return new Vector3D(u.x * s.x + v.x * s.y + w.x * s.z, u.y * s.x + v.y * s.y + w.y * s.z, u.z * s.x + v.z * s.y + w.z * s.z);
 	}
@@ -261,12 +258,10 @@ public final class Vector3D {
 		return new Vector3D(v.x * s, v.y * s, v.z * s);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D negate(final Vector3D v) {
 		return new Vector3D(-v.x, -v.y, -v.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D negateZ(final Vector3D v) {
 		return new Vector3D(v.x, v.y, -v.z);
 	}
@@ -301,9 +296,9 @@ public final class Vector3D {
 		final Vector3D v0 = normalize(v);
 		final Vector3D v1 = abs(v0);
 		
-		if(v1.x > v1.y && v1.x > v1.z) {
+		if(v1.x < v1.y && v1.x < v1.z) {
 			return normalize(new Vector3D(+0.0D, +v0.z, -v0.y));
-		} else if(v1.y > v1.z) {
+		} else if(v1.y < v1.z) {
 			return normalize(new Vector3D(+v0.z, +0.0D, -v0.x));
 		} else {
 			return normalize(new Vector3D(+v0.y, -v0.x, +0.0D));
@@ -422,12 +417,10 @@ public final class Vector3D {
 		return vLHS.z * vRHS.z > 0.0D;
 	}
 	
-//	TODO: Add unit tests!
 	public static double dotProduct(final Vector3D vLHS, final Vector3D vRHS) {
 		return vLHS.x * vRHS.x + vLHS.y * vRHS.y + vLHS.z * vRHS.z;
 	}
 	
-//	TODO: Add unit tests!
 	public static double dotProductAbs(final Vector3D vLHS, final Vector3D vRHS) {
 		return Math.abs(dotProduct(vLHS, vRHS));
 	}
