@@ -21,7 +21,14 @@ package org.dayflower.pt;
 import java.util.Objects;
 
 public final class Point2D {
+	/**
+	 * The X-component of this {@code Point2D} instance.
+	 */
 	public final double x;
+	
+	/**
+	 * The Y-component of this {@code Point2D} instance.
+	 */
 	public final double y;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
