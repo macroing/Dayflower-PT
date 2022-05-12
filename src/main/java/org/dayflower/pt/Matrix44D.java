@@ -22,47 +22,29 @@ import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class Matrix44D {
-//	TODO: Add unit tests!
 	public final double element11;
-//	TODO: Add unit tests!
 	public final double element12;
-//	TODO: Add unit tests!
 	public final double element13;
-//	TODO: Add unit tests!
 	public final double element14;
-//	TODO: Add unit tests!
 	public final double element21;
-//	TODO: Add unit tests!
 	public final double element22;
-//	TODO: Add unit tests!
 	public final double element23;
-//	TODO: Add unit tests!
 	public final double element24;
-//	TODO: Add unit tests!
 	public final double element31;
-//	TODO: Add unit tests!
 	public final double element32;
-//	TODO: Add unit tests!
 	public final double element33;
-//	TODO: Add unit tests!
 	public final double element34;
-//	TODO: Add unit tests!
 	public final double element41;
-//	TODO: Add unit tests!
 	public final double element42;
-//	TODO: Add unit tests!
 	public final double element43;
-//	TODO: Add unit tests!
 	public final double element44;
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public Matrix44D() {
 		this(1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public Matrix44D(final double element11, final double element12, final double element13, final double element14, final double element21, final double element22, final double element23, final double element24, final double element31, final double element32, final double element33, final double element34, final double element41, final double element42, final double element43, final double element44) {
 		this.element11 = element11;
 		this.element12 = element12;
@@ -84,7 +66,6 @@ public final class Matrix44D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		final String row1 = String.format("%s, %s, %s, %s", Utilities.toNonScientificNotationJava(this.element11), Utilities.toNonScientificNotationJava(this.element12), Utilities.toNonScientificNotationJava(this.element13), Utilities.toNonScientificNotationJava(this.element14));
@@ -95,7 +76,6 @@ public final class Matrix44D {
 		return String.format("new Matrix44D(%s, %s, %s, %s)", row1, row2, row3, row4);
 	}
 	
-//	TODO: Add unit tests!
 	public boolean equals(final Matrix44D m) {
 		if(m == this) {
 			return true;
@@ -138,7 +118,6 @@ public final class Matrix44D {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -150,12 +129,10 @@ public final class Matrix44D {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	public boolean isInvertible() {
 		return Math.abs(determinant()) >= 1.0e-12D;
 	}
 	
-//	TODO: Add unit tests!
 	public double determinant() {
 		final double a = this.element11 * this.element22 - this.element12 * this.element21;
 		final double b = this.element11 * this.element23 - this.element13 * this.element21;
@@ -173,7 +150,6 @@ public final class Matrix44D {
 		return a * l - b * k + c * j + d * i - e * h + f * g;
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(new Object[] {
@@ -186,12 +162,10 @@ public final class Matrix44D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public static Matrix44D identity() {
 		return new Matrix44D();
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D inverse(final Matrix44D m) {
 		final double a = m.element11 * m.element22 - m.element12 * m.element21;
 		final double b = m.element11 * m.element23 - m.element13 * m.element21;
@@ -233,7 +207,6 @@ public final class Matrix44D {
 		return new Matrix44D(element11, element12, element13, element14, element21, element22, element23, element24, element31, element32, element33, element34, element41, element42, element43, element44);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D multiply(final Matrix44D mLHS, final Matrix44D mRHS) {
 		final double element11 = mLHS.element11 * mRHS.element11 + mLHS.element12 * mRHS.element21 + mLHS.element13 * mRHS.element31 + mLHS.element14 * mRHS.element41;
 		final double element12 = mLHS.element11 * mRHS.element12 + mLHS.element12 * mRHS.element22 + mLHS.element13 * mRHS.element32 + mLHS.element14 * mRHS.element42;
@@ -255,7 +228,6 @@ public final class Matrix44D {
 		return new Matrix44D(element11, element12, element13, element14, element21, element22, element23, element24, element31, element32, element33, element34, element41, element42, element43, element44);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotate(final OrthonormalBasis33D o) {
 		return rotate(o.w, o.v, o.u);
 	}
@@ -279,7 +251,6 @@ public final class Matrix44D {
 		return rotate(w, v, u);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotate(final Vector3D w, final Vector3D v) {
 		final Vector3D wNormalized = Vector3D.normalize(w);
 		final Vector3D uNormalized = Vector3D.normalize(Vector3D.crossProduct(Vector3D.normalize(v), wNormalized));
@@ -288,7 +259,6 @@ public final class Matrix44D {
 		return rotate(wNormalized, vNormalized, uNormalized);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotate(final Vector3D w, final Vector3D v, final Vector3D u) {
 		final double element11 = u.x;
 		final double element12 = v.x;
@@ -310,12 +280,10 @@ public final class Matrix44D {
 		return new Matrix44D(element11, element12, element13, element14, element21, element22, element23, element24, element31, element32, element33, element34, element41, element42, element43, element44);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotateX(final double angle) {
 		return rotateX(angle, false);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotateX(final double angle, final boolean isRadians) {
 		final double angleRadians = isRadians ? angle : Math.toRadians(angle);
 		
@@ -325,12 +293,10 @@ public final class Matrix44D {
 		return new Matrix44D(1.0D, 0.0D, 0.0D, 0.0D, 0.0D, cos, -sin, 0.0D, 0.0D, sin, cos, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotateY(final double angle) {
 		return rotateY(angle, false);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotateY(final double angle, final boolean isRadians) {
 		final double angleRadians = isRadians ? angle : Math.toRadians(angle);
 		
@@ -340,12 +306,10 @@ public final class Matrix44D {
 		return new Matrix44D(cos, 0.0D, sin, 0.0D, 0.0D, 1.0D, 0.0D, 0.0D, -sin, 0.0D, cos, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotateZ(final double angle) {
 		return rotateZ(angle, false);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotateZ(final double angle, final boolean isRadians) {
 		final double angleRadians = isRadians ? angle : Math.toRadians(angle);
 		
@@ -355,32 +319,26 @@ public final class Matrix44D {
 		return new Matrix44D(cos, -sin, 0.0D, 0.0D, sin, cos, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D scale(final Vector3D v) {
 		return scale(v.x, v.y, v.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D scale(final double scalar) {
 		return scale(scalar, scalar, scalar);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D scale(final double x, final double y, final double z) {
 		return new Matrix44D(x, 0.0D, 0.0D, 0.0D, 0.0D, y, 0.0D, 0.0D, 0.0D, 0.0D, z, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D translate(final Point3D p) {
 		return translate(p.x, p.y, p.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D translate(final double x, final double y, final double z) {
 		return new Matrix44D(1.0D, 0.0D, 0.0D, x, 0.0D, 1.0D, 0.0D, y, 0.0D, 0.0D, 1.0D, z, 0.0D, 0.0D, 0.0D, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D transpose(final Matrix44D m) {
 		final double element11 = m.element11;
 		final double element12 = m.element21;
