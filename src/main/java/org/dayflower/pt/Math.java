@@ -187,31 +187,6 @@ public final class Math {
 		return java.lang.Math.sin(a);
 	}
 	
-//	TODO: Add unit tests!
-	public static double solveCubicForQuartic(final double p, final double q, final double r) {
-		final double pSquared = p * p;
-		final double q0 = (pSquared - 3.0D * q) / 9.0D;
-		final double q0Cubed = q0 * q0 * q0;
-		final double r0 = (p * (pSquared - 4.5D * q) + 13.5D * r) / 27.0D;
-		final double r0Squared = r0 * r0;
-		final double d = q0Cubed - r0Squared;
-		final double e = p / 3.0D;
-		
-		if(d >= 0.0D) {
-			final double d0 = r0 / sqrt(q0Cubed);
-			final double theta = acos(d0) / 3.0D;
-			final double q1 = -2.0D * sqrt(q0);
-			final double q2 = q1 * cos(theta) - e;
-			
-			return q2;
-		}
-		
-		final double q1 = pow(sqrt(r0Squared - q0Cubed) + abs(r0), 1.0D / 3.0D);
-		final double q2 = r0 < 0.0D ? (q1 + q0 / q1) - e : -(q1 + q0 / q1) - e;
-		
-		return q2;
-	}
-	
 	public static double sqrt(final double value) {
 		return java.lang.Math.sqrt(value);
 	}
@@ -267,7 +242,7 @@ public final class Math {
 		final double p = -0.375D * bASquared + cA;
 		final double q = 0.125D * bASquared * bA - 0.5D * bA * cA + dA;
 		final double r = -0.01171875D * bASquared * bASquared + 0.0625D * bASquared * cA - 0.25D * bA * dA + eA;
-		final double z = solveCubicForQuartic(-0.5D * p, -r, 0.5D * r * p - 0.125D * q * q);
+		final double z = doSolveCubicForQuartic(-0.5D * p, -r, 0.5D * r * p - 0.125D * q * q);
 		
 		double d1 = 2.0D * z - p;
 		double d2;
@@ -363,5 +338,27 @@ public final class Math {
 	
 	public static int toInt(final double value) {
 		return (int)(value);
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static double doSolveCubicForQuartic(final double p, final double q, final double r) {
+		final double pSquared = p * p;
+		final double q0 = (pSquared - 3.0D * q) / 9.0D;
+		final double q0Cubed = q0 * q0 * q0;
+		final double r0 = (p * (pSquared - 4.5D * q) + 13.5D * r) / 27.0D;
+		final double r0Squared = r0 * r0;
+		final double d = q0Cubed - r0Squared;
+		final double e = p / 3.0D;
+		
+		if(d >= 0.0D) {
+			return -2.0D * sqrt(q0) * cos(acos(r0 / sqrt(q0Cubed)) / 3.0D) - e;
+		}
+		
+		final double q1 = pow(sqrt(r0Squared - q0Cubed) + abs(r0), 1.0D / 3.0D);
+		final double q2 = q1 + q0 / q1;
+		final double q3 = r0 < 0.0D ? q2 - e : -q2 - e;
+		
+		return q3;
 	}
 }

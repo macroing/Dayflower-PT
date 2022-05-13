@@ -267,25 +267,10 @@ public final class Matrix44DUnitTests {
 	@Test
 	public void testMultiply() {
 		final Matrix44D a = new Matrix44D(1.0D, 2.0D, 3.0D, 4.0D, 5.0D, 6.0D, 7.0D, 8.0D, 9.0D, 10.0D, 11.0D, 12.0D, 13.0D, 14.0D, 15.0D, 16.0D);
-		final Matrix44D b = new Matrix44D(1.0D, 2.0D, 3.0D, 4.0D, 5.0D, 6.0D, 7.0D, 8.0D, 9.0D, 10.0D, 11.0D, 12.0D, 13.0D, 14.0D, 15.0D, 16.0D);
+		final Matrix44D b = Matrix44D.identity();
 		final Matrix44D c = Matrix44D.multiply(a, b);
 		
-		assertEquals( 90.0D, c.element11);
-		assertEquals(100.0D, c.element12);
-		assertEquals(110.0D, c.element13);
-		assertEquals(120.0D, c.element14);
-		assertEquals(202.0D, c.element21);
-		assertEquals(228.0D, c.element22);
-		assertEquals(254.0D, c.element23);
-		assertEquals(280.0D, c.element24);
-		assertEquals(314.0D, c.element31);
-		assertEquals(356.0D, c.element32);
-		assertEquals(398.0D, c.element33);
-		assertEquals(440.0D, c.element34);
-		assertEquals(426.0D, c.element41);
-		assertEquals(484.0D, c.element42);
-		assertEquals(542.0D, c.element43);
-		assertEquals(600.0D, c.element44);
+		assertEquals(a, c);
 		
 		assertThrows(NullPointerException.class, () -> Matrix44D.multiply(a, null));
 		assertThrows(NullPointerException.class, () -> Matrix44D.multiply(null, b));
