@@ -19,6 +19,7 @@
 package org.dayflower.pt;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -155,6 +156,55 @@ public final class Quaternion4DUnitTests {
 		assertNotEquals(f, a);
 		assertNotEquals(a, g);
 		assertNotEquals(g, a);
+	}
+	
+	@Test
+	public void testEqualsQuaternion4D() {
+		final Quaternion4D a = new Quaternion4D(0.0D, 1.0D, 2.0D, 3.0D);
+		final Quaternion4D b = new Quaternion4D(0.0D, 1.0D, 2.0D, 3.0D);
+		final Quaternion4D c = new Quaternion4D(0.0D, 1.0D, 2.0D, 4.0D);
+		final Quaternion4D d = new Quaternion4D(0.0D, 1.0D, 4.0D, 3.0D);
+		final Quaternion4D e = new Quaternion4D(0.0D, 4.0D, 2.0D, 3.0D);
+		final Quaternion4D f = new Quaternion4D(4.0D, 1.0D, 2.0D, 3.0D);
+		final Quaternion4D g = null;
+		
+		assertTrue(a.equals(a));
+		assertTrue(a.equals(b));
+		assertTrue(b.equals(a));
+		
+		assertFalse(a.equals(c));
+		assertFalse(c.equals(a));
+		assertFalse(a.equals(d));
+		assertFalse(d.equals(a));
+		assertFalse(a.equals(e));
+		assertFalse(e.equals(a));
+		assertFalse(a.equals(f));
+		assertFalse(f.equals(a));
+		assertFalse(a.equals(g));
+	}
+	
+	@Test
+	public void testFromOrthonormalBasis33D() {
+		final Quaternion4D q = Quaternion4D.from(new OrthonormalBasis33D(new Vector3D(0.0D, 1.0D, 0.0D), new Vector3D(1.0D, 0.0D, 0.0D), new Vector3D(0.0D, 0.0D, 1.0D)));
+		
+		assertEquals(0.5D, q.x);
+		assertEquals(0.5D, q.y);
+		assertEquals(0.5D, q.z);
+		assertEquals(0.5D, q.w);
+		
+		assertThrows(NullPointerException.class, () -> Quaternion4D.from((OrthonormalBasis33D)(null)));
+	}
+	
+	@Test
+	public void testFromVector3D() {
+		final Quaternion4D q = Quaternion4D.from(new Vector3D(1.0D, 0.0D, 0.0D));
+		
+		assertEquals(+0.5D, q.x);
+		assertEquals(-0.5D, q.y);
+		assertEquals(+0.5D, q.z);
+		assertEquals(+0.5D, q.w);
+		
+		assertThrows(NullPointerException.class, () -> Quaternion4D.from((Vector3D)(null)));
 	}
 	
 	@Test

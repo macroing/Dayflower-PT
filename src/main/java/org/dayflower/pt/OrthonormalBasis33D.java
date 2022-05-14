@@ -105,6 +105,17 @@ public final class OrthonormalBasis33D {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 //	TODO: Add unit tests!
+	public static OrthonormalBasis33D from(final Quaternion4D q) {
+		final Quaternion4D r = Quaternion4D.normalize(q);
+		
+		final Vector3D u = new Vector3D(1.0D - 2.0D * (r.y * r.y + r.z * r.z),        2.0D * (r.x * r.y - r.w * r.z),        2.0D * (r.x * r.z + r.w * r.y));
+		final Vector3D v = new Vector3D(       2.0D * (r.x * r.y + r.w * r.z), 1.0D - 2.0D * (r.x * r.x + r.z * r.z),        2.0D * (r.y * r.z - r.w * r.x));
+		final Vector3D w = new Vector3D(       2.0D * (r.x * r.z - r.w * r.y),        2.0D * (r.y * r.z + r.w * r.x), 1.0D - 2.0D * (r.x * r.x + r.y * r.y));
+		
+		return new OrthonormalBasis33D(w, v, u);
+	}
+	
+//	TODO: Add unit tests!
 	public static OrthonormalBasis33D transform(final Matrix44D mLHS, final OrthonormalBasis33D oRHS) {
 		final Vector3D u = Vector3D.normalize(Vector3D.transform(mLHS, oRHS.u));
 		final Vector3D v = Vector3D.normalize(Vector3D.transform(mLHS, oRHS.v));

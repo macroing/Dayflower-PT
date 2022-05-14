@@ -301,6 +301,30 @@ public final class Matrix44DUnitTests {
 	}
 	
 	@Test
+	public void testRotateQuaternion4D() {
+		final Matrix44D m = Matrix44D.rotate(new Quaternion4D(0.5D, 0.5D, 0.5D, 0.5D));
+		
+		assertEquals(0.0D, m.element11);
+		assertEquals(1.0D, m.element12);
+		assertEquals(0.0D, m.element13);
+		assertEquals(0.0D, m.element14);
+		assertEquals(0.0D, m.element21);
+		assertEquals(0.0D, m.element22);
+		assertEquals(1.0D, m.element23);
+		assertEquals(0.0D, m.element24);
+		assertEquals(1.0D, m.element31);
+		assertEquals(0.0D, m.element32);
+		assertEquals(0.0D, m.element33);
+		assertEquals(0.0D, m.element34);
+		assertEquals(0.0D, m.element41);
+		assertEquals(0.0D, m.element42);
+		assertEquals(0.0D, m.element43);
+		assertEquals(1.0D, m.element44);
+		
+		assertThrows(NullPointerException.class, () -> Matrix44D.rotate((Quaternion4D)(null)));
+	}
+	
+	@Test
 	public void testRotateVector3DVector3D() {
 		final Matrix44D m = Matrix44D.rotate(new Vector3D(0.0D, 0.0D, 1.0D), new Vector3D(0.0D, 1.0D, 0.0D));
 		

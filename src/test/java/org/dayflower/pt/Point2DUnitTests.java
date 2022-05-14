@@ -146,8 +146,8 @@ public final class Point2DUnitTests {
 	public void testSampleDiskUniformDistributionByConcentricMapping() {
 		final Point2D a = Point2D.sampleDiskUniformDistributionByConcentricMapping();
 		
-		assertTrue(a.x >= Math.sin(Math.toRadians(-45.0D)) && a.x <= Math.sin(Math.toRadians(+45.0D)));
-		assertTrue(a.y >= Math.sin(Math.toRadians(-45.0D)) && a.y <= Math.sin(Math.toRadians(+45.0D)));
+		assertTrue(a.x >= -1.0D && a.x <= 1.0D);
+		assertTrue(a.y >= -1.0D && a.y <= 1.0D);
 	}
 	
 	@Test

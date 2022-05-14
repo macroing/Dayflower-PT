@@ -62,7 +62,6 @@ public final class Quaternion4D {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	public boolean equals(final Quaternion4D q) {
 		if(q == this) {
 			return true;
@@ -129,9 +128,12 @@ public final class Quaternion4D {
 		}
 	}
 	
-//	TODO: Add unit tests!
+	public static Quaternion4D from(final OrthonormalBasis33D o) {
+		return from(Matrix44D.rotate(o));
+	}
+	
 	public static Quaternion4D from(final Vector3D direction) {
-		return from(Matrix44D.rotate(new OrthonormalBasis33D(direction)));
+		return from(new OrthonormalBasis33D(direction));
 	}
 	
 	public static Quaternion4D multiply(final Quaternion4D qLHS, final Quaternion4D qRHS) {

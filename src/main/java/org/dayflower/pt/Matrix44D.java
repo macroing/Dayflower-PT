@@ -18,7 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class Matrix44D {
@@ -232,7 +231,6 @@ public final class Matrix44D {
 		return rotate(o.w, o.v, o.u);
 	}
 	
-//	TODO: Add unit tests!
 	public static Matrix44D rotate(final Quaternion4D q) {
 		final double uX = 1.0D - 2.0D * (q.y * q.y + q.z * q.z);
 		final double uY = 0.0D + 2.0D * (q.x * q.y - q.w * q.z);
