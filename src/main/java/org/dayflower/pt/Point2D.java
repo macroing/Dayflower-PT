@@ -104,7 +104,7 @@ public final class Point2D {
 		return new Point2D(x, y);
 	}
 	
-	public static Point2D rotate(final Point2D p, final double angle, final boolean isRadians) {
+	public static Point2D rotateCounterclockwise(final Point2D p, final double angle, final boolean isRadians) {
 		final double angleRadians = isRadians ? angle : Math.toRadians(angle);
 		final double angleRadiansCos = Math.cos(angleRadians);
 		final double angleRadiansSin = Math.sin(angleRadians);
@@ -117,6 +117,11 @@ public final class Point2D {
 		 * 
 		 * x = (p.x - c.x) * angleRadiansCos - (p.y - c.y) * angleRadiansSin + c.x;
 		 * y = (p.y - c.y) * angleRadiansCos + (p.x - c.x) * angleRadiansSin + c.y;
+		 * 
+		 * To rotate clockwise:
+		 * 
+		 * x = p.x * angleRadiansCos + p.y * angleRadiansSin;
+		 * y = p.y * angleRadiansCos - p.x * angleRadiansSin;
 		 */
 		
 		return new Point2D(x, y);

@@ -20,6 +20,16 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+/*
+ * The rotateX(...), rotateY(...) and rotateZ(...) methods are using the right-hand rule according to the article Rotation_matrix on Wikipedia.
+ * The vectors are stored as column vectors.
+ * The elements are laid out in row-major order. The first number denotes the row and the second denotes the column.
+ * 
+ * [UX][VX][WX][TX]
+ * [UY][VY][WY][TY]
+ * [UZ][VZ][WZ][TZ]
+ * [ 0][ 0][ 0][ 1]
+ */
 public final class Matrix44D {
 	public final double element11;
 	public final double element12;
@@ -232,21 +242,7 @@ public final class Matrix44D {
 	}
 	
 	public static Matrix44D rotate(final Quaternion4D q) {
-		final double uX = 1.0D - 2.0D * (q.y * q.y + q.z * q.z);
-		final double uY = 0.0D + 2.0D * (q.x * q.y - q.w * q.z);
-		final double uZ = 0.0D + 2.0D * (q.x * q.z + q.w * q.y);
-		final double vX = 0.0D + 2.0D * (q.x * q.y + q.w * q.z);
-		final double vY = 1.0D - 2.0D * (q.x * q.x + q.z * q.z);
-		final double vZ = 0.0D + 2.0D * (q.y * q.z - q.w * q.x);
-		final double wX = 0.0D + 2.0D * (q.x * q.z - q.w * q.y);
-		final double wY = 0.0D + 2.0D * (q.y * q.z + q.w * q.x);
-		final double wZ = 1.0D - 2.0D * (q.x * q.x + q.y * q.y);
-		
-		final Vector3D u = new Vector3D(uX, uY, uZ);
-		final Vector3D v = new Vector3D(vX, vY, vZ);
-		final Vector3D w = new Vector3D(wX, wY, wZ);
-		
-		return rotate(w, v, u);
+		return rotate(OrthonormalBasis33D.from(q));
 	}
 	
 	public static Matrix44D rotate(final Vector3D w, final Vector3D v) {
@@ -258,24 +254,7 @@ public final class Matrix44D {
 	}
 	
 	public static Matrix44D rotate(final Vector3D w, final Vector3D v, final Vector3D u) {
-		final double element11 = u.x;
-		final double element12 = v.x;
-		final double element13 = w.x;
-		final double element14 = 0.0D;
-		final double element21 = u.y;
-		final double element22 = v.y;
-		final double element23 = w.y;
-		final double element24 = 0.0D;
-		final double element31 = u.z;
-		final double element32 = v.z;
-		final double element33 = w.z;
-		final double element34 = 0.0D;
-		final double element41 = 0.0D;
-		final double element42 = 0.0D;
-		final double element43 = 0.0D;
-		final double element44 = 1.0D;
-		
-		return new Matrix44D(element11, element12, element13, element14, element21, element22, element23, element24, element31, element32, element33, element34, element41, element42, element43, element44);
+		return new Matrix44D(u.x, v.x, w.x, 0.0D, u.y, v.y, w.y, 0.0D, u.z, v.z, w.z, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
 	}
 	
 	public static Matrix44D rotateX(final double angle) {

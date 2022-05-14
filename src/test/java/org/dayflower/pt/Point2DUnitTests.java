@@ -128,10 +128,10 @@ public final class Point2DUnitTests {
 	}
 	
 	@Test
-	public void testRotate() {
+	public void testRotateCounterclockwise() {
 		final Point2D a = new Point2D(1.0D, 1.0D);
-		final Point2D b = Point2D.rotate(a, 360.0D, false);
-		final Point2D c = Point2D.rotate(a, java.lang.Math.toRadians(360.0D), true);
+		final Point2D b = Point2D.rotateCounterclockwise(a, 360.0D, false);
+		final Point2D c = Point2D.rotateCounterclockwise(a, java.lang.Math.toRadians(360.0D), true);
 		
 		assertEquals(1.0000000000000002D, b.x);
 		assertEquals(0.9999999999999998D, b.y);
@@ -139,7 +139,7 @@ public final class Point2DUnitTests {
 		assertEquals(1.0000000000000002D, c.x);
 		assertEquals(0.9999999999999998D, c.y);
 		
-		assertThrows(NullPointerException.class, () -> Point2D.rotate(null, 360.0D, false));
+		assertThrows(NullPointerException.class, () -> Point2D.rotateCounterclockwise(null, 360.0D, false));
 	}
 	
 	@Test

@@ -278,7 +278,16 @@ public final class Vector3D {
 	
 //	TODO: Add unit tests!
 	public static Vector3D normalize(final Vector3D v) {
-		return divide(v, v.length());
+		final double length = v.length();
+		
+		final boolean isLengthGTEThreshold = length >= Math.NEXT_DOWN_1_3;
+		final boolean isLengthLTEThreshold = length <= Math.NEXT_UP_1_1;
+		
+		if(isLengthGTEThreshold && isLengthLTEThreshold) {
+			return v;
+		}
+		
+		return divide(v, length);
 	}
 	
 //	TODO: Add unit tests!
