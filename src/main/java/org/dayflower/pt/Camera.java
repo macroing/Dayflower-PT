@@ -30,7 +30,16 @@ public final class Camera {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
+	/**
+	 * Constructs a new {@code Camera} instance.
+	 * <p>
+	 * Calling this constructor is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * new Camera(1024.0D, 768.0D);
+	 * }
+	 * </pre>
+	 */
 	public Camera() {
 		this(1024.0D, 768.0D);
 	}
