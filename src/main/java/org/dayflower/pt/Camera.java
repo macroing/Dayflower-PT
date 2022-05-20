@@ -44,7 +44,19 @@ public final class Camera {
 		this(1024.0D, 768.0D);
 	}
 	
-//	TODO: Add unit tests!
+	/**
+	 * Constructs a new {@code Camera} instance.
+	 * <p>
+	 * Calling this constructor is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * new Camera(resolutionX, resolutionY, 2.0D * Math.tan(Math.toRadians(28.799323D) * 0.5D));
+	 * }
+	 * </pre>
+	 * 
+	 * @param resolutionX the resolution along the X-axis
+	 * @param resolutionY the resolution along the Y-axis
+	 */
 	public Camera(final double resolutionX, final double resolutionY) {
 		this(resolutionX, resolutionY, 2.0D * Math.tan(Math.toRadians(28.799323D) * 0.5D));
 	}
