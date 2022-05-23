@@ -78,6 +78,11 @@ public final class Color3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	/**
+	 * Returns a {@code String} representation of this {@code Color3D} instance.
+	 * 
+	 * @return a {@code String} representation of this {@code Color3D} instance
+	 */
 	@Override
 	public String toString() {
 		return String.format("new Color3D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.r), Utilities.toNonScientificNotationJava(this.g), Utilities.toNonScientificNotationJava(this.b));
