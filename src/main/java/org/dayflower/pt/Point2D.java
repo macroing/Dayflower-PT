@@ -54,6 +54,11 @@ public final class Point2D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	/**
+	 * Returns a {@code String} representation of this {@code Point2D} instance.
+	 * 
+	 * @return a {@code String} representation of this {@code Point2D} instance
+	 */
 	@Override
 	public String toString() {
 		return String.format("new Point2D(%s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y));
