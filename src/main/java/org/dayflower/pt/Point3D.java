@@ -44,6 +44,11 @@ public final class Point3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	/**
+	 * Returns a {@code String} representation of this {@code Point3D} instance.
+	 * 
+	 * @return a {@code String} representation of this {@code Point3D} instance
+	 */
 	@Override
 	public String toString() {
 		return String.format("new Point3D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y), Utilities.toNonScientificNotationJava(this.z));
