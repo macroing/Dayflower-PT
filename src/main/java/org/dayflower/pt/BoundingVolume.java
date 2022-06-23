@@ -18,7 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public abstract class BoundingVolume {
@@ -32,7 +31,6 @@ public abstract class BoundingVolume {
 	
 	public abstract boolean contains(final Point3D p);
 	
-//	TODO: Add unit tests!
 	public final boolean intersects(final Ray3D r, final double tMin, final double tMax) {
 		return !Math.isNaN(intersection(r, tMin, tMax));
 	}
@@ -41,17 +39,14 @@ public abstract class BoundingVolume {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public static BoundingVolume axisAlignedBoundingBox(final Point3D... points) {
 		return AxisAlignedBoundingBox.create(points);
 	}
 	
-//	TODO: Add unit tests!
 	public static BoundingVolume boundingSphere(final Point3D center, final double radius) {
 		return new BoundingSphere(center, radius);
 	}
 	
-//	TODO: Add unit tests!
 	public static BoundingVolume infiniteBoundingVolume() {
 		return new InfiniteBoundingVolume();
 	}
@@ -71,7 +66,6 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-//		TODO: Add unit tests!
 		@Override
 		public AxisAlignedBoundingBox transform(final Matrix44D m) {
 			final Point3D[] points = new Point3D[] {
@@ -96,46 +90,31 @@ public abstract class BoundingVolume {
 			return new AxisAlignedBoundingBox(maximum, minimum);
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public String toString() {
 			return String.format("BoundingVolume.axisAlignedBoundingBox(%s, %s)", this.maximum, this.minimum);
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public boolean contains(final Point3D p) {
 			return p.x >= this.minimum.x && p.x <= this.maximum.x && p.y >= this.minimum.y && p.y <= this.maximum.y && p.z >= this.minimum.z && p.z <= this.maximum.z;
 		}
 		
-//		TODO: Add unit tests!
-		public boolean equals(final AxisAlignedBoundingBox axisAlignedBoundingBox) {
-			if(axisAlignedBoundingBox == this) {
-				return true;
-			} else if(axisAlignedBoundingBox == null) {
-				return false;
-			} else if(!Objects.equals(this.maximum, axisAlignedBoundingBox.maximum)) {
-				return false;
-			} else if(!Objects.equals(this.minimum, axisAlignedBoundingBox.minimum)) {
-				return false;
-			} else {
-				return true;
-			}
-		}
-		
-//		TODO: Add unit tests!
 		@Override
 		public boolean equals(final Object object) {
 			if(object == this) {
 				return true;
 			} else if(!(object instanceof AxisAlignedBoundingBox)) {
 				return false;
+			} else if(!Objects.equals(this.maximum, AxisAlignedBoundingBox.class.cast(object).maximum)) {
+				return false;
+			} else if(!Objects.equals(this.minimum, AxisAlignedBoundingBox.class.cast(object).minimum)) {
+				return false;
 			} else {
-				return equals(AxisAlignedBoundingBox.class.cast(object));
+				return true;
 			}
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public double intersection(final Ray3D r, final double tMin, final double tMax) {
 			final Point3D o = r.getOrigin();
@@ -151,7 +130,6 @@ public abstract class BoundingVolume {
 			return t0 > t1 ? Math.NaN : t0 > tMin && t0 < tMax ? t0 : t1 > tMin && t1 < tMax ? t1 : Math.NaN;
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public int hashCode() {
 			return Objects.hash(this.maximum, this.minimum);
@@ -159,7 +137,6 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-//		TODO: Add unit tests!
 		public static AxisAlignedBoundingBox create(final Point3D... points) {
 			Utilities.requireNonNullArray(points, "points");
 			Utilities.requireRange(points.length, 1, Integer.MAX_VALUE, "points.length");
@@ -184,7 +161,6 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-//		TODO: Add unit tests!
 		public BoundingSphere(final Point3D center, final double radius) {
 			this.center = Objects.requireNonNull(center, "center == null");
 			this.radius = radius;
@@ -192,7 +168,6 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-//		TODO: Add unit tests!
 		@Override
 		public BoundingSphere transform(final Matrix44D m) {
 			final Point3D c = Point3D.transformAndDivide(m, this.center);
@@ -205,46 +180,31 @@ public abstract class BoundingVolume {
 			return new BoundingSphere(c, r);
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public String toString() {
 			return String.format("BoundingVolume.boundingSphere(%s, %s)", this.center, Utilities.toNonScientificNotationJava(this.radius));
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public boolean contains(final Point3D p) {
 			return Point3D.distanceSquared(this.center, p) <= this.radius * this.radius;
 		}
 		
-//		TODO: Add unit tests!
-		public boolean equals(final BoundingSphere boundingSphere) {
-			if(boundingSphere == this) {
-				return true;
-			} else if(boundingSphere == null) {
-				return false;
-			} else if(!Objects.equals(this.center, boundingSphere.center)) {
-				return false;
-			} else if(!Math.equals(this.radius, boundingSphere.radius)) {
-				return false;
-			} else {
-				return true;
-			}
-		}
-		
-//		TODO: Add unit tests!
 		@Override
 		public boolean equals(final Object object) {
 			if(object == this) {
 				return true;
 			} else if(!(object instanceof BoundingSphere)) {
 				return false;
+			} else if(!Objects.equals(this.center, BoundingSphere.class.cast(object).center)) {
+				return false;
+			} else if(!Math.equals(this.radius, BoundingSphere.class.cast(object).radius)) {
+				return false;
 			} else {
-				return equals(BoundingSphere.class.cast(object));
+				return true;
 			}
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public double intersection(final Ray3D r, final double tMin, final double tMax) {
 			final Point3D o = r.getOrigin();
@@ -272,7 +232,6 @@ public abstract class BoundingVolume {
 			return Math.NaN;
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public int hashCode() {
 			return Objects.hash(this.center, Double.valueOf(this.radius));
@@ -288,7 +247,6 @@ public abstract class BoundingVolume {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-//		TODO: Add unit tests!
 		@Override
 		public InfiniteBoundingVolume transform(final Matrix44D m) {
 			Objects.requireNonNull(m, "m == null");
@@ -296,13 +254,11 @@ public abstract class BoundingVolume {
 			return this;
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public String toString() {
 			return "BoundingVolume.infiniteBoundingVolume()";
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public boolean contains(final Point3D p) {
 			Objects.requireNonNull(p, "p == null");
@@ -310,7 +266,6 @@ public abstract class BoundingVolume {
 			return true;
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public boolean equals(final Object object) {
 			if(object == this) {
@@ -322,7 +277,6 @@ public abstract class BoundingVolume {
 			}
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public double intersection(final Ray3D r, final double tMin, final double tMax) {
 			Objects.requireNonNull(r, "r == null");
@@ -330,7 +284,6 @@ public abstract class BoundingVolume {
 			return tMin;
 		}
 		
-//		TODO: Add unit tests!
 		@Override
 		public int hashCode() {
 			return Objects.hash();
