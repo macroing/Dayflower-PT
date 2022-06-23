@@ -20,6 +20,14 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+/**
+ * A {@code Point2D} represents a point with two {@code double}-based components.
+ * <p>
+ * This class is immutable and therefore thread-safe.
+ * 
+ * @since 1.0.0
+ * @author J&#246;rgen Lundgren
+ */
 public final class Point2D {
 	/**
 	 * The X-component of this {@code Point2D} instance.
@@ -34,7 +42,7 @@ public final class Point2D {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	/**
-	 * Constructs a new {@code Point2D} instance.
+	 * Constructs a new {@code Point2D} instance at {@code 0.0D} and {@code 0.0D}.
 	 * <p>
 	 * Calling this constructor is equivalent to the following:
 	 * <pre>
@@ -47,6 +55,12 @@ public final class Point2D {
 		this(0.0D, 0.0D);
 	}
 	
+	/**
+	 * Constructs a new {@code Point2D} instance at {@code x} and {@code y}.
+	 * 
+	 * @param x the X-component of this {@code Point2D} instance
+	 * @param y the Y-component of this {@code Point2D} instance
+	 */
 	public Point2D(final double x, final double y) {
 		this.x = x;
 		this.y = y;
@@ -64,6 +78,14 @@ public final class Point2D {
 		return String.format("new Point2D(%s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y));
 	}
 	
+	/**
+	 * Compares {@code object} to this {@code Point2D} instance for equality.
+	 * <p>
+	 * Returns {@code true} if, and only if, {@code object} is an instance of {@code Point2D} and their respective values are equal, {@code false} otherwise.
+	 * 
+	 * @param object the {@code Object} instance to compare to this {@code Point2D} instance for equality
+	 * @return {@code true} if, and only if, {@code object} is an instance of {@code Point2D} and their respective values are equal, {@code false} otherwise
+	 */
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -75,6 +97,14 @@ public final class Point2D {
 		}
 	}
 	
+	/**
+	 * Compares {@code p} to this {@code Point2D} instance for equality.
+	 * <p>
+	 * Returns {@code true} if, and only if, {@code p} is not {@code null} and their respective values are equal, {@code false} otherwise.
+	 * 
+	 * @param p the {@code Point2D} instance to compare to this {@code Point2D} instance for equality
+	 * @return {@code true} if, and only if, {@code p} is not {@code null} and their respective values are equal, {@code false} otherwise
+	 */
 	public boolean equals(final Point2D p) {
 		if(p == this) {
 			return true;
@@ -89,10 +119,20 @@ public final class Point2D {
 		}
 	}
 	
+	/**
+	 * Returns {@code true} if, and only if, both {@code x} and {@code y} are equal to {@code 0.0D}, {@code false} otherwise.
+	 * 
+	 * @return {@code true} if, and only if, both {@code x} and {@code y} are equal to {@code 0.0D}, {@code false} otherwise
+	 */
 	public boolean isZero() {
 		return Math.isZero(this.x) && Math.isZero(this.y); 
 	}
 	
+	/**
+	 * Returns a hash code for this {@code Point2D} instance.
+	 * 
+	 * @return a hash code for this {@code Point2D} instance
+	 */
 	@Override
 	public int hashCode() {
 		return Objects.hash(Double.valueOf(this.x), Double.valueOf(this.y));

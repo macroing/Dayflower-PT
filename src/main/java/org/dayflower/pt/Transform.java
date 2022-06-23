@@ -79,8 +79,53 @@ public final class Transform {
 	}
 	
 //	TODO: Add unit tests!
+	@Override
+	public String toString() {
+		return String.format("new Transform(%s, %s, %s)", this.position, this.rotation, this.scale);
+	}
+	
+//	TODO: Add unit tests!
 	public Vector3D getScale() {
 		return this.scale;
+	}
+	
+//	TODO: Add unit tests!
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Transform)) {
+			return false;
+		} else {
+			return equals(Transform.class.cast(object));
+		}
+	}
+	
+//	TODO: Add unit tests!
+	public boolean equals(final Transform transform) {
+		if(transform == this) {
+			return true;
+		} else if(transform == null) {
+			return false;
+		} else if(!Objects.equals(this.objectToWorld, transform.objectToWorld)) {
+			return false;
+		} else if(!Objects.equals(this.worldToObject, transform.worldToObject)) {
+			return false;
+		} else if(!Objects.equals(this.position, transform.position)) {
+			return false;
+		} else if(!Objects.equals(this.rotation, transform.rotation)) {
+			return false;
+		} else if(!Objects.equals(this.scale, transform.scale)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+//	TODO: Add unit tests!
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.objectToWorld, this.worldToObject, this.position, this.rotation, this.scale);
 	}
 	
 //	TODO: Add unit tests!

@@ -100,7 +100,7 @@ public final class Intersection {
 	
 //	TODO: Add unit tests!
 	public Vector3D getSurfaceNormalOSCorrectlyOriented() {
-		return Vector3D.faceForwardLHSNegated(getSurfaceNormalOS(), getRayOS().getDirection());
+		return Vector3D.dotProduct(getSurfaceNormalOS(), getRayOS().getDirection()) > 0.0D ? Vector3D.negate(getSurfaceNormalOS()) : getSurfaceNormalOS();
 	}
 	
 //	TODO: Add unit tests!
@@ -110,7 +110,7 @@ public final class Intersection {
 	
 //	TODO: Add unit tests!
 	public Vector3D getSurfaceNormalWSCorrectlyOriented() {
-		return Vector3D.faceForwardLHSNegated(getSurfaceNormalWS(), getRayWS().getDirection());
+		return Vector3D.dotProduct(getSurfaceNormalWS(), getRayOS().getDirection()) > 0.0D ? Vector3D.negate(getSurfaceNormalWS()) : getSurfaceNormalWS();
 	}
 	
 //	TODO: Add unit tests!

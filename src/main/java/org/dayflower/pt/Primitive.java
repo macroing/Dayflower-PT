@@ -73,7 +73,50 @@ public final class Primitive {
 	}
 	
 //	TODO: Add unit tests!
+	@Override
+	public String toString() {
+		return String.format("new Primitive(%s, %s, %s)", this.material, this.shape, this.transform);
+	}
+	
+//	TODO: Add unit tests!
 	public Transform getTransform() {
 		return this.transform;
+	}
+	
+//	TODO: Add unit tests!
+	@Override
+	public boolean equals(final Object object) {
+		if(object == this) {
+			return true;
+		} else if(!(object instanceof Primitive)) {
+			return false;
+		} else {
+			return equals(Primitive.class.cast(object));
+		}
+	}
+	
+//	TODO: Add unit tests!
+	public boolean equals(final Primitive primitive) {
+		if(primitive == this) {
+			return true;
+		} else if(primitive == null) {
+			return false;
+		} else if(!Objects.equals(this.boundingVolume, primitive.boundingVolume)) {
+			return false;
+		} else if(!Objects.equals(this.material, primitive.material)) {
+			return false;
+		} else if(!Objects.equals(this.shape, primitive.shape)) {
+			return false;
+		} else if(!Objects.equals(this.transform, primitive.transform)) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+//	TODO: Add unit tests!
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.boundingVolume, this.material, this.shape, this.transform);
 	}
 }

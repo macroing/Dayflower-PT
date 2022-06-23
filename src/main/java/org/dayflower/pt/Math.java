@@ -25,17 +25,11 @@ public final class Math {
 	public static final double EPSILON = 1.0e-4D;
 	public static final double MAX_VALUE = +Double.MAX_VALUE;
 	public static final double MIN_VALUE = -Double.MAX_VALUE;
-//	TODO: Add unit tests!
 	public static final double NEXT_DOWN_1_1 = nextDown(1.0D);
-//	TODO: Add unit tests!
 	public static final double NEXT_DOWN_1_2 = nextDown(NEXT_DOWN_1_1);
-//	TODO: Add unit tests!
 	public static final double NEXT_DOWN_1_3 = nextDown(NEXT_DOWN_1_2);
-//	TODO: Add unit tests!
 	public static final double NEXT_UP_1_1 = nextUp(1.0D);
-//	TODO: Add unit tests!
 	public static final double NEXT_UP_1_2 = nextUp(NEXT_UP_1_1);
-//	TODO: Add unit tests!
 	public static final double NEXT_UP_1_3 = nextUp(NEXT_UP_1_2);
 	public static final double NaN = Double.NaN;
 	public static final double PI = java.lang.Math.PI;
@@ -133,12 +127,10 @@ public final class Math {
 		return min(min(a, b), c);
 	}
 	
-//	TODO: Add unit tests!
 	public static double nextDown(final double value) {
 		return java.lang.Math.nextDown(value);
 	}
 	
-//	TODO: Add unit tests!
 	public static double nextUp(final double value) {
 		return java.lang.Math.nextUp(value);
 	}
@@ -151,7 +143,6 @@ public final class Math {
 		return valueNormalized;
 	}
 	
-//	TODO: Add unit tests!
 	public static double positiveModulo(final double x, final double y) {
 		return x < 0.0D ? (x % y + y) % y : x % y;
 	}
@@ -320,7 +311,6 @@ public final class Math {
 		return java.lang.Math.min(a, b);
 	}
 	
-//	TODO: Add unit tests!
 	public static int positiveModulo(final int x, final int y) {
 		return x < 0 ? (x % y + y) % y : x % y;
 	}

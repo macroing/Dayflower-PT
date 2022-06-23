@@ -36,7 +36,7 @@ public final class PathTracer {
 	
 	private PathTracer() {
 		this.image = new Image(RESOLUTION_X, RESOLUTION_Y);
-		this.scene = Scene.createScene(new Camera(RESOLUTION_X, RESOLUTION_Y));
+		this.scene = Scene.createSceneSmallPT(new Camera(RESOLUTION_X, RESOLUTION_Y));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -98,8 +98,41 @@ public abstract class BoundingVolume {
 		
 //		TODO: Add unit tests!
 		@Override
+		public String toString() {
+			return String.format("BoundingVolume.axisAlignedBoundingBox(%s, %s)", this.maximum, this.minimum);
+		}
+		
+//		TODO: Add unit tests!
+		@Override
 		public boolean contains(final Point3D p) {
 			return p.x >= this.minimum.x && p.x <= this.maximum.x && p.y >= this.minimum.y && p.y <= this.maximum.y && p.z >= this.minimum.z && p.z <= this.maximum.z;
+		}
+		
+//		TODO: Add unit tests!
+		public boolean equals(final AxisAlignedBoundingBox axisAlignedBoundingBox) {
+			if(axisAlignedBoundingBox == this) {
+				return true;
+			} else if(axisAlignedBoundingBox == null) {
+				return false;
+			} else if(!Objects.equals(this.maximum, axisAlignedBoundingBox.maximum)) {
+				return false;
+			} else if(!Objects.equals(this.minimum, axisAlignedBoundingBox.minimum)) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		
+//		TODO: Add unit tests!
+		@Override
+		public boolean equals(final Object object) {
+			if(object == this) {
+				return true;
+			} else if(!(object instanceof AxisAlignedBoundingBox)) {
+				return false;
+			} else {
+				return equals(AxisAlignedBoundingBox.class.cast(object));
+			}
 		}
 		
 //		TODO: Add unit tests!
@@ -116,6 +149,12 @@ public abstract class BoundingVolume {
 			final double t1 = Math.min(Math.max(v2.x, v3.x), Math.max(v2.y, v3.y), Math.max(v2.z, v3.z));
 			
 			return t0 > t1 ? Math.NaN : t0 > tMin && t0 < tMax ? t0 : t1 > tMin && t1 < tMax ? t1 : Math.NaN;
+		}
+		
+//		TODO: Add unit tests!
+		@Override
+		public int hashCode() {
+			return Objects.hash(this.maximum, this.minimum);
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -168,8 +207,41 @@ public abstract class BoundingVolume {
 		
 //		TODO: Add unit tests!
 		@Override
+		public String toString() {
+			return String.format("BoundingVolume.boundingSphere(%s, %s)", this.center, Utilities.toNonScientificNotationJava(this.radius));
+		}
+		
+//		TODO: Add unit tests!
+		@Override
 		public boolean contains(final Point3D p) {
 			return Point3D.distanceSquared(this.center, p) <= this.radius * this.radius;
+		}
+		
+//		TODO: Add unit tests!
+		public boolean equals(final BoundingSphere boundingSphere) {
+			if(boundingSphere == this) {
+				return true;
+			} else if(boundingSphere == null) {
+				return false;
+			} else if(!Objects.equals(this.center, boundingSphere.center)) {
+				return false;
+			} else if(!Math.equals(this.radius, boundingSphere.radius)) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		
+//		TODO: Add unit tests!
+		@Override
+		public boolean equals(final Object object) {
+			if(object == this) {
+				return true;
+			} else if(!(object instanceof BoundingSphere)) {
+				return false;
+			} else {
+				return equals(BoundingSphere.class.cast(object));
+			}
 		}
 		
 //		TODO: Add unit tests!
@@ -199,6 +271,12 @@ public abstract class BoundingVolume {
 			
 			return Math.NaN;
 		}
+		
+//		TODO: Add unit tests!
+		@Override
+		public int hashCode() {
+			return Objects.hash(this.center, Double.valueOf(this.radius));
+		}
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -220,6 +298,12 @@ public abstract class BoundingVolume {
 		
 //		TODO: Add unit tests!
 		@Override
+		public String toString() {
+			return "BoundingVolume.infiniteBoundingVolume()";
+		}
+		
+//		TODO: Add unit tests!
+		@Override
 		public boolean contains(final Point3D p) {
 			Objects.requireNonNull(p, "p == null");
 			
@@ -228,10 +312,28 @@ public abstract class BoundingVolume {
 		
 //		TODO: Add unit tests!
 		@Override
+		public boolean equals(final Object object) {
+			if(object == this) {
+				return true;
+			} else if(!(object instanceof InfiniteBoundingVolume)) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		
+//		TODO: Add unit tests!
+		@Override
 		public double intersection(final Ray3D r, final double tMin, final double tMax) {
 			Objects.requireNonNull(r, "r == null");
 			
 			return tMin;
+		}
+		
+//		TODO: Add unit tests!
+		@Override
+		public int hashCode() {
+			return Objects.hash();
 		}
 	}
 }

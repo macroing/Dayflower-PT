@@ -77,7 +77,6 @@ public final class Vector3D {
 		return Math.isZero(this.x) && Math.isZero(this.y) && Math.isZero(this.z);  
 	}
 	
-//	TODO: Add unit tests!
 	public double cosPhi() {
 		final double sinTheta = sinTheta();
 		
@@ -88,7 +87,6 @@ public final class Vector3D {
 		return Math.saturate(this.x / sinTheta, -1.0D, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public double cosPhiSquared() {
 		return cosPhi() * cosPhi();
 	}
@@ -117,7 +115,6 @@ public final class Vector3D {
 		return this.x * this.x + this.y * this.y + this.z * this.z;
 	}
 	
-//	TODO: Add unit tests!
 	public double sinPhi() {
 		final double sinTheta = sinTheta();
 		
@@ -128,32 +125,26 @@ public final class Vector3D {
 		return Math.saturate(this.y / sinTheta, -1.0D, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public double sinPhiSquared() {
 		return sinPhi() * sinPhi();
 	}
 	
-//	TODO: Add unit tests!
 	public double sinTheta() {
 		return Math.sqrt(sinThetaSquared());
 	}
 	
-//	TODO: Add unit tests!
 	public double sinThetaSquared() {
 		return Math.max(0.0D, 1.0D - cosThetaSquared());
 	}
 	
-//	TODO: Add unit tests!
 	public double tanTheta() {
 		return sinTheta() / cosTheta();
 	}
 	
-//	TODO: Add unit tests!
 	public double tanThetaAbs() {
 		return Math.abs(tanTheta());
 	}
 	
-//	TODO: Add unit tests!
 	public double tanThetaSquared() {
 		return sinThetaSquared() / cosThetaSquared();
 	}
@@ -165,16 +156,16 @@ public final class Vector3D {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public static Optional<Vector3D> refraction(final Vector3D direction, final Vector3D normal, final double eta) {
 		final double cosThetaI = dotProduct(direction, normal);
-		final double sinThetaISquared = 1.0D - cosThetaI * cosThetaI;
-		final double sinThetaTSquared = 1.0D - eta * eta * sinThetaISquared;
-		final double cosThetaT = Math.sqrt(sinThetaTSquared);
+		final double sinThetaISquared = Math.max(0.0D, 1.0D - cosThetaI * cosThetaI);
+		final double sinThetaTSquared = eta * eta * sinThetaISquared;
 		
-		if(sinThetaTSquared < 0.0D) {
+		if(sinThetaTSquared >= 1.0D) {
 			return Optional.empty();
 		}
+		
+		final double cosThetaT = Math.sqrt(1.0D - sinThetaTSquared);
 		
 		return Optional.of(subtract(multiply(direction, eta), multiply(normal, eta * cosThetaI + cosThetaT)));
 	}
@@ -203,7 +194,6 @@ public final class Vector3D {
 		return new Vector3D(u.x * s.x + v.x * s.y + w.x * s.z, u.y * s.x + v.y * s.y + w.y * s.z, u.z * s.x + v.z * s.y + w.z * s.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D directionNormalized(final Point3D eye, final Point3D lookAt) {
 		return normalize(direction(eye, lookAt));
 	}
@@ -228,32 +218,14 @@ public final class Vector3D {
 		return normalize(directionSpherical(sinTheta, cosTheta, phi));
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D divide(final Vector3D v, final double s) {
 		return new Vector3D(v.x / s, v.y / s, v.z / s);
 	}
 	
-//	TODO: Add unit tests!
-	public static Vector3D faceForwardLHS(final Vector3D vLHS, final Vector3D vRHS) {
-		return dotProduct(vLHS, vRHS) < 0.0D ? negate(vLHS) : vLHS;
-	}
-	
-//	TODO: Add unit tests!
-	public static Vector3D faceForwardLHSNegated(final Vector3D vLHS, final Vector3D vRHS) {
-		return dotProduct(vLHS, vRHS) > 0.0D ? negate(vLHS) : vLHS;
-	}
-	
-//	TODO: Add unit tests!
-	public static Vector3D faceForwardRHSZ(final Vector3D vLHS, final Vector3D vRHS) {
-		return vLHS.z < 0.0D ? negateZ(vRHS) : vRHS;
-	}
-	
-//	TODO: Add unit tests!
 	public static Vector3D hadamardProduct(final Vector3D vLHS, final Vector3D vRHS) {
 		return new Vector3D(vLHS.x * vRHS.x, vLHS.y * vRHS.y, vLHS.z * vRHS.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D multiply(final Vector3D v, final double s) {
 		return new Vector3D(v.x * s, v.y * s, v.z * s);
 	}
@@ -266,17 +238,14 @@ public final class Vector3D {
 		return new Vector3D(v.x, v.y, -v.z);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D normal(final Point3D a, final Point3D b, final Point3D c) {
 		return crossProduct(directionNormalized(a, b), directionNormalized(a, c));
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D normalNormalized(final Point3D a, final Point3D b, final Point3D c) {
 		return normalize(normal(a, b, c));
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D normalize(final Vector3D v) {
 		final double length = v.length();
 		
@@ -300,7 +269,6 @@ public final class Vector3D {
 		return sameHemisphereZ(direction, normal) ? normal : negate(normal);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D orthogonal(final Vector3D v) {
 		final Vector3D v0 = normalize(v);
 		final Vector3D v1 = abs(v0);
@@ -314,7 +282,6 @@ public final class Vector3D {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D reciprocal(final Vector3D v) {
 		return new Vector3D(1.0D / v.x, 1.0D / v.y, 1.0D / v.z);
 	}
@@ -363,7 +330,6 @@ public final class Vector3D {
 		return directionSpherical(sinTheta, cosTheta, phi);
 	}
 	
-//	TODO: Add unit tests!
 	public static Vector3D subtract(final Vector3D vLHS, final Vector3D vRHS) {
 		return new Vector3D(vLHS.x - vRHS.x, vLHS.y - vRHS.y, vLHS.z - vRHS.z);
 	}

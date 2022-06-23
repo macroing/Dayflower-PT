@@ -18,7 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 public final class OrthonormalBasis33D {
@@ -111,7 +110,6 @@ public final class OrthonormalBasis33D {
 		return new OrthonormalBasis33D(w, v, u);
 	}
 	
-//	TODO: Add unit tests!
 	public static OrthonormalBasis33D transform(final Matrix44D mLHS, final OrthonormalBasis33D oRHS) {
 		final Vector3D u = Vector3D.normalize(Vector3D.transform(mLHS, oRHS.u));
 		final Vector3D v = Vector3D.normalize(Vector3D.transform(mLHS, oRHS.v));
@@ -120,7 +118,6 @@ public final class OrthonormalBasis33D {
 		return new OrthonormalBasis33D(w, v, u);
 	}
 	
-//	TODO: Add unit tests!
 	public static OrthonormalBasis33D transformTranspose(final Matrix44D mLHS, final OrthonormalBasis33D oRHS) {
 		final Vector3D u = Vector3D.normalize(Vector3D.transformTranspose(mLHS, oRHS.u));
 		final Vector3D v = Vector3D.normalize(Vector3D.transformTranspose(mLHS, oRHS.v));

@@ -745,7 +745,10 @@ public abstract class Material {
 		
 		@Override
 		public Optional<Vector3D> sampleDF(final Vector3D o, final Point2D p) {
-			return Optional.of(Vector3D.faceForwardRHSZ(o, Vector3D.sampleHemisphereCosineDistribution(p)));
+			final Vector3D sample = Vector3D.sampleHemisphereCosineDistribution(p);
+			final Vector3D sampleCorrectlyOriented = o.z < 0.0D ? Vector3D.negateZ(sample) : sample;
+			
+			return Optional.of(sampleCorrectlyOriented);
 		}
 		
 		@Override
@@ -1137,7 +1140,7 @@ public abstract class Material {
 			}
 			
 			final Vector3D hNormalized = Vector3D.normalize(h);
-			final Vector3D hNormalizedCorrectlyOriented = Vector3D.faceForwardLHS(hNormalized, Vector3D.z());
+			final Vector3D hNormalizedCorrectlyOriented = Vector3D.dotProduct(hNormalized, Vector3D.z()) < 0.0D ? Vector3D.negate(hNormalized) : hNormalized;
 			
 			final double cosThetaI = Vector3D.dotProduct(i, hNormalizedCorrectlyOriented);
 			

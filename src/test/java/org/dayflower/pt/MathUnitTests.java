@@ -75,6 +75,12 @@ public final class MathUnitTests {
 		assertEquals(1.0e-4D, Math.EPSILON);
 		assertEquals(+Double.MAX_VALUE, Math.MAX_VALUE);
 		assertEquals(-Double.MAX_VALUE, Math.MIN_VALUE);
+		assertEquals(java.lang.Math.nextDown(1.0D), Math.NEXT_DOWN_1_1);
+		assertEquals(java.lang.Math.nextDown(java.lang.Math.nextDown(1.0D)), Math.NEXT_DOWN_1_2);
+		assertEquals(java.lang.Math.nextDown(java.lang.Math.nextDown(java.lang.Math.nextDown(1.0D))), Math.NEXT_DOWN_1_3);
+		assertEquals(java.lang.Math.nextUp(1.0D), Math.NEXT_UP_1_1);
+		assertEquals(java.lang.Math.nextUp(java.lang.Math.nextUp(1.0D)), Math.NEXT_UP_1_2);
+		assertEquals(java.lang.Math.nextUp(java.lang.Math.nextUp(java.lang.Math.nextUp(1.0D))), Math.NEXT_UP_1_3);
 		assertEquals(Double.NaN, Math.NaN);
 		assertEquals(java.lang.Math.PI, Math.PI);
 		assertEquals(Double.POSITIVE_INFINITY, Math.POSITIVE_INFINITY);
@@ -203,12 +209,48 @@ public final class MathUnitTests {
 	}
 	
 	@Test
+	public void testNextDown() {
+		assertEquals(java.lang.Math.nextDown(2.0D), Math.nextDown(2.0D));
+	}
+	
+	@Test
+	public void testNextUp() {
+		assertEquals(java.lang.Math.nextUp(2.0D), Math.nextUp(2.0D));
+	}
+	
+	@Test
 	public void testNormalize() {
 		assertEquals(-1.0D, Math.normalize(  0.0D, 100.0D, 200.0D));
 		assertEquals(+0.0D, Math.normalize(100.0D, 100.0D, 200.0D));
 		assertEquals(+0.5D, Math.normalize(150.0D, 100.0D, 200.0D));
 		assertEquals(+1.0D, Math.normalize(200.0D, 100.0D, 200.0D));
 		assertEquals(+2.0D, Math.normalize(300.0D, 100.0D, 200.0D));
+	}
+	
+	@Test
+	public void testPositiveModuloDoubleDouble() {
+		assertEquals(-0.0D, Math.positiveModulo(-2.0D, -1.0D));
+		assertEquals(-2.0D, Math.positiveModulo(-2.0D, -3.0D));
+		
+		assertEquals(+0.0D, Math.positiveModulo(-2.0D, +1.0D));
+		
+		assertEquals(+0.0D, Math.positiveModulo(+2.0D, -1.0D));
+		
+		assertEquals(+0.0D, Math.positiveModulo(+2.0D, +1.0D));
+		assertEquals(+2.0D, Math.positiveModulo(+2.0D, +3.0D));
+	}
+	
+	@Test
+	public void testPositiveModuloIntInt() {
+		assertEquals(-0, Math.positiveModulo(-2, -1));
+		assertEquals(-2, Math.positiveModulo(-2, -3));
+		
+		assertEquals(+0, Math.positiveModulo(-2, +1));
+		
+		assertEquals(+0, Math.positiveModulo(+2, -1));
+		
+		assertEquals(+0, Math.positiveModulo(+2, +1));
+		assertEquals(+2, Math.positiveModulo(+2, +3));
 	}
 	
 	@Test
