@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.macroing.art4j.color.Color3D;
+import org.macroing.java.util.Randoms;
 
 public final class Scene {
 	private final Camera camera;
@@ -67,7 +68,7 @@ public final class Scene {
 				if(depth >= 5) {
 					final double probability = result.getReflectance().max();
 					
-					if(Math.random() >= probability) {
+					if(Randoms.nextDouble() >= probability) {
 						return result.getEmission();
 					}
 					

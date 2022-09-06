@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
+import org.macroing.java.lang.Doubles;
 
 @SuppressWarnings("static-method")
 public final class Matrix44DUnitTests {
@@ -378,9 +379,9 @@ public final class Matrix44DUnitTests {
 	@Test
 	public void testRotateXDouble() {
 		final double angleDegrees = 90.0D;
-		final double angleRadians = Math.toRadians(angleDegrees);
-		final double angleRadiansCos = Math.cos(angleRadians);
-		final double angleRadiansSin = Math.sin(angleRadians);
+		final double angleRadians = Doubles.toRadians(angleDegrees);
+		final double angleRadiansCos = Doubles.cos(angleRadians);
+		final double angleRadiansSin = Doubles.sin(angleRadians);
 		
 		final Matrix44D m = Matrix44D.rotateX(angleDegrees);
 		
@@ -405,9 +406,9 @@ public final class Matrix44DUnitTests {
 	@Test
 	public void testRotateXDoubleBoolean() {
 		final double angleDegrees = 90.0D;
-		final double angleRadians = Math.toRadians(angleDegrees);
-		final double angleRadiansCos = Math.cos(angleRadians);
-		final double angleRadiansSin = Math.sin(angleRadians);
+		final double angleRadians = Doubles.toRadians(angleDegrees);
+		final double angleRadiansCos = Doubles.cos(angleRadians);
+		final double angleRadiansSin = Doubles.sin(angleRadians);
 		
 		final Matrix44D a = Matrix44D.rotateX(angleDegrees, false);
 		final Matrix44D b = Matrix44D.rotateX(angleRadians, true);
@@ -450,9 +451,9 @@ public final class Matrix44DUnitTests {
 	@Test
 	public void testRotateYDouble() {
 		final double angleDegrees = 90.0D;
-		final double angleRadians = Math.toRadians(angleDegrees);
-		final double angleRadiansCos = Math.cos(angleRadians);
-		final double angleRadiansSin = Math.sin(angleRadians);
+		final double angleRadians = Doubles.toRadians(angleDegrees);
+		final double angleRadiansCos = Doubles.cos(angleRadians);
+		final double angleRadiansSin = Doubles.sin(angleRadians);
 		
 		final Matrix44D m = Matrix44D.rotateY(angleDegrees);
 		
@@ -477,9 +478,9 @@ public final class Matrix44DUnitTests {
 	@Test
 	public void testRotateYDoubleBoolean() {
 		final double angleDegrees = 90.0D;
-		final double angleRadians = Math.toRadians(angleDegrees);
-		final double angleRadiansCos = Math.cos(angleRadians);
-		final double angleRadiansSin = Math.sin(angleRadians);
+		final double angleRadians = Doubles.toRadians(angleDegrees);
+		final double angleRadiansCos = Doubles.cos(angleRadians);
+		final double angleRadiansSin = Doubles.sin(angleRadians);
 		
 		final Matrix44D a = Matrix44D.rotateY(angleDegrees, false);
 		final Matrix44D b = Matrix44D.rotateY(angleRadians, true);
@@ -522,9 +523,9 @@ public final class Matrix44DUnitTests {
 	@Test
 	public void testRotateZDouble() {
 		final double angleDegrees = 90.0D;
-		final double angleRadians = Math.toRadians(angleDegrees);
-		final double angleRadiansCos = Math.cos(angleRadians);
-		final double angleRadiansSin = Math.sin(angleRadians);
+		final double angleRadians = Doubles.toRadians(angleDegrees);
+		final double angleRadiansCos = Doubles.cos(angleRadians);
+		final double angleRadiansSin = Doubles.sin(angleRadians);
 		
 		final Matrix44D m = Matrix44D.rotateZ(angleDegrees);
 		
@@ -549,9 +550,9 @@ public final class Matrix44DUnitTests {
 	@Test
 	public void testRotateZDoubleBoolean() {
 		final double angleDegrees = 90.0D;
-		final double angleRadians = Math.toRadians(angleDegrees);
-		final double angleRadiansCos = Math.cos(angleRadians);
-		final double angleRadiansSin = Math.sin(angleRadians);
+		final double angleRadians = Doubles.toRadians(angleDegrees);
+		final double angleRadiansCos = Doubles.cos(angleRadians);
+		final double angleRadiansSin = Doubles.sin(angleRadians);
 		
 		final Matrix44D a = Matrix44D.rotateZ(angleDegrees, false);
 		final Matrix44D b = Matrix44D.rotateZ(angleRadians, true);

@@ -26,6 +26,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.macroing.art4j.color.Color3D;
+import org.macroing.java.lang.Doubles;
+import org.macroing.java.lang.Ints;
+import org.macroing.java.util.Randoms;
 
 public abstract class Material {
 	protected Material() {
@@ -357,15 +360,15 @@ public abstract class Material {
 			final Vector3D oWS = Vector3D.negate(intersection.getRayWS().getDirection());
 			final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, orthonormalBasis);
 			
-			if(Math.isZero(oLS.z)) {
+			if(Doubles.isZero(oLS.z)) {
 				return Optional.empty();
 			}
 			
-			final double sampleU = Math.random();
-			final double sampleV = Math.random();
+			final double sampleU = Randoms.nextDouble();
+			final double sampleV = Randoms.nextDouble();
 			
 			final int matches = this.bXDFs.size();
-			final int match = Math.min(Math.toInt(Math.floor(sampleU * matches)), matches - 1);
+			final int match = Ints.min((int)(Math.floor(sampleU * matches)), matches - 1);
 			
 			if(matches == 0) {
 				return Optional.empty();
@@ -395,7 +398,7 @@ public abstract class Material {
 			
 			double probabilityDensityFunctionValue = bXDF.evaluatePDF(oLS, iLS);
 			
-			if(Math.isZero(probabilityDensityFunctionValue)) {
+			if(Doubles.isZero(probabilityDensityFunctionValue)) {
 				return Optional.empty();
 			}
 			
@@ -478,9 +481,9 @@ public abstract class Material {
 			this.materialA = Objects.requireNonNull(materialA, "materialA == null");
 			this.materialB = Objects.requireNonNull(materialB, "materialB == null");
 			this.angleDegrees = angleDegrees;
-			this.angleRadians = Math.toRadians(this.angleDegrees);
-			this.angleRadiansCos = Math.cos(this.angleRadians);
-			this.angleRadiansSin = Math.sin(this.angleRadians);
+			this.angleRadians = Doubles.toRadians(this.angleDegrees);
+			this.angleRadiansCos = Doubles.cos(this.angleRadians);
+			this.angleRadiansSin = Doubles.sin(this.angleRadians);
 			this.scaleU = scaleU;
 			this.scaleV = scaleV;
 		}
@@ -520,7 +523,7 @@ public abstract class Material {
 		
 		@Override
 		public Color3D evaluate(final double cosThetaI) {
-			return evaluateConductor(Math.abs(cosThetaI), this.etaI, this.etaT, this.k);
+			return evaluateConductor(Doubles.abs(cosThetaI), this.etaI, this.etaT, this.k);
 		}
 	}
 	
@@ -561,7 +564,7 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		public static Color3D evaluateConductor(final double cosThetaI, final Color3D etaI, final Color3D etaT, final Color3D k) {
-			final double saturateCosThetaI = Math.saturate(cosThetaI, -1.0D, 1.0D);
+			final double saturateCosThetaI = Doubles.saturate(cosThetaI, -1.0D, 1.0D);
 			final double saturateCosThetaIMultipliedBy2 = saturateCosThetaI * 2.0D;
 			
 			final double etaR = etaT.r / etaI.r;
@@ -592,17 +595,17 @@ public abstract class Material {
 			final double t0SquaredG = t0G * t0G;
 			final double t0SquaredB = t0B * t0B;
 			
-			final double aSquaredPlusBSquaredR = Math.sqrt(t0SquaredR + etaSquaredR * etaKSquaredR * 4.0D);
-			final double aSquaredPlusBSquaredG = Math.sqrt(t0SquaredG + etaSquaredG * etaKSquaredG * 4.0D);
-			final double aSquaredPlusBSquaredB = Math.sqrt(t0SquaredB + etaSquaredB * etaKSquaredB * 4.0D);
+			final double aSquaredPlusBSquaredR = Doubles.sqrt(t0SquaredR + etaSquaredR * etaKSquaredR * 4.0D);
+			final double aSquaredPlusBSquaredG = Doubles.sqrt(t0SquaredG + etaSquaredG * etaKSquaredG * 4.0D);
+			final double aSquaredPlusBSquaredB = Doubles.sqrt(t0SquaredB + etaSquaredB * etaKSquaredB * 4.0D);
 			
 			final double t1R = aSquaredPlusBSquaredR + cosThetaISquared;
 			final double t1G = aSquaredPlusBSquaredG + cosThetaISquared;
 			final double t1B = aSquaredPlusBSquaredB + cosThetaISquared;
 			
-			final double t2R = Math.sqrt((aSquaredPlusBSquaredR + t0R) * 0.5D) * saturateCosThetaIMultipliedBy2;
-			final double t2G = Math.sqrt((aSquaredPlusBSquaredG + t0G) * 0.5D) * saturateCosThetaIMultipliedBy2;
-			final double t2B = Math.sqrt((aSquaredPlusBSquaredB + t0B) * 0.5D) * saturateCosThetaIMultipliedBy2;
+			final double t2R = Doubles.sqrt((aSquaredPlusBSquaredR + t0R) * 0.5D) * saturateCosThetaIMultipliedBy2;
+			final double t2G = Doubles.sqrt((aSquaredPlusBSquaredG + t0G) * 0.5D) * saturateCosThetaIMultipliedBy2;
+			final double t2B = Doubles.sqrt((aSquaredPlusBSquaredB + t0B) * 0.5D) * saturateCosThetaIMultipliedBy2;
 			
 			final double t3R = aSquaredPlusBSquaredR * cosThetaISquared + sinThetaISquaredSquared;
 			final double t3G = aSquaredPlusBSquaredG * cosThetaISquared + sinThetaISquaredSquared;
@@ -632,22 +635,22 @@ public abstract class Material {
 		}
 		
 		public static double evaluateDielectric(final double cosThetaI, final double etaI, final double etaT) {
-			final double saturateCosThetaI = Math.saturate(cosThetaI, -1.0D, 1.0D);
+			final double saturateCosThetaI = Doubles.saturate(cosThetaI, -1.0D, 1.0D);
 			
 			final boolean isEntering = saturateCosThetaI > 0.0D;
 			
-			final double currentCosThetaI = isEntering ? saturateCosThetaI : Math.abs(saturateCosThetaI);
+			final double currentCosThetaI = isEntering ? saturateCosThetaI : Doubles.abs(saturateCosThetaI);
 			final double currentEtaI = isEntering ? etaI : etaT;
 			final double currentEtaT = isEntering ? etaT : etaI;
 			
-			final double currentSinThetaI = Math.sqrt(Math.max(0.0D, 1.0D - currentCosThetaI * currentCosThetaI));
+			final double currentSinThetaI = Doubles.sqrt(Doubles.max(0.0D, 1.0D - currentCosThetaI * currentCosThetaI));
 			final double currentSinThetaT = currentEtaI / currentEtaT * currentSinThetaI;
 			
 			if(currentSinThetaT >= 1.0D) {
 				return 1.0D;
 			}
 			
-			final double currentCosThetaT = Math.sqrt(Math.max(0.0D, 1.0D - currentSinThetaT * currentSinThetaT));
+			final double currentCosThetaT = Doubles.sqrt(Doubles.max(0.0D, 1.0D - currentSinThetaT * currentSinThetaT));
 			
 			final double reflectancePara = ((currentEtaT * currentCosThetaI) - (currentEtaI * currentCosThetaT)) / ((currentEtaT * currentCosThetaI) + (currentEtaI * currentCosThetaT));
 			final double reflectancePerp = ((currentEtaI * currentCosThetaI) - (currentEtaT * currentCosThetaT)) / ((currentEtaI * currentCosThetaI) + (currentEtaT * currentCosThetaT));
@@ -657,7 +660,7 @@ public abstract class Material {
 		}
 		
 		public static double evaluateDielectricSchlick(final double cosTheta, final double r0) {
-			return r0 + (1.0D - r0) * Math.pow5(Math.saturate(1.0D - cosTheta));
+			return r0 + (1.0D - r0) * Math.pow5(Doubles.saturate(1.0D - cosTheta));
 		}
 	}
 	
@@ -713,7 +716,7 @@ public abstract class Material {
 				final double probabilityRussianRouletteReflection = reflectance / probabilityRussianRoulette;
 				final double probabilityRussianRouletteTransmission = transmittance / (1.0D - probabilityRussianRoulette);
 				
-				final boolean isChoosingSpecularReflection = Math.random() < probabilityRussianRoulette;
+				final boolean isChoosingSpecularReflection = Randoms.nextDouble() < probabilityRussianRoulette;
 				
 				if(isChoosingSpecularReflection) {
 					return Optional.of(new Result(Color3D.BLACK, new Color3D(probabilityRussianRouletteReflection), reflectionRay));
@@ -779,7 +782,7 @@ public abstract class Material {
 		public Optional<Result> compute(final Intersection intersection) {
 			final Vector3D s = Vector3D.sampleHemisphereCosineDistribution();
 			final Vector3D w = Vector3D.orientNormal(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS());
-			final Vector3D u = Vector3D.normalize(Vector3D.crossProduct(Math.abs(w.x) > 0.1D ? Vector3D.y() : Vector3D.x(), w));
+			final Vector3D u = Vector3D.normalize(Vector3D.crossProduct(Doubles.abs(w.x) > 0.1D ? Vector3D.y() : Vector3D.x(), w));
 			final Vector3D v = Vector3D.normalize(Vector3D.crossProduct(w, u));
 			
 			final Color3D colorEmission = this.textureEmission.compute(intersection);
@@ -1035,13 +1038,13 @@ public abstract class Material {
 				final Vector3D oWS = Vector3D.negate(intersection.getRayWS().getDirection());
 				final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, orthonormalBasis);
 				
-				if(Math.isZero(oLS.z)) {
+				if(Doubles.isZero(oLS.z)) {
 					return Optional.empty();
 				}
 				
-				final double t = Math.min(Math.random(), 0.99999994D);
+				final double t = Doubles.min(Randoms.nextDouble(), 0.99999994D);
 				final double u = t < 0.5D ? Math.min(2.0D * t, 0.99999994D) : Math.min(2.0D * (t - 0.5D), 0.99999994D);
-				final double v = Math.random();
+				final double v = Randoms.nextDouble();
 				
 				final Point2D p = new Point2D(u, v);
 				
@@ -1062,7 +1065,7 @@ public abstract class Material {
 				final Vector3D hLSNormalized = Vector3D.normalize(hLS);
 				
 				final double iDotH = Vector3D.dotProduct(iLS, hLSNormalized);
-				final double iDotHAbs = Math.abs(iDotH);
+				final double iDotHAbs = Doubles.abs(iDotH);
 				final double iDotNAbs = Vector3D.dotProductAbs(iWS, nWS);
 				final double oDotH = Vector3D.dotProduct(oLS, hLSNormalized);
 				
@@ -1071,7 +1074,7 @@ public abstract class Material {
 				
 				final double probabilityDensityFunctionValue = 0.5D * (cosThetaAbsI / Math.PI + microfacetDistribution.computePDF(oLS, hLSNormalized) / (4.0D * oDotH));
 				
-				if(Math.isZero(probabilityDensityFunctionValue)) {
+				if(Doubles.isZero(probabilityDensityFunctionValue)) {
 					return Optional.empty();
 				}
 				
@@ -1088,7 +1091,7 @@ public abstract class Material {
 				final double resultG = colorKD.g * a * (1.0D - colorKS.g) * b * c + colorFresnel.g * f;
 				final double resultB = colorKD.b * a * (1.0D - colorKS.b) * b * c + colorFresnel.b * f;
 				
-				if(Math.isZero(resultR) && Math.isZero(resultG) && Math.isZero(resultB)) {
+				if(Doubles.isZero(resultR) && Doubles.isZero(resultG) && Doubles.isZero(resultB)) {
 					return Optional.empty();
 				}
 				
@@ -1131,7 +1134,7 @@ public abstract class Material {
 			final double cosThetaAbsO = o.cosThetaAbs();
 			final double cosThetaAbsI = i.cosThetaAbs();
 			
-			if(Math.isZero(cosThetaAbsO) || Math.isZero(cosThetaAbsI)) {
+			if(Doubles.isZero(cosThetaAbsO) || Doubles.isZero(cosThetaAbsI)) {
 				return Color3D.BLACK;
 			}
 			
@@ -1157,7 +1160,7 @@ public abstract class Material {
 		
 		@Override
 		public Optional<Vector3D> sampleDF(final Vector3D o, final Point2D p) {
-			if(Math.isZero(o.z)) {
+			if(Doubles.isZero(o.z)) {
 				return Optional.empty();
 			}
 			
@@ -1214,16 +1217,16 @@ public abstract class Material {
 		public Vector3D sampleH(final Vector3D o, final Point2D p) {
 			if(isSamplingVisibleArea()) {
 				return o.z >= 0.0D ? doSample(o, p) : Vector3D.negate(doSample(Vector3D.negate(o), p));
-			} else if(Math.equals(this.alphaX, this.alphaY)) {
-				final double phi = p.y * 2.0D * Math.PI;
-				final double cosTheta = 1.0D / Math.sqrt(1.0D + (this.alphaX * this.alphaX * p.x / (1.0D - p.x)));
-				final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
+			} else if(Doubles.equals(this.alphaX, this.alphaY)) {
+				final double phi = p.y * 2.0D * Doubles.PI;
+				final double cosTheta = 1.0D / Doubles.sqrt(1.0D + (this.alphaX * this.alphaX * p.x / (1.0D - p.x)));
+				final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
 				
 				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
 			} else {
-				final double phi = Math.atan(this.alphaY / this.alphaX * Math.tan(2.0D * Math.PI * p.y + 0.5D * Math.PI)) + (p.y > 0.5D ? Math.PI : 0.0D);
-				final double cosTheta = 1.0D / Math.sqrt(1.0D + ((1.0D / (Math.pow2(Math.cos(phi)) / (this.alphaX * this.alphaX) + Math.pow2(Math.sin(phi)) / (this.alphaY * this.alphaY))) * p.x / (1.0D - p.x)));
-				final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
+				final double phi = Doubles.atan(this.alphaY / this.alphaX * Math.tan(2.0D * Doubles.PI * p.y + 0.5D * Doubles.PI)) + (p.y > 0.5D ? Doubles.PI : 0.0D);
+				final double cosTheta = 1.0D / Doubles.sqrt(1.0D + ((1.0D / (Math.pow2(Doubles.cos(phi)) / (this.alphaX * this.alphaX) + Math.pow2(Doubles.sin(phi)) / (this.alphaY * this.alphaY))) * p.x / (1.0D - p.x)));
+				final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
 				
 				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
 			}
@@ -1233,7 +1236,7 @@ public abstract class Material {
 		public double computeDifferentialArea(final Vector3D h) {
 			final double tanThetaSquared = h.tanThetaSquared();
 			
-			if(Math.isInfinite(tanThetaSquared)) {
+			if(Doubles.isInfinite(tanThetaSquared)) {
 				return 0.0D;
 			}
 			
@@ -1244,11 +1247,11 @@ public abstract class Material {
 		public double computeLambda(final Vector3D o) {
 			final double tanThetaAbs = o.tanThetaAbs();
 			
-			if(Math.isInfinite(tanThetaAbs)) {
+			if(Doubles.isInfinite(tanThetaAbs)) {
 				return 0.0D;
 			}
 			
-			return (-1.0D + Math.sqrt(1.0D + Math.pow2(Math.sqrt(o.cosPhiSquared() * this.alphaX * this.alphaX + o.sinPhiSquared() * this.alphaY * this.alphaY) * tanThetaAbs))) / 2.0D;
+			return (-1.0D + Doubles.sqrt(1.0D + Math.pow2(Doubles.sqrt(o.cosPhiSquared() * this.alphaX * this.alphaX + o.sinPhiSquared() * this.alphaY * this.alphaY) * tanThetaAbs))) / 2.0D;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1261,24 +1264,24 @@ public abstract class Material {
 			final double sinPhi = iStretched.sinPhi();
 			
 			if(cosTheta > 0.9999D) {
-				final double r = Math.sqrt(p.x / (1.0D - p.x));
-				final double phi = 2.0D * Math.PI * p.y;
+				final double r = Doubles.sqrt(p.x / (1.0D - p.x));
+				final double phi = 2.0D * Doubles.PI * p.y;
 				
-				final double slopeX = r * Math.cos(phi);
-				final double slopeY = r * Math.sin(phi);
+				final double slopeX = r * Doubles.cos(phi);
+				final double slopeY = r * Doubles.sin(phi);
 				
 				return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * this.alphaX), -((sinPhi * slopeX + cosPhi * slopeY) * this.alphaY), 1.0D));
 			}
 			
-			final double a = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta)) / cosTheta;
-			final double b = 2.0D * p.x / (2.0D / (1.0D + Math.sqrt(1.0D + a * a))) - 1.0D;
-			final double c = Math.min(1.0D / (b * b - 1.0D), 1.0e10D);
-			final double d = Math.sqrt(Math.max(a * a * c * c - (b * b - a * a) * c, 0.0D));
+			final double a = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta)) / cosTheta;
+			final double b = 2.0D * p.x / (2.0D / (1.0D + Doubles.sqrt(1.0D + a * a))) - 1.0D;
+			final double c = Doubles.min(1.0D / (b * b - 1.0D), 1.0e10D);
+			final double d = Doubles.sqrt(Doubles.max(a * a * c * c - (b * b - a * a) * c, 0.0D));
 			final double e = a * c + d;
 			final double f = p.y > 0.5D ? 2.0D * (p.y - 0.5D) : 2.0D * (0.5D - p.y);
 			
 			final double slopeX = b < 0.0D || e > 1.0D / a ? a * c - d : e;
-			final double slopeY = (p.y > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Math.sqrt(1.0D + this.alphaX * this.alphaX);
+			final double slopeY = (p.y > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Doubles.sqrt(1.0D + this.alphaX * this.alphaX);
 			
 			return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * this.alphaX), -((sinPhi * slopeX + cosPhi * slopeY) * this.alphaY), 1.0D));
 		}

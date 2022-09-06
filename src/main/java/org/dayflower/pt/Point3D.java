@@ -20,6 +20,7 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Ints;
 import org.macroing.java.lang.Strings;
 import org.macroing.java.util.Arrays;
@@ -74,11 +75,11 @@ public final class Point3D {
 			return true;
 		} else if(p == null) {
 			return false;
-		} else if(!Math.equals(this.x, p.x)) {
+		} else if(!Doubles.equals(this.x, p.x)) {
 			return false;
-		} else if(!Math.equals(this.y, p.y)) {
+		} else if(!Doubles.equals(this.y, p.y)) {
 			return false;
-		} else if(!Math.equals(this.z, p.z)) {
+		} else if(!Doubles.equals(this.z, p.z)) {
 			return false;
 		} else {
 			return true;
@@ -142,7 +143,7 @@ public final class Point3D {
 		final double z = mLHS.element31 * pRHS.x + mLHS.element32 * pRHS.y + mLHS.element33 * pRHS.z + mLHS.element34;
 		final double w = mLHS.element41 * pRHS.x + mLHS.element42 * pRHS.y + mLHS.element43 * pRHS.z + mLHS.element44;
 		
-		return Math.equals(w, 1.0D) || Math.isZero(w) ? new Point3D(x, y, z) : new Point3D(x / w, y / w, z / w);
+		return Doubles.equals(w, 1.0D) || Doubles.isZero(w) ? new Point3D(x, y, z) : new Point3D(x / w, y / w, z / w);
 	}
 	
 	public static boolean coplanar(final Point3D... points) {
@@ -162,7 +163,7 @@ public final class Point3D {
 			
 			final Vector3D v2 = Vector3D.directionNormalized(p0, pI);
 			
-			if(!Math.isZero(Vector3D.tripleProduct(v0, v2, v1))) {
+			if(!Doubles.isZero(Vector3D.tripleProduct(v0, v2, v1))) {
 				return false;
 			}
 		}

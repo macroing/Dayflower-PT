@@ -20,6 +20,7 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Strings;
 
 public final class Vector2D {
@@ -60,9 +61,9 @@ public final class Vector2D {
 			return true;
 		} else if(v == null) {
 			return false;
-		} else if(!Math.equals(this.x, v.x)) {
+		} else if(!Doubles.equals(this.x, v.x)) {
 			return false;
-		} else if(!Math.equals(this.y, v.y)) {
+		} else if(!Doubles.equals(this.y, v.y)) {
 			return false;
 		} else {
 			return true;
@@ -70,7 +71,7 @@ public final class Vector2D {
 	}
 	
 	public double length() {
-		return Math.sqrt(lengthSquared());
+		return Doubles.sqrt(lengthSquared());
 	}
 	
 	public double lengthSquared() {

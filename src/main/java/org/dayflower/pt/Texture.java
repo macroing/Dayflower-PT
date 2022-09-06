@@ -27,6 +27,7 @@ import org.macroing.art4j.image.Image;
 import org.macroing.art4j.noise.PerlinNoiseD;
 import org.macroing.art4j.noise.SimplexNoiseD;
 import org.macroing.art4j.pixel.PixelTransformer;
+import org.macroing.java.lang.Doubles;
 
 public interface Texture {
 	Color3D compute(final Intersection intersection);
@@ -171,9 +172,9 @@ public interface Texture {
 		Objects.requireNonNull(textureA, "textureA == null");
 		Objects.requireNonNull(textureB, "textureB == null");
 		
-		final double angleRadians = Math.toRadians(angleDegrees);
-		final double angleRadiansCos = Math.cos(angleRadians);
-		final double angleRadiansSin = Math.sin(angleRadians);
+		final double angleRadians = Doubles.toRadians(angleDegrees);
+		final double angleRadiansCos = Doubles.cos(angleRadians);
+		final double angleRadiansSin = Doubles.sin(angleRadians);
 		
 		return intersection -> {
 			final double u = intersection.getTextureCoordinates().x;
@@ -239,9 +240,9 @@ public interface Texture {
 	static Texture image(final Image image, final double angleDegrees, final double scaleU, final double scaleV) {
 		Objects.requireNonNull(image, "image == null");
 		
-		final double angleRadians = Math.toRadians(angleDegrees);
-		final double angleRadiansCos = Math.cos(angleRadians);
-		final double angleRadiansSin = Math.sin(angleRadians);
+		final double angleRadians = Doubles.toRadians(angleDegrees);
+		final double angleRadiansCos = Doubles.cos(angleRadians);
+		final double angleRadiansSin = Doubles.sin(angleRadians);
 		
 		return intersection -> {
 			final int resolutionX = image.getResolutionX();
@@ -308,7 +309,7 @@ public interface Texture {
 			final double y = p.y * frequency;
 			final double z = p.z * frequency;
 			final double r = PerlinNoiseD.turbulenceXYZ(x, y, z, octaves) * scale;
-			final double s = 2.0D * Math.abs(Math.sin(x + r));
+			final double s = 2.0D * Doubles.abs(Doubles.sin(x + r));
 			final double t = s < 1.0D ? s : s - 1.0D;
 			
 			final Color3D a = s < 1.0D ? colorC : colorB;
@@ -368,9 +369,9 @@ public interface Texture {
 		Objects.requireNonNull(textureA, "textureA == null");
 		Objects.requireNonNull(textureB, "textureB == null");
 		
-		final double angleRadians = Math.toRadians(angleDegrees);
-		final double angleRadiansCos = Math.cos(angleRadians);
-		final double angleRadiansSin = Math.sin(angleRadians);
+		final double angleRadians = Doubles.toRadians(angleDegrees);
+		final double angleRadiansCos = Doubles.cos(angleRadians);
+		final double angleRadiansSin = Doubles.sin(angleRadians);
 		
 		final double polkaDotRadiusSquared = polkaDotRadius * polkaDotRadius;
 		
@@ -427,9 +428,9 @@ public interface Texture {
 		return intersection -> {
 			final Point3D p = intersection.getSurfaceIntersectionPointOS();
 			
-			final double r = Math.saturate(p.x);
-			final double g = Math.saturate(p.y);
-			final double b = Math.saturate(p.z);
+			final double r = Doubles.saturate(p.x);
+			final double g = Doubles.saturate(p.y);
+			final double b = Doubles.saturate(p.z);
 			
 			return new Color3D(r, g, b);
 		};

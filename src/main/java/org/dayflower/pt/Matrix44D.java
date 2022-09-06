@@ -20,6 +20,7 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Strings;
 
 /*
@@ -92,37 +93,37 @@ public final class Matrix44D {
 			return true;
 		} else if(m == null) {
 			return false;
-		} else if(!Math.equals(this.element11, m.element11)) {
+		} else if(!Doubles.equals(this.element11, m.element11)) {
 			return false;
-		} else if(!Math.equals(this.element12, m.element12)) {
+		} else if(!Doubles.equals(this.element12, m.element12)) {
 			return false;
-		} else if(!Math.equals(this.element13, m.element13)) {
+		} else if(!Doubles.equals(this.element13, m.element13)) {
 			return false;
-		} else if(!Math.equals(this.element14, m.element14)) {
+		} else if(!Doubles.equals(this.element14, m.element14)) {
 			return false;
-		} else if(!Math.equals(this.element21, m.element21)) {
+		} else if(!Doubles.equals(this.element21, m.element21)) {
 			return false;
-		} else if(!Math.equals(this.element22, m.element22)) {
+		} else if(!Doubles.equals(this.element22, m.element22)) {
 			return false;
-		} else if(!Math.equals(this.element23, m.element23)) {
+		} else if(!Doubles.equals(this.element23, m.element23)) {
 			return false;
-		} else if(!Math.equals(this.element24, m.element24)) {
+		} else if(!Doubles.equals(this.element24, m.element24)) {
 			return false;
-		} else if(!Math.equals(this.element31, m.element31)) {
+		} else if(!Doubles.equals(this.element31, m.element31)) {
 			return false;
-		} else if(!Math.equals(this.element32, m.element32)) {
+		} else if(!Doubles.equals(this.element32, m.element32)) {
 			return false;
-		} else if(!Math.equals(this.element33, m.element33)) {
+		} else if(!Doubles.equals(this.element33, m.element33)) {
 			return false;
-		} else if(!Math.equals(this.element34, m.element34)) {
+		} else if(!Doubles.equals(this.element34, m.element34)) {
 			return false;
-		} else if(!Math.equals(this.element41, m.element41)) {
+		} else if(!Doubles.equals(this.element41, m.element41)) {
 			return false;
-		} else if(!Math.equals(this.element42, m.element42)) {
+		} else if(!Doubles.equals(this.element42, m.element42)) {
 			return false;
-		} else if(!Math.equals(this.element43, m.element43)) {
+		} else if(!Doubles.equals(this.element43, m.element43)) {
 			return false;
-		} else if(!Math.equals(this.element44, m.element44)) {
+		} else if(!Doubles.equals(this.element44, m.element44)) {
 			return false;
 		} else {
 			return true;
@@ -141,7 +142,7 @@ public final class Matrix44D {
 	}
 	
 	public boolean isInvertible() {
-		return Math.abs(determinant()) >= 1.0e-12D;
+		return Doubles.abs(determinant()) >= 1.0e-12D;
 	}
 	
 	public double determinant() {
@@ -194,7 +195,7 @@ public final class Matrix44D {
 		final double determinant = a * l - b * k + c * j + d * i - e * h + f * g;
 		final double determinantReciprocal = 1.0D / determinant;
 		
-		if(Math.abs(determinant) < 1.0e-12D) {
+		if(Doubles.abs(determinant) < 1.0e-12D) {
 			throw new IllegalArgumentException("The Matrix44D 'm' cannot be inverted!");
 		}
 		
@@ -264,10 +265,10 @@ public final class Matrix44D {
 	}
 	
 	public static Matrix44D rotateX(final double angle, final boolean isRadians) {
-		final double angleRadians = isRadians ? angle : Math.toRadians(angle);
+		final double angleRadians = isRadians ? angle : Doubles.toRadians(angle);
 		
-		final double cos = Math.cos(angleRadians);
-		final double sin = Math.sin(angleRadians);
+		final double cos = Doubles.cos(angleRadians);
+		final double sin = Doubles.sin(angleRadians);
 		
 		return new Matrix44D(1.0D, 0.0D, 0.0D, 0.0D, 0.0D, cos, -sin, 0.0D, 0.0D, sin, cos, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
 	}
@@ -277,10 +278,10 @@ public final class Matrix44D {
 	}
 	
 	public static Matrix44D rotateY(final double angle, final boolean isRadians) {
-		final double angleRadians = isRadians ? angle : Math.toRadians(angle);
+		final double angleRadians = isRadians ? angle : Doubles.toRadians(angle);
 		
-		final double cos = Math.cos(angleRadians);
-		final double sin = Math.sin(angleRadians);
+		final double cos = Doubles.cos(angleRadians);
+		final double sin = Doubles.sin(angleRadians);
 		
 		return new Matrix44D(cos, 0.0D, sin, 0.0D, 0.0D, 1.0D, 0.0D, 0.0D, -sin, 0.0D, cos, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
 	}
@@ -290,10 +291,10 @@ public final class Matrix44D {
 	}
 	
 	public static Matrix44D rotateZ(final double angle, final boolean isRadians) {
-		final double angleRadians = isRadians ? angle : Math.toRadians(angle);
+		final double angleRadians = isRadians ? angle : Doubles.toRadians(angle);
 		
-		final double cos = Math.cos(angleRadians);
-		final double sin = Math.sin(angleRadians);
+		final double cos = Doubles.cos(angleRadians);
+		final double sin = Doubles.sin(angleRadians);
 		
 		return new Matrix44D(cos, -sin, 0.0D, 0.0D, sin, cos, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D, 0.0D, 0.0D, 0.0D, 0.0D, 1.0D);
 	}

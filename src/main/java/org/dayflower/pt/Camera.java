@@ -20,6 +20,8 @@ package org.dayflower.pt;
 
 import java.lang.reflect.Field;//TODO: Add unit tests!
 
+import org.macroing.java.lang.Doubles;
+
 public final class Camera {
 	private final Point3D eye;
 	private final Vector3D u;
@@ -50,7 +52,7 @@ public final class Camera {
 	 * Calling this constructor is equivalent to the following:
 	 * <pre>
 	 * {@code
-	 * new Camera(resolutionX, resolutionY, 2.0D * Math.tan(Math.toRadians(28.799323D) * 0.5D));
+	 * new Camera(resolutionX, resolutionY, 2.0D * Math.tan(Doubles.toRadians(28.799323D) * 0.5D));
 	 * }
 	 * </pre>
 	 * 
@@ -58,7 +60,7 @@ public final class Camera {
 	 * @param resolutionY the resolution along the Y-axis
 	 */
 	public Camera(final double resolutionX, final double resolutionY) {
-		this(resolutionX, resolutionY, 2.0D * Math.tan(Math.toRadians(28.799323D) * 0.5D));
+		this(resolutionX, resolutionY, 2.0D * Math.tan(Doubles.toRadians(28.799323D) * 0.5D));
 	}
 	
 //	TODO: Add unit tests!

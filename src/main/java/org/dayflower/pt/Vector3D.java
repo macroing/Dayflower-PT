@@ -22,6 +22,7 @@ import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 import java.util.Optional;
 
+import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Strings;
 
 public final class Vector3D {
@@ -64,11 +65,11 @@ public final class Vector3D {
 			return true;
 		} else if(v == null) {
 			return false;
-		} else if(!Math.equals(this.x, v.x)) {
+		} else if(!Doubles.equals(this.x, v.x)) {
 			return false;
-		} else if(!Math.equals(this.y, v.y)) {
+		} else if(!Doubles.equals(this.y, v.y)) {
 			return false;
-		} else if(!Math.equals(this.z, v.z)) {
+		} else if(!Doubles.equals(this.z, v.z)) {
 			return false;
 		} else {
 			return true;
@@ -76,17 +77,17 @@ public final class Vector3D {
 	}
 	
 	public boolean isZero() {
-		return Math.isZero(this.x) && Math.isZero(this.y) && Math.isZero(this.z);  
+		return Doubles.isZero(this.x) && Doubles.isZero(this.y) && Doubles.isZero(this.z);  
 	}
 	
 	public double cosPhi() {
 		final double sinTheta = sinTheta();
 		
-		if(Math.isZero(sinTheta)) {
+		if(Doubles.isZero(sinTheta)) {
 			return 1.0D;
 		}
 		
-		return Math.saturate(this.x / sinTheta, -1.0D, 1.0D);
+		return Doubles.saturate(this.x / sinTheta, -1.0D, 1.0D);
 	}
 	
 	public double cosPhiSquared() {
@@ -98,7 +99,7 @@ public final class Vector3D {
 	}
 	
 	public double cosThetaAbs() {
-		return Math.abs(cosTheta());
+		return Doubles.abs(cosTheta());
 	}
 	
 	public double cosThetaQuartic() {
@@ -110,7 +111,7 @@ public final class Vector3D {
 	}
 	
 	public double length() {
-		return Math.sqrt(lengthSquared());
+		return Doubles.sqrt(lengthSquared());
 	}
 	
 	public double lengthSquared() {
@@ -120,11 +121,11 @@ public final class Vector3D {
 	public double sinPhi() {
 		final double sinTheta = sinTheta();
 		
-		if(Math.isZero(sinTheta)) {
+		if(Doubles.isZero(sinTheta)) {
 			return 0.0D;
 		}
 		
-		return Math.saturate(this.y / sinTheta, -1.0D, 1.0D);
+		return Doubles.saturate(this.y / sinTheta, -1.0D, 1.0D);
 	}
 	
 	public double sinPhiSquared() {
@@ -132,11 +133,11 @@ public final class Vector3D {
 	}
 	
 	public double sinTheta() {
-		return Math.sqrt(sinThetaSquared());
+		return Doubles.sqrt(sinThetaSquared());
 	}
 	
 	public double sinThetaSquared() {
-		return Math.max(0.0D, 1.0D - cosThetaSquared());
+		return Doubles.max(0.0D, 1.0D - cosThetaSquared());
 	}
 	
 	public double tanTheta() {
@@ -144,7 +145,7 @@ public final class Vector3D {
 	}
 	
 	public double tanThetaAbs() {
-		return Math.abs(tanTheta());
+		return Doubles.abs(tanTheta());
 	}
 	
 	public double tanThetaSquared() {
@@ -160,20 +161,20 @@ public final class Vector3D {
 	
 	public static Optional<Vector3D> refraction(final Vector3D direction, final Vector3D normal, final double eta) {
 		final double cosThetaI = dotProduct(direction, normal);
-		final double sinThetaISquared = Math.max(0.0D, 1.0D - cosThetaI * cosThetaI);
+		final double sinThetaISquared = Doubles.max(0.0D, 1.0D - cosThetaI * cosThetaI);
 		final double sinThetaTSquared = eta * eta * sinThetaISquared;
 		
 		if(sinThetaTSquared >= 1.0D) {
 			return Optional.empty();
 		}
 		
-		final double cosThetaT = Math.sqrt(1.0D - sinThetaTSquared);
+		final double cosThetaT = Doubles.sqrt(1.0D - sinThetaTSquared);
 		
 		return Optional.of(subtract(multiply(direction, eta), multiply(normal, eta * cosThetaI + cosThetaT)));
 	}
 	
 	public static Vector3D abs(final Vector3D v) {
-		return new Vector3D(Math.abs(v.x), Math.abs(v.y), Math.abs(v.z));
+		return new Vector3D(Doubles.abs(v.x), Doubles.abs(v.y), Doubles.abs(v.z));
 	}
 	
 	public static Vector3D add(final Vector3D vLHS, final Vector3D vRHS) {
@@ -212,7 +213,7 @@ public final class Vector3D {
 	
 //	TODO: Add unit tests!
 	public static Vector3D directionSpherical(final double sinTheta, final double cosTheta, final double phi) {
-		return new Vector3D(sinTheta * Math.cos(phi), sinTheta * Math.sin(phi), cosTheta);
+		return new Vector3D(sinTheta * Doubles.cos(phi), sinTheta * Doubles.sin(phi), cosTheta);
 	}
 	
 //	TODO: Add unit tests!
@@ -310,7 +311,7 @@ public final class Vector3D {
 		
 		final Point2D q = Point2D.sampleDiskUniformDistributionByConcentricMapping(p);
 		
-		return new Vector3D(q.x, q.y, Math.sqrt(Math.max(0.0D, 1.0D - q.x * q.x - q.y * q.y)));
+		return new Vector3D(q.x, q.y, Doubles.sqrt(Math.max(0.0D, 1.0D - q.x * q.x - q.y * q.y)));
 	}
 	
 //	TODO: Add unit tests!
@@ -325,9 +326,9 @@ public final class Vector3D {
 	
 //	TODO: Add unit tests!
 	public static Vector3D sampleHemispherePowerCosineDistribution(final Point2D p, final double exponent) {
-		final double cosTheta = Math.pow(1.0D - p.y, 1.0D / (exponent + 1.0D));
-		final double sinTheta = Math.sqrt(Math.max(0.0D, 1.0D - cosTheta * cosTheta));
-		final double phi = 2.0D * Math.PI * p.x;
+		final double cosTheta = Doubles.pow(1.0D - p.y, 1.0D / (exponent + 1.0D));
+		final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
+		final double phi = 2.0D * Doubles.PI * p.x;
 		
 		return directionSpherical(sinTheta, cosTheta, phi);
 	}
@@ -399,7 +400,7 @@ public final class Vector3D {
 	}
 	
 	public static double dotProductAbs(final Vector3D vLHS, final Vector3D vRHS) {
-		return Math.abs(dotProduct(vLHS, vRHS));
+		return Doubles.abs(dotProduct(vLHS, vRHS));
 	}
 	
 //	TODO: Add unit tests!

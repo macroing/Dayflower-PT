@@ -21,6 +21,7 @@ package org.dayflower.pt;
 import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
+import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Ints;
 import org.macroing.java.util.Arrays;
 
@@ -60,7 +61,7 @@ public abstract class Shape {
 	
 //	TODO: Add unit tests!
 	public static Shape cone(final double phiMax, final double radius, final double zMax) {
-		return new Cone(Math.toRadians(phiMax), radius, zMax);
+		return new Cone(Doubles.toRadians(phiMax), radius, zMax);
 	}
 	
 //	TODO: Add unit tests!
@@ -85,7 +86,7 @@ public abstract class Shape {
 	
 //	TODO: Add unit tests!
 	public static Shape cylinder(final double phiMax, final double radius, final double zMax, final double zMin) {
-		return new Cylinder(Math.toRadians(phiMax), radius, zMax, zMin);
+		return new Cylinder(Doubles.toRadians(phiMax), radius, zMax, zMin);
 	}
 	
 //	TODO: Add unit tests!
@@ -110,7 +111,7 @@ public abstract class Shape {
 	
 //	TODO: Add unit tests!
 	public static Shape disk(final double phiMax, final double radiusInner, final double radiusOuter, final double zMax) {
-		return new Disk(Math.toRadians(phiMax), radiusInner, radiusOuter, zMax);
+		return new Disk(Doubles.toRadians(phiMax), radiusInner, radiusOuter, zMax);
 	}
 	
 //	TODO: Add unit tests!
@@ -130,7 +131,7 @@ public abstract class Shape {
 	
 //	TODO: Add unit tests!
 	public static Shape hyperboloid(final Point3D a, final Point3D b, final double phiMax) {
-		return Hyperboloid.create(a, b, Math.toRadians(phiMax));
+		return Hyperboloid.create(a, b, Doubles.toRadians(phiMax));
 	}
 	
 //	TODO: Add unit tests!
@@ -155,7 +156,7 @@ public abstract class Shape {
 	
 //	TODO: Add unit tests!
 	public static Shape paraboloid(final double phiMax, final double radius, final double zMax, final double zMin) {
-		return new Paraboloid(Math.toRadians(phiMax), radius, zMax, zMin);
+		return new Paraboloid(Doubles.toRadians(phiMax), radius, zMax, zMin);
 	}
 	
 //	TODO: Add unit tests!
@@ -303,7 +304,7 @@ public abstract class Shape {
 			for(int i = 0; i < ts.length; i++) {
 				final double t = ts[i];
 				
-				if(Math.isNaN(t)) {
+				if(Doubles.isNaN(t)) {
 					return Math.NaN;
 				}
 				
@@ -394,7 +395,7 @@ public abstract class Shape {
 			for(int i = 0; i < ts.length; i++) {
 				final double t = ts[i];
 				
-				if(Math.isNaN(t)) {
+				if(Doubles.isNaN(t)) {
 					return Math.NaN;
 				}
 				
@@ -440,7 +441,7 @@ public abstract class Shape {
 		public OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t) {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
-			final double length = Math.sqrt(p.x * p.x + p.y * p.y);
+			final double length = Doubles.sqrt(p.x * p.x + p.y * p.y);
 			
 			final double uX = -this.phiMax * p.y;
 			final double uY = +this.phiMax * p.x;
@@ -461,7 +462,7 @@ public abstract class Shape {
 		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
-			final double length = Math.sqrt(p.x * p.x + p.y * p.y);
+			final double length = Doubles.sqrt(p.x * p.x + p.y * p.y);
 			
 			final double u = p.sphericalPhi() / this.phiMax;
 			final double v = (this.radiusOuter - length) / (this.radiusOuter - this.radiusInner);
@@ -480,7 +481,7 @@ public abstract class Shape {
 			
 			final Vector3D d = ray.getDirection();
 			
-			if(Math.isZero(d.z)) {
+			if(Doubles.isZero(d.z)) {
 				return Math.NaN;
 			}
 			
@@ -540,8 +541,8 @@ public abstract class Shape {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
 			final double phi = doComputePhi(p);
-			final double phiCos = Math.cos(phi);
-			final double phiSin = Math.sin(phi);
+			final double phiCos = Doubles.cos(phi);
+			final double phiSin = Doubles.sin(phi);
 			
 			final double uX = -this.phiMax * p.y;
 			final double uY = +this.phiMax * p.x;
@@ -588,7 +589,7 @@ public abstract class Shape {
 			for(int i = 0; i < ts.length; i++) {
 				final double t = ts[i];
 				
-				if(Math.isNaN(t)) {
+				if(Doubles.isNaN(t)) {
 					return Math.NaN;
 				}
 				
@@ -610,14 +611,14 @@ public abstract class Shape {
 			Objects.requireNonNull(initialA, "initialA == null");
 			Objects.requireNonNull(initialA, "initialA == null");
 			
-			Point3D a = Math.isZero(initialA.z) ? initialA : Math.isZero(initialB.z) ? initialB : initialA;
-			Point3D b = Math.isZero(initialA.z) ? initialB : Math.isZero(initialB.z) ? initialA : initialB;
+			Point3D a = Doubles.isZero(initialA.z) ? initialA : Doubles.isZero(initialB.z) ? initialB : initialA;
+			Point3D b = Doubles.isZero(initialA.z) ? initialB : Doubles.isZero(initialB.z) ? initialA : initialB;
 			Point3D c = a;
 			
 			double aH = Math.POSITIVE_INFINITY;
 			double cH = Math.POSITIVE_INFINITY;
 			
-			for(int i = 0; i < 10 && (Math.isInfinite(aH) || Math.isNaN(aH)); i++) {
+			for(int i = 0; i < 10 && (Doubles.isInfinite(aH) || Doubles.isNaN(aH)); i++) {
 				c = Point3D.add(c, Vector3D.multiply(Vector3D.direction(a, b), 2.0D));
 				
 				final double d = c.x * c.x + c.y * c.y;
@@ -627,13 +628,13 @@ public abstract class Shape {
 				cH = (aH * e - 1.0D) / (b.z * b.z);
 			}
 			
-			if(Math.isInfinite(aH) || Math.isNaN(aH)) {
+			if(Doubles.isInfinite(aH) || Doubles.isNaN(aH)) {
 				throw new IllegalArgumentException();
 			}
 			
-			final double rMax = Math.max(Math.sqrt(initialA.x * initialA.x + initialA.y * initialA.y), Math.sqrt(initialB.x * initialB.x + initialB.y * initialB.y));
-			final double zMax = Math.max(initialA.z, initialB.z);
-			final double zMin = Math.min(initialA.z, initialB.z);
+			final double rMax = Doubles.max(Doubles.sqrt(initialA.x * initialA.x + initialA.y * initialA.y), Doubles.sqrt(initialB.x * initialB.x + initialB.y * initialB.y));
+			final double zMax = Doubles.max(initialA.z, initialB.z);
+			final double zMin = Doubles.min(initialA.z, initialB.z);
 			
 			return new Hyperboloid(a, b, aH, cH, phiMax, rMax, zMax, zMin);
 		}
@@ -728,7 +729,7 @@ public abstract class Shape {
 			for(int i = 0; i < ts.length; i++) {
 				final double t = ts[i];
 				
-				if(Math.isNaN(t)) {
+				if(Doubles.isNaN(t)) {
 					return Math.NaN;
 				}
 				
@@ -821,7 +822,7 @@ public abstract class Shape {
 			
 			final double nDotD = Vector3D.dotProduct(n, d);
 			
-			if(Math.isZero(nDotD)) {
+			if(Doubles.isZero(nDotD)) {
 				return Math.NaN;
 			}
 			
@@ -932,11 +933,11 @@ public abstract class Shape {
 				final Point2D pI = this.point2Ds[i];
 				final Point2D pJ = this.point2Ds[j];
 				
-				if(!Math.isZero((q.x - pI.x) * (pJ.y - pI.y) - (q.y - pI.y) * (pJ.x - pI.x))) {
+				if(!Doubles.isZero((q.x - pI.x) * (pJ.y - pI.y) - (q.y - pI.y) * (pJ.x - pI.x))) {
 					continue;
-				} else if(Math.abs(pJ.x - pI.x) >= Math.abs(pJ.y - pI.y) && pJ.x - pI.x > 0.0D ? pI.x <= q.x && q.x <= pJ.x : pJ.x <= q.x && q.x <= pI.x) {
+				} else if(Doubles.abs(pJ.x - pI.x) >= Doubles.abs(pJ.y - pI.y) && pJ.x - pI.x > 0.0D ? pI.x <= q.x && q.x <= pJ.x : pJ.x <= q.x && q.x <= pI.x) {
 					return true;
-				} else if(Math.abs(pJ.x - pI.x) <  Math.abs(pJ.y - pI.y) && pJ.y - pI.y > 0.0D ? pI.y <= q.y && q.y <= pJ.y : pJ.y <= q.y && q.y <= pI.y) {
+				} else if(Doubles.abs(pJ.x - pI.x) <  Doubles.abs(pJ.y - pI.y) && pJ.y - pI.y > 0.0D ? pI.y <= q.y && q.y <= pJ.y : pJ.y <= q.y && q.y <= pI.y) {
 					return true;
 				}
 			}
@@ -954,7 +955,7 @@ public abstract class Shape {
 			
 			final double nDotD = Vector3D.dotProduct(n, d);
 			
-			if(Math.isZero(nDotD)) {
+			if(Doubles.isZero(nDotD)) {
 				return Math.NaN;
 			}
 			
@@ -1097,7 +1098,7 @@ public abstract class Shape {
 			
 			final double nDotD = Vector3D.dotProduct(n, d);
 			
-			if(Math.isZero(nDotD)) {
+			if(Doubles.isZero(nDotD)) {
 				return Math.NaN;
 			}
 			
@@ -1154,8 +1155,8 @@ public abstract class Shape {
 			final double distanceCD = Point3D.distance(c, d);
 			final double distanceDA = Point3D.distance(d, a);
 			
-			final double deltaABCD = Math.abs(distanceAB - distanceCD);
-			final double deltaBCDA = Math.abs(distanceBC - distanceDA);
+			final double deltaABCD = Doubles.abs(distanceAB - distanceCD);
+			final double deltaBCDA = Doubles.abs(distanceBC - distanceDA);
 			
 			final boolean isValidABCD = deltaABCD <= 0.00001D;
 			final boolean isValidBCDA = deltaBCDA <= 0.00001D;
@@ -1350,11 +1351,11 @@ public abstract class Shape {
 			final double t0 = ts[0];
 			final double t1 = ts[1];
 			
-			if(!Math.isNaN(t0) && t0 > tMinimum && t0 < tMaximum) {
+			if(!Doubles.isNaN(t0) && t0 > tMinimum && t0 < tMaximum) {
 				return t0;
 			}
 			
-			if(!Math.isNaN(t1) && t1 > tMinimum && t1 < tMaximum) {
+			if(!Doubles.isNaN(t1) && t1 > tMinimum && t1 < tMaximum) {
 				return t1;
 			}
 			
@@ -1404,11 +1405,11 @@ public abstract class Shape {
 		public Point2D computeTextureCoordinates(final Ray3D ray, final double t) {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
-			final double phi = Math.asin(Math.saturate(p.z / this.radiusInner, -1.0D, 1.0D));
-			final double theta = Math.getOrAdd(Math.atan2(p.y, p.x), 0.0D, Math.PI * 2.0D);
+			final double phi = Doubles.asin(Doubles.saturate(p.z / this.radiusInner, -1.0D, 1.0D));
+			final double theta = Math.getOrAdd(Doubles.atan2(p.y, p.x), 0.0D, Doubles.PI * 2.0D);
 			
-			final double u = theta / (Math.PI * 2.0D);
-			final double v = (phi + Math.PI / 2.0D) / Math.PI;
+			final double u = theta / (Doubles.PI * 2.0D);
+			final double v = (phi + Doubles.PI / 2.0D) / Doubles.PI;
 			
 			return new Point2D(u, v);
 		}
@@ -1505,7 +1506,7 @@ public abstract class Shape {
 			
 			final double determinant = Vector2D.crossProduct(vTCA, vTCB);
 			
-			if(Math.isZero(determinant)) {
+			if(Doubles.isZero(determinant)) {
 				return new OrthonormalBasis33D(w);
 			}
 			

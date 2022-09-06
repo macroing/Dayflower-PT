@@ -20,6 +20,7 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Ints;
 import org.macroing.java.lang.Strings;
 import org.macroing.java.util.Arrays;
@@ -36,7 +37,7 @@ public abstract class BoundingVolume {
 	public abstract boolean contains(final Point3D p);
 	
 	public final boolean intersects(final Ray3D r, final double tMin, final double tMax) {
-		return !Math.isNaN(intersection(r, tMin, tMax));
+		return !Doubles.isNaN(intersection(r, tMin, tMax));
 	}
 	
 	public abstract double intersection(final Ray3D r, final double tMin, final double tMax);
@@ -180,7 +181,7 @@ public abstract class BoundingVolume {
 			final Point3D y = Point3D.transformAndDivide(m, new Point3D(this.center.x,               this.center.y + this.radius, this.center.z));
 			final Point3D z = Point3D.transformAndDivide(m, new Point3D(this.center.x,               this.center.y,               this.center.z + this.radius));
 			
-			final double r = Math.sqrt(Math.max(Point3D.distanceSquared(c, x), Point3D.distanceSquared(c, y), Point3D.distanceSquared(c, z)));
+			final double r = Doubles.sqrt(Math.max(Point3D.distanceSquared(c, x), Point3D.distanceSquared(c, y), Point3D.distanceSquared(c, z)));
 			
 			return new BoundingSphere(c, r);
 		}
@@ -203,7 +204,7 @@ public abstract class BoundingVolume {
 				return false;
 			} else if(!Objects.equals(this.center, BoundingSphere.class.cast(object).center)) {
 				return false;
-			} else if(!Math.equals(this.radius, BoundingSphere.class.cast(object).radius)) {
+			} else if(!Doubles.equals(this.radius, BoundingSphere.class.cast(object).radius)) {
 				return false;
 			} else {
 				return true;
@@ -226,11 +227,11 @@ public abstract class BoundingVolume {
 			final double t0 = ts[0];
 			final double t1 = ts[1];
 			
-			if(!Math.isNaN(t0) && t0 > tMin && t0 < tMax) {
+			if(!Doubles.isNaN(t0) && t0 > tMin && t0 < tMax) {
 				return t0;
 			}
 			
-			if(!Math.isNaN(t1) && t1 > tMin && t1 < tMax) {
+			if(!Doubles.isNaN(t1) && t1 > tMin && t1 < tMax) {
 				return t1;
 			}
 			

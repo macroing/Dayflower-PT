@@ -21,6 +21,7 @@ package org.dayflower.pt;
 import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
+import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Strings;
 
 public final class Quaternion4D {
@@ -69,13 +70,13 @@ public final class Quaternion4D {
 			return true;
 		} else if(q == null) {
 			return false;
-		} else if(!Math.equals(this.w, q.w)) {
+		} else if(!Doubles.equals(this.w, q.w)) {
 			return false;
-		} else if(!Math.equals(this.x, q.x)) {
+		} else if(!Doubles.equals(this.x, q.x)) {
 			return false;
-		} else if(!Math.equals(this.y, q.y)) {
+		} else if(!Doubles.equals(this.y, q.y)) {
 			return false;
-		} else if(!Math.equals(this.z, q.z)) {
+		} else if(!Doubles.equals(this.z, q.z)) {
 			return false;
 		} else {
 			return true;
@@ -83,7 +84,7 @@ public final class Quaternion4D {
 	}
 	
 	public double length() {
-		return Math.sqrt(lengthSquared());
+		return Doubles.sqrt(lengthSquared());
 	}
 	
 	public double lengthSquared() {
@@ -112,19 +113,19 @@ public final class Quaternion4D {
 //	TODO: Add unit tests!
 	public static Quaternion4D from(final Matrix44D m) {
 		if(m.element11 + m.element22 + m.element33 > 0.0D) {
-			final double scalar = 0.5D / Math.sqrt(m.element11 + m.element22 + m.element33 + 1.0D);
+			final double scalar = 0.5D / Doubles.sqrt(m.element11 + m.element22 + m.element33 + 1.0D);
 			
 			return normalize(new Quaternion4D((m.element23 - m.element32) * scalar, (m.element31 - m.element13) * scalar, (m.element12 - m.element21) * scalar, 0.25D / scalar));
 		} else if(m.element11 > m.element22 && m.element11 > m.element33) {
-			final double scalar = 2.0D * Math.sqrt(1.0D + m.element11 - m.element22 - m.element23);
+			final double scalar = 2.0D * Doubles.sqrt(1.0D + m.element11 - m.element22 - m.element23);
 			
 			return normalize(new Quaternion4D(0.25D * scalar, (m.element21 + m.element12) / scalar, (m.element31 + m.element13) / scalar, (m.element23 - m.element32) / scalar));
 		} else if(m.element22 > m.element33) {
-			final double scalar = 2.0D * Math.sqrt(1.0D + m.element22 - m.element11 - m.element33);
+			final double scalar = 2.0D * Doubles.sqrt(1.0D + m.element22 - m.element11 - m.element33);
 			
 			return normalize(new Quaternion4D((m.element21 + m.element12) / scalar, 0.25D * scalar, (m.element32 + m.element23) / scalar, (m.element31 - m.element13) / scalar));
 		} else {
-			final double scalar = 2.0F * Math.sqrt(1.0D + m.element33 - m.element11 - m.element22);
+			final double scalar = 2.0F * Doubles.sqrt(1.0D + m.element33 - m.element11 - m.element22);
 			
 			return normalize(new Quaternion4D((m.element31 + m.element13) / scalar, (m.element23 + m.element32) / scalar, 0.25D * scalar, (m.element12 - m.element21) / scalar));
 		}

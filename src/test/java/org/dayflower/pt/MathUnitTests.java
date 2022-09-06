@@ -20,8 +20,6 @@ package org.dayflower.pt;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,18 +30,6 @@ public final class MathUnitTests {
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	@Test
-	public void testAbsDouble() {
-		assertEquals(1.0D, Math.abs(-1.0D));
-		assertEquals(1.0D, Math.abs(+1.0D));
-	}
-	
-	@Test
-	public void testAbsInt() {
-		assertEquals(1, Math.abs(-1));
-		assertEquals(1, Math.abs(+1));
-	}
 	
 	@Test
 	public void testAcos() {
@@ -92,13 +78,6 @@ public final class MathUnitTests {
 	}
 	
 	@Test
-	public void testEquals() {
-		assertTrue(Math.equals(10.0D, 10.0D));
-		
-		assertFalse(Math.equals(10.0D, 20.0D));
-	}
-	
-	@Test
 	public void testFloor() {
 		assertEquals(0.0D, Math.floor(0.5D));
 	}
@@ -126,36 +105,6 @@ public final class MathUnitTests {
 	public void testGetOrAdd() {
 		assertEquals(1.0D, Math.getOrAdd(+1.0D, 0.0D, 2.0D));
 		assertEquals(1.0D, Math.getOrAdd(-1.0D, 0.0D, 2.0D));
-	}
-	
-	@Test
-	public void testIsInfinite() {
-		assertTrue(Math.isInfinite(Double.NEGATIVE_INFINITY));
-		assertTrue(Math.isInfinite(Double.POSITIVE_INFINITY));
-		
-		assertFalse(Math.isInfinite(10.0D));
-		assertFalse(Math.isInfinite(Double.NaN));
-	}
-	
-	@Test
-	public void testIsNaN() {
-		assertTrue(Math.isNaN(Double.NaN));
-		
-		assertFalse(Math.isNaN(10.0D));
-		assertFalse(Math.isNaN(Double.NEGATIVE_INFINITY));
-		assertFalse(Math.isNaN(Double.POSITIVE_INFINITY));
-	}
-	
-	@Test
-	public void testIsZero() {
-		assertTrue(Math.isZero(-0.0D));
-		assertTrue(Math.isZero(+0.0D));
-		
-		assertFalse(Math.isZero(-1.0D));
-		assertFalse(Math.isZero(+1.0D));
-		assertFalse(Math.isZero(Double.NaN));
-		assertFalse(Math.isZero(Double.NEGATIVE_INFINITY));
-		assertFalse(Math.isZero(Double.POSITIVE_INFINITY));
 	}
 	
 	@Test
@@ -254,11 +203,6 @@ public final class MathUnitTests {
 	}
 	
 	@Test
-	public void testPow() {
-		assertEquals(java.lang.Math.pow(2.0D, 2.0D), Math.pow(2.0D, 2.0D));
-	}
-	
-	@Test
 	public void testPow2() {
 		assertEquals(4.0D, Math.pow2(2.0D));
 	}
@@ -266,66 +210,6 @@ public final class MathUnitTests {
 	@Test
 	public void testPow5() {
 		assertEquals(32.0D, Math.pow5(2.0D));
-	}
-	
-	@Test
-	public void testRandom() {
-		final double value = Math.random();
-		
-		assertTrue(value >= 0.0D && value < 1.0D);
-	}
-	
-	@Test
-	public void testSaturateDouble() {
-		assertEquals(0.0D, Math.saturate(0.0D));
-		assertEquals(1.0D, Math.saturate(1.0D));
-		
-		assertEquals(0.0D, Math.saturate(-1.0D));
-		
-		assertEquals(1.0D, Math.saturate(2.0D));
-	}
-	
-	@Test
-	public void testSaturateDoubleDoubleDouble() {
-		assertEquals(0.0D, Math.saturate(0.0D, 0.0D, 1.0D));
-		assertEquals(0.0D, Math.saturate(0.0D, 1.0D, 0.0D));
-		assertEquals(1.0D, Math.saturate(1.0D, 0.0D, 1.0D));
-		assertEquals(1.0D, Math.saturate(1.0D, 1.0D, 0.0D));
-		
-		assertEquals(0.0D, Math.saturate(-1.0D, 0.0D, 1.0D));
-		assertEquals(0.0D, Math.saturate(-1.0D, 1.0D, 0.0D));
-		
-		assertEquals(1.0D, Math.saturate(2.0D, 0.0D, 1.0D));
-		assertEquals(1.0D, Math.saturate(2.0D, 1.0D, 0.0D));
-	}
-	
-	@Test
-	public void testSaturateInt() {
-		assertEquals(  0, Math.saturate(  0));
-		assertEquals(255, Math.saturate(255));
-		
-		assertEquals(0, Math.saturate(-1));
-		
-		assertEquals(255, Math.saturate(256));
-	}
-	
-	@Test
-	public void testSaturateIntIntInt() {
-		assertEquals(  0, Math.saturate(  0,   0, 255));
-		assertEquals(  0, Math.saturate(  0, 255,   0));
-		assertEquals(255, Math.saturate(255,   0, 255));
-		assertEquals(255, Math.saturate(255, 255,   0));
-		
-		assertEquals(0, Math.saturate(-1,   0, 255));
-		assertEquals(0, Math.saturate(-1, 255,   0));
-		
-		assertEquals(255, Math.saturate(256,   0, 255));
-		assertEquals(255, Math.saturate(256, 255,   0));
-	}
-	
-	@Test
-	public void testSin() {
-		assertEquals(java.lang.Math.sin(0.5D), Math.sin(0.5D));
 	}
 	
 	@Test
@@ -337,28 +221,7 @@ public final class MathUnitTests {
 	}
 	
 	@Test
-	public void testSqrt() {
-		assertEquals(java.lang.Math.sqrt(4.0D), Math.sqrt(4.0D));
-	}
-	
-	@Test
 	public void testTan() {
 		assertEquals(java.lang.Math.tan(0.5D), Math.tan(0.5D));
-	}
-	
-	@Test
-	public void testToDegrees() {
-		assertEquals(java.lang.Math.toDegrees(0.5D), Math.toDegrees(0.5D));
-	}
-	
-	@Test
-	public void testToInt() {
-		assertEquals(+1, Math.toInt(+1.5D));
-		assertEquals(-1, Math.toInt(-1.5D));
-	}
-	
-	@Test
-	public void testToRadians() {
-		assertEquals(java.lang.Math.toRadians(0.5D), Math.toRadians(0.5D));
 	}
 }

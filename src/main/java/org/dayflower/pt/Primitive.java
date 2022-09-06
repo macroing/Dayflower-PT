@@ -22,6 +22,8 @@ import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 import java.util.Optional;
 
+import org.macroing.java.lang.Doubles;
+
 public final class Primitive {
 	private final BoundingVolume boundingVolume;
 	private final Material material;
@@ -59,7 +61,7 @@ public final class Primitive {
 			
 			final double tOS = this.shape.intersection(rayOS, tMinimum, Ray3D.transformT(worldToObject, rayWS, rayOS, tMaximum));
 			
-			if(!Math.isNaN(tOS)) {
+			if(!Doubles.isNaN(tOS)) {
 				return Optional.of(new Intersection(this, rayOS, tOS));
 			}
 		}

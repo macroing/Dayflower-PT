@@ -19,7 +19,8 @@
 package org.dayflower.pt;
 
 import java.lang.reflect.Field;//TODO: Add unit tests!
-import java.util.concurrent.ThreadLocalRandom;
+
+import org.macroing.java.lang.Doubles;
 
 public final class Math {
 	public static final double EPSILON = 1.0e-4D;
@@ -42,26 +43,6 @@ public final class Math {
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	public static boolean equals(final double a, final double b) {
-		return Double.compare(a, b) == 0;
-	}
-	
-	public static boolean isInfinite(final double value) {
-		return Double.isInfinite(value);
-	}
-	
-	public static boolean isNaN(final double value) {
-		return Double.isNaN(value);
-	}
-	
-	public static boolean isZero(final double value) {
-		return Double.compare(value, +0.0D) == 0 || Double.compare(value, -0.0D) == 0;
-	}
-	
-	public static double abs(final double value) {
-		return java.lang.Math.abs(value);
-	}
 	
 	public static double acos(final double a) {
 		return java.lang.Math.acos(a);
@@ -147,10 +128,6 @@ public final class Math {
 		return x < 0.0D ? (x % y + y) % y : x % y;
 	}
 	
-	public static double pow(final double base, final double exponent) {
-		return java.lang.Math.pow(base, exponent);
-	}
-	
 	public static double pow2(final double base) {
 		return base * base;
 	}
@@ -159,39 +136,8 @@ public final class Math {
 		return base * base * base * base * base;
 	}
 	
-	public static double random() {
-		return ThreadLocalRandom.current().nextDouble();
-	}
-	
-	public static double saturate(final double value) {
-		return saturate(value, 0.0D, 1.0D);
-	}
-	
-	public static double saturate(final double value, final double valueIntervalA, final double valueIntervalB) {
-		final double valueMaximum = max(valueIntervalA, valueIntervalB);
-		final double valueMinimum = min(valueIntervalA, valueIntervalB);
-		
-		return value < valueMinimum ? valueMinimum : value > valueMaximum ? valueMaximum : value;
-	}
-	
-	public static double sin(final double a) {
-		return java.lang.Math.sin(a);
-	}
-	
-	public static double sqrt(final double value) {
-		return java.lang.Math.sqrt(value);
-	}
-	
 	public static double tan(final double a) {
 		return java.lang.Math.tan(a);
-	}
-	
-	public static double toDegrees(final double angleRadians) {
-		return java.lang.Math.toDegrees(angleRadians);
-	}
-	
-	public static double toRadians(final double angleDegrees) {
-		return java.lang.Math.toRadians(angleDegrees);
 	}
 	
 	public static double[] solveQuadraticSystem(final double a, final double b, final double c) {
@@ -199,7 +145,7 @@ public final class Math {
 		
 		final double discriminantSquared = b * b - 4.0D * a * c;
 		
-		if(isZero(discriminantSquared)) {
+		if(Doubles.isZero(discriminantSquared)) {
 			final double q = -0.5D * b / a;
 			
 			final double result0 = q;
@@ -208,15 +154,15 @@ public final class Math {
 			result[0] = result0;
 			result[1] = result1;
 		} else if(discriminantSquared > 0.0D) {
-			final double discriminant = sqrt(discriminantSquared);
+			final double discriminant = Doubles.sqrt(discriminantSquared);
 			
 			final double q = -0.5D * (b > 0.0D ? b + discriminant : b - discriminant);
 			
 			final double result0 = q / a;
 			final double result1 = c / q;
 			
-			result[0] = min(result0, result1);
-			result[1] = max(result0, result1);
+			result[0] = Doubles.min(result0, result1);
+			result[1] = Doubles.max(result0, result1);
 		}
 		
 		return result;
@@ -247,9 +193,9 @@ public final class Math {
 				return new double[0];
 			}
 			
-			d2 = sqrt(d2);
+			d2 = Doubles.sqrt(d2);
 		} else {
-			d1 = sqrt(d1);
+			d1 = Doubles.sqrt(d1);
 			d2 = 0.5D * q / d1;
 		}
 		
@@ -259,8 +205,8 @@ public final class Math {
 		final double pp = q1 - 4.0D * (z + d2);
 		
 		if(pm >= 0.0D && pp >= 0.0D) {
-			final double pmSqrt = sqrt(pm);
-			final double ppSqrt = sqrt(pp);
+			final double pmSqrt = Doubles.sqrt(pm);
+			final double ppSqrt = Doubles.sqrt(pp);
 			
 			final double[] results = new double[4];
 			
@@ -281,14 +227,14 @@ public final class Math {
 			
 			return results;
 		} else if(pm >= 0.0D) {
-			final double pmSqrt = sqrt(pm);
+			final double pmSqrt = Doubles.sqrt(pm);
 			
 			return new double[] {
 				-0.5D * (d1 + pmSqrt) + q2,
 				-0.5D * (d1 - pmSqrt) + q2
 			};
 		} else if(pp >= 0.0D) {
-			final double ppSqrt = sqrt(pp);
+			final double ppSqrt = Doubles.sqrt(pp);
 			
 			return new double[] {
 				+0.5D * (d1 - ppSqrt) + q2,
@@ -297,37 +243,6 @@ public final class Math {
 		} else {
 			return new double[0];
 		}
-	}
-	
-	public static int abs(final int value) {
-		return java.lang.Math.abs(value);
-	}
-	
-	public static int max(final int a, final int b) {
-		return java.lang.Math.max(a, b);
-	}
-	
-	public static int min(final int a, final int b) {
-		return java.lang.Math.min(a, b);
-	}
-	
-	public static int positiveModulo(final int x, final int y) {
-		return x < 0 ? (x % y + y) % y : x % y;
-	}
-	
-	public static int saturate(final int value) {
-		return saturate(value, 0, 255);
-	}
-	
-	public static int saturate(final int value, final int valueIntervalA, final int valueIntervalB) {
-		final int valueMaximum = max(valueIntervalA, valueIntervalB);
-		final int valueMinimum = min(valueIntervalA, valueIntervalB);
-		
-		return value < valueMinimum ? valueMinimum : value > valueMaximum ? valueMaximum : value;
-	}
-	
-	public static int toInt(final double value) {
-		return (int)(value);
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -342,10 +257,10 @@ public final class Math {
 		final double e = p / 3.0D;
 		
 		if(d >= 0.0D) {
-			return -2.0D * sqrt(q0) * cos(acos(r0 / sqrt(q0Cubed)) / 3.0D) - e;
+			return -2.0D * Doubles.sqrt(q0) * Doubles.cos(Doubles.acos(r0 / Doubles.sqrt(q0Cubed)) / 3.0D) - e;
 		}
 		
-		final double q1 = pow(sqrt(r0Squared - q0Cubed) + abs(r0), 1.0D / 3.0D);
+		final double q1 = Doubles.pow(Doubles.sqrt(r0Squared - q0Cubed) + Doubles.abs(r0), 1.0D / 3.0D);
 		final double q2 = q1 + q0 / q1;
 		final double q3 = r0 < 0.0D ? q2 - e : -q2 - e;
 		
