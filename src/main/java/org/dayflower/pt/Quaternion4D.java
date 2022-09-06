@@ -21,6 +21,8 @@ package org.dayflower.pt;
 import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
+import org.macroing.java.lang.Strings;
+
 public final class Quaternion4D {
 	public final double w;
 	public final double x;
@@ -48,7 +50,7 @@ public final class Quaternion4D {
 	
 	@Override
 	public String toString() {
-		return String.format("new Quaternion4D(%s, %s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y), Utilities.toNonScientificNotationJava(this.z), Utilities.toNonScientificNotationJava(this.w));
+		return String.format("new Quaternion4D(%s, %s, %s, %s)", Strings.toNonScientificNotationJava(this.x), Strings.toNonScientificNotationJava(this.y), Strings.toNonScientificNotationJava(this.z), Strings.toNonScientificNotationJava(this.w));
 	}
 	
 	@Override

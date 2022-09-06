@@ -64,6 +64,8 @@ Supported Textures
 Dependencies
 ------------
  - [Java 8](http://www.java.com)
+ - [Macroing / Java](https://github.com/macroing/Java)
+ - [Macroing / Art4J](https://github.com/macroing/Art4J)
 
 Note
 ----

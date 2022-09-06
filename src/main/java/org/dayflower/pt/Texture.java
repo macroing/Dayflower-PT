@@ -22,6 +22,12 @@ import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 import java.util.function.Function;
 
+import org.macroing.art4j.color.Color3D;
+import org.macroing.art4j.image.Image;
+import org.macroing.art4j.noise.PerlinNoiseD;
+import org.macroing.art4j.noise.SimplexNoiseD;
+import org.macroing.art4j.pixel.PixelTransformer;
+
 public interface Texture {
 	Color3D compute(final Intersection intersection);
 	
@@ -253,7 +259,7 @@ public interface Texture {
 			final double dU = Math.positiveModulo(cU * resolutionX - 0.5D, resolutionX);
 			final double dV = Math.positiveModulo(cV * resolutionY - 0.5D, resolutionY);
 			
-			return image.getColor(dU, dV, true);
+			return image.getColor3D(dU, dV, PixelTransformer.WRAP_AROUND);
 		};
 	}
 	
@@ -301,7 +307,7 @@ public interface Texture {
 			final double x = p.x * frequency;
 			final double y = p.y * frequency;
 			final double z = p.z * frequency;
-			final double r = PerlinNoise.turbulenceXYZ(x, y, z, octaves) * scale;
+			final double r = PerlinNoiseD.turbulenceXYZ(x, y, z, octaves) * scale;
 			final double s = 2.0D * Math.abs(Math.sin(x + r));
 			final double t = s < 1.0D ? s : s - 1.0D;
 			
@@ -410,7 +416,7 @@ public interface Texture {
 		return intersection -> {
 			final Point3D p = intersection.getSurfaceIntersectionPointWS();
 			
-			final double noise = SimplexNoise.fractionalBrownianMotionXYZ(p.x, p.y, p.z, frequency, gain, 0.0D, 1.0D, octaves);
+			final double noise = SimplexNoiseD.fractionalBrownianMotionXYZ(p.x, p.y, p.z, frequency, gain, 0.0D, 1.0D, octaves);
 			
 			return Color3D.multiply(color, noise);
 		};

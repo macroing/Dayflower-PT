@@ -20,6 +20,10 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+import org.macroing.java.lang.Ints;
+import org.macroing.java.lang.Strings;
+import org.macroing.java.util.Arrays;
+
 public abstract class BoundingVolume {
 	protected BoundingVolume() {
 		
@@ -138,8 +142,9 @@ public abstract class BoundingVolume {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		public static AxisAlignedBoundingBox create(final Point3D... points) {
-			Utilities.requireNonNullArray(points, "points");
-			Utilities.requireRange(points.length, 1, Integer.MAX_VALUE, "points.length");
+			Arrays.requireNonNull(points, "points");
+			
+			Ints.requireRange(points.length, 1, Integer.MAX_VALUE, "points.length");
 			
 			Point3D maximum = Point3D.MIN;
 			Point3D minimum = Point3D.MAX;
@@ -182,7 +187,7 @@ public abstract class BoundingVolume {
 		
 		@Override
 		public String toString() {
-			return String.format("BoundingVolume.boundingSphere(%s, %s)", this.center, Utilities.toNonScientificNotationJava(this.radius));
+			return String.format("BoundingVolume.boundingSphere(%s, %s)", this.center, Strings.toNonScientificNotationJava(this.radius));
 		}
 		
 		@Override

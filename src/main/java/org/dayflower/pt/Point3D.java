@@ -20,6 +20,10 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+import org.macroing.java.lang.Ints;
+import org.macroing.java.lang.Strings;
+import org.macroing.java.util.Arrays;
+
 public final class Point3D {
 	public static final Point3D MAX = max();
 	public static final Point3D MIN = min();
@@ -51,7 +55,7 @@ public final class Point3D {
 	 */
 	@Override
 	public String toString() {
-		return String.format("new Point3D(%s, %s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y), Utilities.toNonScientificNotationJava(this.z));
+		return String.format("new Point3D(%s, %s, %s)", Strings.toNonScientificNotationJava(this.x), Strings.toNonScientificNotationJava(this.y), Strings.toNonScientificNotationJava(this.z));
 	}
 	
 	@Override
@@ -142,8 +146,9 @@ public final class Point3D {
 	}
 	
 	public static boolean coplanar(final Point3D... points) {
-		Utilities.requireNonNullArray(points, "points");
-		Utilities.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
+		Arrays.requireNonNull(points, "points");
+		
+		Ints.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
 		
 		final Point3D p0 = points[0];
 		final Point3D p1 = points[1];

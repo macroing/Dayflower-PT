@@ -20,6 +20,8 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+import org.macroing.java.lang.Strings;
+
 /*
  * The rotateX(...), rotateY(...) and rotateZ(...) methods are using the right-hand rule according to the article Rotation_matrix on Wikipedia.
  * The vectors are stored as column vectors.
@@ -77,10 +79,10 @@ public final class Matrix44D {
 	
 	@Override
 	public String toString() {
-		final String row1 = String.format("%s, %s, %s, %s", Utilities.toNonScientificNotationJava(this.element11), Utilities.toNonScientificNotationJava(this.element12), Utilities.toNonScientificNotationJava(this.element13), Utilities.toNonScientificNotationJava(this.element14));
-		final String row2 = String.format("%s, %s, %s, %s", Utilities.toNonScientificNotationJava(this.element21), Utilities.toNonScientificNotationJava(this.element22), Utilities.toNonScientificNotationJava(this.element23), Utilities.toNonScientificNotationJava(this.element24));
-		final String row3 = String.format("%s, %s, %s, %s", Utilities.toNonScientificNotationJava(this.element31), Utilities.toNonScientificNotationJava(this.element32), Utilities.toNonScientificNotationJava(this.element33), Utilities.toNonScientificNotationJava(this.element34));
-		final String row4 = String.format("%s, %s, %s, %s", Utilities.toNonScientificNotationJava(this.element41), Utilities.toNonScientificNotationJava(this.element42), Utilities.toNonScientificNotationJava(this.element43), Utilities.toNonScientificNotationJava(this.element44));
+		final String row1 = String.format("%s, %s, %s, %s", Strings.toNonScientificNotationJava(this.element11), Strings.toNonScientificNotationJava(this.element12), Strings.toNonScientificNotationJava(this.element13), Strings.toNonScientificNotationJava(this.element14));
+		final String row2 = String.format("%s, %s, %s, %s", Strings.toNonScientificNotationJava(this.element21), Strings.toNonScientificNotationJava(this.element22), Strings.toNonScientificNotationJava(this.element23), Strings.toNonScientificNotationJava(this.element24));
+		final String row3 = String.format("%s, %s, %s, %s", Strings.toNonScientificNotationJava(this.element31), Strings.toNonScientificNotationJava(this.element32), Strings.toNonScientificNotationJava(this.element33), Strings.toNonScientificNotationJava(this.element34));
+		final String row4 = String.format("%s, %s, %s, %s", Strings.toNonScientificNotationJava(this.element41), Strings.toNonScientificNotationJava(this.element42), Strings.toNonScientificNotationJava(this.element43), Strings.toNonScientificNotationJava(this.element44));
 		
 		return String.format("new Matrix44D(%s, %s, %s, %s)", row1, row2, row3, row4);
 	}

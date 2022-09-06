@@ -20,6 +20,11 @@ package org.dayflower.pt;
 
 import java.lang.reflect.Field;//TODO: Add unit tests!
 
+import org.macroing.art4j.color.Color3D;
+import org.macroing.art4j.color.Color4D;
+import org.macroing.art4j.image.Image;
+import org.macroing.art4j.pixel.Color4DPixelOperator;
+
 public final class PathTracer {
 	private static final int RESOLUTION_X = 1024;
 	private static final int RESOLUTION_Y = 768;
@@ -35,7 +40,7 @@ public final class PathTracer {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private PathTracer() {
-		this.image = new Image(RESOLUTION_X, RESOLUTION_Y);
+		this.image = new Image(RESOLUTION_X, RESOLUTION_Y, Color4D.WHITE);
 		this.scene = Scene.createSceneSmallPT(new Camera(RESOLUTION_X, RESOLUTION_Y));
 	}
 	
@@ -61,13 +66,14 @@ public final class PathTracer {
 					}
 				}
 				
-				this.image.setColor(totalRadiance, pixelIndex);
+				this.image.setColor3D(totalRadiance, pixelIndex);
 			}
 		}
 		
 		final long currentTimeMillisB = System.currentTimeMillis();
 		final long currentTimeMillisC =  currentTimeMillisB -  currentTimeMillisA;
 		
+		this.image.fillD(Color4DPixelOperator.redoGammaCorrection());
 		this.image.save(String.format("./PT-%s.png", Long.toString(System.currentTimeMillis())));
 		
 		System.out.println("Rendering completed in " + currentTimeMillisC + " milliseconds.");

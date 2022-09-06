@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.macroing.art4j.color.Color3D;
+
 public abstract class Material {
 	protected Material() {
 		

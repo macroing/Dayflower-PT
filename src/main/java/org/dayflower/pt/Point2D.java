@@ -20,6 +20,8 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+import org.macroing.java.lang.Strings;
+
 /**
  * A {@code Point2D} represents a point with two {@code double}-based components.
  * <p>
@@ -75,7 +77,7 @@ public final class Point2D {
 	 */
 	@Override
 	public String toString() {
-		return String.format("new Point2D(%s, %s)", Utilities.toNonScientificNotationJava(this.x), Utilities.toNonScientificNotationJava(this.y));
+		return String.format("new Point2D(%s, %s)", Strings.toNonScientificNotationJava(this.x), Strings.toNonScientificNotationJava(this.y));
 	}
 	
 	/**

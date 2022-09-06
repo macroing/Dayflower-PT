@@ -21,6 +21,9 @@ package org.dayflower.pt;
 import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
+import org.macroing.java.lang.Ints;
+import org.macroing.java.util.Arrays;
+
 public abstract class Shape {
 	protected Shape() {
 		
@@ -843,8 +846,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		private Polygon(final Point2D[] point2Ds, final Point3D[] point3Ds, final Vector3D n) {
-			this.point2Ds = Utilities.requireNonNullArray(point2Ds, "point2Ds");
-			this.point3Ds = Utilities.requireNonNullArray(point3Ds, "point3Ds");
+			this.point2Ds = Arrays.requireNonNull(point2Ds, "point2Ds");
+			this.point3Ds = Arrays.requireNonNull(point3Ds, "point3Ds");
 			this.n = Objects.requireNonNull(n, "n == null");
 		}
 		
@@ -996,8 +999,9 @@ public abstract class Shape {
 		}
 		
 		private static Point3D[] doRequireValidPoints(final Point3D[] points) {
-			Utilities.requireNonNullArray(points, "points");
-			Utilities.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
+			Arrays.requireNonNull(points, "points");
+			
+			Ints.requireRange(points.length, 3, Integer.MAX_VALUE, "points.length");
 			
 			if(Point3D.coplanar(points)) {
 				return points.clone();

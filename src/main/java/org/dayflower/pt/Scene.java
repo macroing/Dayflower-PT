@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.macroing.art4j.color.Color3D;
+
 public final class Scene {
 	private final Camera camera;
 	private final List<Primitive> primitives;
