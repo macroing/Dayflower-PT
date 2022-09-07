@@ -87,7 +87,7 @@ public final class Point3D {
 	}
 	
 	public double sphericalPhi() {
-		return Math.getOrAdd(Math.atan2(this.y, this.x), 0.0D, Math.PI * 2.0D);
+		return Doubles.addLessThan(Doubles.atan2(this.y, this.x), 0.0D, Doubles.PI * 2.0D);
 	}
 	
 	@Override
@@ -106,15 +106,15 @@ public final class Point3D {
 	}
 	
 	public static Point3D lerp(final Point3D a, final Point3D b, final double t) {
-		return new Point3D(Math.lerp(a.x, b.x, t), Math.lerp(a.y, b.y, t), Math.lerp(a.z, b.z, t));
+		return new Point3D(Doubles.lerp(a.x, b.x, t), Doubles.lerp(a.y, b.y, t), Doubles.lerp(a.z, b.z, t));
 	}
 	
 	public static Point3D max() {
-		return new Point3D(Math.MAX_VALUE, Math.MAX_VALUE, Math.MAX_VALUE);
+		return new Point3D(Doubles.MAX_VALUE, Doubles.MAX_VALUE, Doubles.MAX_VALUE);
 	}
 	
 	public static Point3D max(final Point3D a, final Point3D b) {
-		return new Point3D(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
+		return new Point3D(Doubles.max(a.x, b.x), Doubles.max(a.y, b.y), Doubles.max(a.z, b.z));
 	}
 	
 	public static Point3D midpoint(final Point3D a, final Point3D b) {
@@ -122,11 +122,11 @@ public final class Point3D {
 	}
 	
 	public static Point3D min() {
-		return new Point3D(Math.MIN_VALUE, Math.MIN_VALUE, Math.MIN_VALUE);
+		return new Point3D(Doubles.MIN_VALUE, Doubles.MIN_VALUE, Doubles.MIN_VALUE);
 	}
 	
 	public static Point3D min(final Point3D a, final Point3D b) {
-		return new Point3D(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
+		return new Point3D(Doubles.min(a.x, b.x), Doubles.min(a.y, b.y), Doubles.min(a.z, b.z));
 	}
 	
 	public static Point3D transform(final Matrix44D mLHS, final Point3D pRHS) {

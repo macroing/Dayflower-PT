@@ -158,8 +158,8 @@ public final class Quaternion4D {
 	public static Quaternion4D normalize(final Quaternion4D q) {
 		final double length = q.length();
 		
-		final boolean isLengthGTEThreshold = length >= Math.NEXT_DOWN_1_3;
-		final boolean isLengthLTEThreshold = length <= Math.NEXT_UP_1_1;
+		final boolean isLengthGTEThreshold = length >= Doubles.NEXT_DOWN_1_3;
+		final boolean isLengthLTEThreshold = length <= Doubles.NEXT_UP_1_1;
 		
 		if(isLengthGTEThreshold && isLengthLTEThreshold) {
 			return q;

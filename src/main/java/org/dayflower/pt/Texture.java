@@ -180,8 +180,8 @@ public interface Texture {
 			final double u = intersection.getTextureCoordinates().x;
 			final double v = intersection.getTextureCoordinates().y;
 			
-			final boolean isU = Math.fractionalPart((u * angleRadiansCos - v * angleRadiansSin) * scaleU) > 0.5D;
-			final boolean isV = Math.fractionalPart((v * angleRadiansCos + u * angleRadiansSin) * scaleV) > 0.5D;
+			final boolean isU = Doubles.fractionalPart((u * angleRadiansCos - v * angleRadiansSin) * scaleU) > 0.5D;
+			final boolean isV = Doubles.fractionalPart((v * angleRadiansCos + u * angleRadiansSin) * scaleV) > 0.5D;
 			final boolean isTextureA = isU ^ isV;
 			
 			return isTextureA ? textureA.compute(intersection) : textureB.compute(intersection);
@@ -257,8 +257,8 @@ public interface Texture {
 			final double cU = bU * scaleU;
 			final double cV = bV * scaleV;
 			
-			final double dU = Math.positiveModulo(cU * resolutionX - 0.5D, resolutionX);
-			final double dV = Math.positiveModulo(cV * resolutionY - 0.5D, resolutionY);
+			final double dU = Doubles.positiveModulo(cU * resolutionX - 0.5D, resolutionX);
+			final double dV = Doubles.positiveModulo(cV * resolutionY - 0.5D, resolutionY);
 			
 			return image.getColor3D(dU, dV, PixelTransformer.WRAP_AROUND);
 		};
@@ -300,7 +300,7 @@ public interface Texture {
 		Objects.requireNonNull(colorB, "colorB == null");
 		Objects.requireNonNull(colorC, "colorC == null");
 		
-		final double frequency = Math.PI * stripes;
+		final double frequency = Doubles.PI * stripes;
 		
 		return intersection -> {
 			final Point3D p = intersection.getSurfaceIntersectionPointWS();
@@ -379,8 +379,8 @@ public interface Texture {
 			final double aU = intersection.getTextureCoordinates().x;
 			final double aV = intersection.getTextureCoordinates().y;
 			
-			final double bU = Math.fractionalPart((aU * angleRadiansCos - aV * angleRadiansSin) * cellResolution) - 0.5D;
-			final double bV = Math.fractionalPart((aV * angleRadiansCos + aU * angleRadiansSin) * cellResolution) - 0.5D;
+			final double bU = Doubles.fractionalPart((aU * angleRadiansCos - aV * angleRadiansSin) * cellResolution) - 0.5D;
+			final double bV = Doubles.fractionalPart((aV * angleRadiansCos + aU * angleRadiansSin) * cellResolution) - 0.5D;
 			
 			final double distanceSquared = bU * bU + bV * bV;
 			

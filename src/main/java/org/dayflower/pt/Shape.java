@@ -299,13 +299,13 @@ public abstract class Shape {
 			final double b = 2.0D * (d.x * o.x + d.y * o.y - k * d.z * (o.z - this.zMax));
 			final double c = o.x * o.x + o.y * o.y - k * (o.z - this.zMax) * (o.z - this.zMax);
 			
-			final double[] ts = Math.solveQuadraticSystem(a, b, c);
+			final double[] ts = Doubles.solveQuadraticSystem(a, b, c);
 			
 			for(int i = 0; i < ts.length; i++) {
 				final double t = ts[i];
 				
 				if(Doubles.isNaN(t)) {
-					return Math.NaN;
+					return Doubles.NaN;
 				}
 				
 				if(t > tMinimum && t < tMaximum) {
@@ -317,7 +317,7 @@ public abstract class Shape {
 				}
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 	}
 	
@@ -390,13 +390,13 @@ public abstract class Shape {
 			final double b = 2.0D * (d.x * o.x + d.y * o.y);
 			final double c = o.x * o.x + o.y * o.y - this.radius * this.radius;
 			
-			final double[] ts = Math.solveQuadraticSystem(a, b, c);
+			final double[] ts = Doubles.solveQuadraticSystem(a, b, c);
 			
 			for(int i = 0; i < ts.length; i++) {
 				final double t = ts[i];
 				
 				if(Doubles.isNaN(t)) {
-					return Math.NaN;
+					return Doubles.NaN;
 				}
 				
 				if(t > tMinimum && t < tMaximum) {
@@ -408,7 +408,7 @@ public abstract class Shape {
 				}
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 	}
 	
@@ -482,13 +482,13 @@ public abstract class Shape {
 			final Vector3D d = ray.getDirection();
 			
 			if(Doubles.isZero(d.z)) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			final double t = (this.zMax - o.z) / d.z;
 			
 			if(t <= tMinimum || t >= tMaximum) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			final Point3D p = Point3D.add(o, d, t);
@@ -496,7 +496,7 @@ public abstract class Shape {
 			final double lengthSquared = p.x * p.x + p.y * p.y;
 			
 			if(lengthSquared > this.radiusOuter * this.radiusOuter || lengthSquared < this.radiusInner * this.radiusInner || p.sphericalPhi() > this.phiMax) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			return t;
@@ -584,13 +584,13 @@ public abstract class Shape {
 			final double b = 2.0D * (this.aH * d.x * o.x + this.aH * d.y * o.y - this.cH * d.z * o.z);
 			final double c = this.aH * o.x * o.x + this.aH * o.y * o.y - this.cH * o.z * o.z - 1.0D;
 			
-			final double[] ts = Math.solveQuadraticSystem(a, b, c);
+			final double[] ts = Doubles.solveQuadraticSystem(a, b, c);
 			
 			for(int i = 0; i < ts.length; i++) {
 				final double t = ts[i];
 				
 				if(Doubles.isNaN(t)) {
-					return Math.NaN;
+					return Doubles.NaN;
 				}
 				
 				if(t > tMinimum && t < tMaximum) {
@@ -602,7 +602,7 @@ public abstract class Shape {
 				}
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -724,13 +724,13 @@ public abstract class Shape {
 			final double b = 2.0D * k * (d.x * o.x + d.y * o.y) - d.z;
 			final double c = k * (o.x * o.x + o.y * o.y) - o.z;
 			
-			final double[] ts = Math.solveQuadraticSystem(a, b, c);
+			final double[] ts = Doubles.solveQuadraticSystem(a, b, c);
 			
 			for(int i = 0; i < ts.length; i++) {
 				final double t = ts[i];
 				
 				if(Doubles.isNaN(t)) {
-					return Math.NaN;
+					return Doubles.NaN;
 				}
 				
 				if(t > tMinimum && t < tMaximum) {
@@ -742,7 +742,7 @@ public abstract class Shape {
 				}
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 	}
 	
@@ -823,7 +823,7 @@ public abstract class Shape {
 			final double nDotD = Vector3D.dotProduct(n, d);
 			
 			if(Doubles.isZero(nDotD)) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			final double t = Vector3D.dotProduct(Vector3D.direction(o, a), n) / nDotD;
@@ -832,7 +832,7 @@ public abstract class Shape {
 				return t;
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 	}
 	
@@ -956,7 +956,7 @@ public abstract class Shape {
 			final double nDotD = Vector3D.dotProduct(n, d);
 			
 			if(Doubles.isZero(nDotD)) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			final double t = Vector3D.dotProduct(Vector3D.direction(o, a), n) / nDotD;
@@ -965,7 +965,7 @@ public abstract class Shape {
 				return t;
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1099,7 +1099,7 @@ public abstract class Shape {
 			final double nDotD = Vector3D.dotProduct(n, d);
 			
 			if(Doubles.isZero(nDotD)) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			final double t = Vector3D.dotProduct(Vector3D.direction(o, a), n) / nDotD;
@@ -1108,7 +1108,7 @@ public abstract class Shape {
 				return t;
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1231,15 +1231,15 @@ public abstract class Shape {
 			final Vector3D v = Vector3D.multiply(Vector3D.direction(this.minimum, this.maximum), 0.5D);
 			
 			if(p.x + v.x - 0.0001D < q.x || p.x - v.x + 0.0001D > q.x) {
-				return new Point2D(Math.normalize(p.z, this.minimum.z, this.maximum.z), Math.normalize(p.y, this.minimum.y, this.maximum.y));
+				return new Point2D(Doubles.normalize(p.z, this.minimum.z, this.maximum.z), Doubles.normalize(p.y, this.minimum.y, this.maximum.y));
 			}
 			
 			if(p.y + v.y - 0.0001D < q.y || p.y - v.y + 0.0001D > q.y) {
-				return new Point2D(Math.normalize(p.x, this.minimum.x, this.maximum.x), Math.normalize(p.z, this.minimum.z, this.maximum.z));
+				return new Point2D(Doubles.normalize(p.x, this.minimum.x, this.maximum.x), Doubles.normalize(p.z, this.minimum.z, this.maximum.z));
 			}
 			
 			if(p.z + v.z - 0.0001D < q.z || p.z - v.z + 0.0001D > q.z) {
-				return new Point2D(Math.normalize(p.x, this.minimum.x, this.maximum.x), Math.normalize(p.y, this.minimum.y, this.maximum.y));
+				return new Point2D(Doubles.normalize(p.x, this.minimum.x, this.maximum.x), Doubles.normalize(p.y, this.minimum.y, this.maximum.y));
 			}
 			
 			return new Point2D();
@@ -1256,11 +1256,11 @@ public abstract class Shape {
 			final Vector3D v1 = Vector3D.hadamardProduct(Vector3D.direction(ray.getOrigin(), this.minimum), v0);
 			final Vector3D v2 = Vector3D.hadamardProduct(Vector3D.direction(ray.getOrigin(), this.maximum), v0);
 			
-			final double t0 = Math.max(Math.min(v1.x, v2.x), Math.min(v1.y, v2.y), Math.min(v1.z, v2.z));
-			final double t1 = Math.min(Math.max(v1.x, v2.x), Math.max(v1.y, v2.y), Math.max(v1.z, v2.z));
+			final double t0 = Doubles.max(Doubles.min(v1.x, v2.x), Doubles.min(v1.y, v2.y), Doubles.min(v1.z, v2.z));
+			final double t1 = Doubles.min(Doubles.max(v1.x, v2.x), Doubles.max(v1.y, v2.y), Doubles.max(v1.z, v2.z));
 			
 			if(t0 > t1) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			if(t0 > tMinimum && t0 < tMaximum) {
@@ -1271,7 +1271,7 @@ public abstract class Shape {
 				return t1;
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1313,7 +1313,7 @@ public abstract class Shape {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
 			final Vector3D w = Vector3D.directionNormalized(this.center, p);
-			final Vector3D v = Vector3D.normalize(Vector3D.crossProduct(Vector3D.normalize(new Vector3D(-(Math.PI * 2.0D) * w.y, Math.PI * 2.0D * w.x, 0.0D)), w));
+			final Vector3D v = Vector3D.normalize(Vector3D.crossProduct(Vector3D.normalize(new Vector3D(-(Doubles.PI * 2.0D) * w.y, Doubles.PI * 2.0D * w.x, 0.0D)), w));
 			
 			return new OrthonormalBasis33D(w, v);
 		}
@@ -1324,8 +1324,8 @@ public abstract class Shape {
 			
 			final Vector3D n = Vector3D.directionNormalized(this.center, p);
 			
-			final double u = Math.getOrAdd(Math.atan2(n.y, n.x), 0.0D, 2.0D * Math.PI) / (2.0D * Math.PI);
-			final double v = Math.acos(Math.max(Math.min(n.z, 1.0D), -1.0D)) / Math.PI;
+			final double u = Doubles.addLessThan(Doubles.atan2(n.y, n.x), 0.0D, 2.0D * Doubles.PI) / (2.0D * Doubles.PI);
+			final double v = Doubles.acos(Doubles.max(Doubles.min(n.z, 1.0D), -1.0D)) / Doubles.PI;
 			
 			return new Point2D(u, v);
 		}
@@ -1346,7 +1346,7 @@ public abstract class Shape {
 			final double b = 2.0D * Vector3D.dotProduct(e, d);
 			final double c = e.lengthSquared() - this.radius * this.radius;
 			
-			final double[] ts = Math.solveQuadraticSystem(a, b, c);
+			final double[] ts = Doubles.solveQuadraticSystem(a, b, c);
 			
 			final double t0 = ts[0];
 			final double t1 = ts[1];
@@ -1359,7 +1359,7 @@ public abstract class Shape {
 				return t1;
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 	}
 	
@@ -1406,7 +1406,7 @@ public abstract class Shape {
 			final Point3D p = Point3D.add(ray.getOrigin(), ray.getDirection(), t);
 			
 			final double phi = Doubles.asin(Doubles.saturate(p.z / this.radiusInner, -1.0D, 1.0D));
-			final double theta = Math.getOrAdd(Doubles.atan2(p.y, p.x), 0.0D, Doubles.PI * 2.0D);
+			final double theta = Doubles.addLessThan(Doubles.atan2(p.y, p.x), 0.0D, Doubles.PI * 2.0D);
 			
 			final double u = theta / (Doubles.PI * 2.0D);
 			final double v = (phi + Doubles.PI / 2.0D) / Doubles.PI;
@@ -1444,11 +1444,11 @@ public abstract class Shape {
 			final double[] ts = Math.solveQuartic(a, b, c, d, e);
 			
 			if(ts.length == 0) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			if(ts[0] >= tMaximum || ts[ts.length - 1] <= tMinimum) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			for(int i = 0; i < ts.length; i++) {
@@ -1457,7 +1457,7 @@ public abstract class Shape {
 				}
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 	}
 	
@@ -1584,7 +1584,7 @@ public abstract class Shape {
 			final double t = Vector3D.dotProduct(v3, v4) * determinantReciprocal;
 			
 			if(t <= tMinimum || t >= tMaximum) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			final Vector3D v5 = Vector3D.crossProduct(v4, v2);
@@ -1593,18 +1593,18 @@ public abstract class Shape {
 			final double u = uDot * determinantReciprocal;
 			
 			if(u < 0.0D) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			final double vDot = Vector3D.dotProduct(v5, v0);
 			final double v = vDot * determinantReciprocal;
 			
 			if(v < 0.0D) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			if((uDot + vDot) * determinant > determinant * determinant) {
-				return Math.NaN;
+				return Doubles.NaN;
 			}
 			
 			return t;

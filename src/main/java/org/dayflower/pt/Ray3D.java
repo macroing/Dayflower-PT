@@ -87,6 +87,6 @@ public final class Ray3D {
 	}
 	
 	public static double transformT(final Matrix44D m, final Ray3D rOldSpace, final Ray3D rNewSpace, final double t) {
-		return !Doubles.isNaN(t) && !Doubles.isZero(t) && t < Math.MAX_VALUE ? Doubles.abs(Point3D.distance(rNewSpace.origin, Point3D.transformAndDivide(m, Point3D.add(rOldSpace.origin, rOldSpace.direction, t)))) : t;
+		return !Doubles.isNaN(t) && !Doubles.isZero(t) && t < Doubles.MAX_VALUE ? Doubles.abs(Point3D.distance(rNewSpace.origin, Point3D.transformAndDivide(m, Point3D.add(rOldSpace.origin, rOldSpace.direction, t)))) : t;
 	}
 }

@@ -129,10 +129,10 @@ public abstract class BoundingVolume {
 			final Vector3D v2 = Vector3D.hadamardProduct(Vector3D.direction(o, this.maximum), v1);
 			final Vector3D v3 = Vector3D.hadamardProduct(Vector3D.direction(o, this.minimum), v1);
 			
-			final double t0 = Math.max(Math.min(v2.x, v3.x), Math.min(v2.y, v3.y), Math.min(v2.z, v3.z));
-			final double t1 = Math.min(Math.max(v2.x, v3.x), Math.max(v2.y, v3.y), Math.max(v2.z, v3.z));
+			final double t0 = Doubles.max(Doubles.min(v2.x, v3.x), Doubles.min(v2.y, v3.y), Doubles.min(v2.z, v3.z));
+			final double t1 = Doubles.min(Doubles.max(v2.x, v3.x), Doubles.max(v2.y, v3.y), Doubles.max(v2.z, v3.z));
 			
-			return t0 > t1 ? Math.NaN : t0 > tMin && t0 < tMax ? t0 : t1 > tMin && t1 < tMax ? t1 : Math.NaN;
+			return t0 > t1 ? Doubles.NaN : t0 > tMin && t0 < tMax ? t0 : t1 > tMin && t1 < tMax ? t1 : Doubles.NaN;
 		}
 		
 		@Override
@@ -181,7 +181,7 @@ public abstract class BoundingVolume {
 			final Point3D y = Point3D.transformAndDivide(m, new Point3D(this.center.x,               this.center.y + this.radius, this.center.z));
 			final Point3D z = Point3D.transformAndDivide(m, new Point3D(this.center.x,               this.center.y,               this.center.z + this.radius));
 			
-			final double r = Doubles.sqrt(Math.max(Point3D.distanceSquared(c, x), Point3D.distanceSquared(c, y), Point3D.distanceSquared(c, z)));
+			final double r = Doubles.sqrt(Doubles.max(Point3D.distanceSquared(c, x), Point3D.distanceSquared(c, y), Point3D.distanceSquared(c, z)));
 			
 			return new BoundingSphere(c, r);
 		}
@@ -222,7 +222,7 @@ public abstract class BoundingVolume {
 			final double b = 2.0D * Vector3D.dotProduct(e, d);
 			final double c = e.lengthSquared() - this.radius * this.radius;
 			
-			final double[] ts = Math.solveQuadraticSystem(a, b, c);
+			final double[] ts = Doubles.solveQuadraticSystem(a, b, c);
 			
 			final double t0 = ts[0];
 			final double t1 = ts[1];
@@ -235,7 +235,7 @@ public abstract class BoundingVolume {
 				return t1;
 			}
 			
-			return Math.NaN;
+			return Doubles.NaN;
 		}
 		
 		@Override

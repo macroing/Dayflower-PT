@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import org.macroing.java.lang.Doubles;
+
 @SuppressWarnings("static-method")
 public final class Ray3DUnitTests {
 	public Ray3DUnitTests() {
@@ -121,9 +123,9 @@ public final class Ray3DUnitTests {
 		final Ray3D rOldSpaceA = new Ray3D(new Point3D(), Vector3D.z());
 		final Ray3D rNewSpaceA = new Ray3D(new Point3D(), Vector3D.z());
 		
-		assertEquals(Math.NaN,       Ray3D.transformT(mA, rOldSpaceA, rNewSpaceA, Math.NaN));
-		assertEquals(0.0D,           Ray3D.transformT(mA, rOldSpaceA, rNewSpaceA, 0.0D));
-		assertEquals(Math.MAX_VALUE, Ray3D.transformT(mA, rOldSpaceA, rNewSpaceA, Math.MAX_VALUE));
+		assertEquals(Doubles.NaN,       Ray3D.transformT(mA, rOldSpaceA, rNewSpaceA, Doubles.NaN));
+		assertEquals(0.0D,              Ray3D.transformT(mA, rOldSpaceA, rNewSpaceA, 0.0D));
+		assertEquals(Doubles.MAX_VALUE, Ray3D.transformT(mA, rOldSpaceA, rNewSpaceA, Doubles.MAX_VALUE));
 		
 		assertEquals(1.0D,           Ray3D.transformT(mA, rOldSpaceA, rNewSpaceA, 1.0D));
 		assertEquals(2.0D,           Ray3D.transformT(mB, rOldSpaceA, rNewSpaceA, 1.0D));

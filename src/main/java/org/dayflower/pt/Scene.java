@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.macroing.art4j.color.Color3D;
+import org.macroing.java.lang.Doubles;
 import org.macroing.java.util.Randoms;
 
 public final class Scene {
@@ -89,7 +90,7 @@ public final class Scene {
 	
 //	TODO: Add unit tests!
 	public Optional<Intersection> intersection(final Ray3D rayWS) {
-		return intersection(rayWS, Math.EPSILON, Math.MAX_VALUE);
+		return intersection(rayWS, Math.EPSILON, Doubles.MAX_VALUE);
 	}
 	
 //	TODO: Add unit tests!

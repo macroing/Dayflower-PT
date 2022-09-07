@@ -26,6 +26,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import org.macroing.java.lang.Doubles;
+
 @SuppressWarnings("static-method")
 public final class Point3DUnitTests {
 	public Point3DUnitTests() {
@@ -253,9 +255,9 @@ public final class Point3DUnitTests {
 		final Point3D y = new Point3D(0.0D, 1.0D, 0.0D);
 		final Point3D z = new Point3D(0.0D, 0.0D, 1.0D);
 		
-		assertEquals(0.0D,           x.sphericalPhi());
-		assertEquals(Math.PI / 2.0D, y.sphericalPhi());
-		assertEquals(0.0D,           z.sphericalPhi());
+		assertEquals(0.0D,              x.sphericalPhi());
+		assertEquals(Doubles.PI / 2.0D, y.sphericalPhi());
+		assertEquals(0.0D,              z.sphericalPhi());
 	}
 	
 	@Test

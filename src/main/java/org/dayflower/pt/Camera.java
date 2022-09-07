@@ -60,7 +60,7 @@ public final class Camera {
 	 * @param resolutionY the resolution along the Y-axis
 	 */
 	public Camera(final double resolutionX, final double resolutionY) {
-		this(resolutionX, resolutionY, 2.0D * Math.tan(Doubles.toRadians(28.799323D) * 0.5D));
+		this(resolutionX, resolutionY, 2.0D * Doubles.tan(Doubles.toRadians(28.799323D) * 0.5D));
 	}
 	
 //	TODO: Add unit tests!

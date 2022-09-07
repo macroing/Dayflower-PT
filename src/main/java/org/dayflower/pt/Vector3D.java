@@ -252,8 +252,8 @@ public final class Vector3D {
 	public static Vector3D normalize(final Vector3D v) {
 		final double length = v.length();
 		
-		final boolean isLengthGTEThreshold = length >= Math.NEXT_DOWN_1_3;
-		final boolean isLengthLTEThreshold = length <= Math.NEXT_UP_1_1;
+		final boolean isLengthGTEThreshold = length >= Doubles.NEXT_DOWN_1_3;
+		final boolean isLengthLTEThreshold = length <= Doubles.NEXT_UP_1_1;
 		
 		if(isLengthGTEThreshold && isLengthLTEThreshold) {
 			return v;
@@ -307,11 +307,11 @@ public final class Vector3D {
 //	TODO: Add unit tests!
 	public static Vector3D sampleHemisphereCosineDistribution(final Point2D p) {
 //		This version is similar to the one in SmallPT:
-//		return directionSpherical(Math.sqrt(p.y), Math.sqrt(1.0D - p.y), 2.0D * Math.PI * p.x);
+//		return directionSpherical(Doubles.sqrt(p.y), Doubles.sqrt(1.0D - p.y), 2.0D * Doubles.PI * p.x);
 		
 		final Point2D q = Point2D.sampleDiskUniformDistributionByConcentricMapping(p);
 		
-		return new Vector3D(q.x, q.y, Doubles.sqrt(Math.max(0.0D, 1.0D - q.x * q.x - q.y * q.y)));
+		return new Vector3D(q.x, q.y, Doubles.sqrt(Doubles.max(0.0D, 1.0D - q.x * q.x - q.y * q.y)));
 	}
 	
 //	TODO: Add unit tests!

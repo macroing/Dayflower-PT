@@ -368,13 +368,13 @@ public abstract class Material {
 			final double sampleV = Randoms.nextDouble();
 			
 			final int matches = this.bXDFs.size();
-			final int match = Ints.min((int)(Math.floor(sampleU * matches)), matches - 1);
+			final int match = Ints.min((int)(Doubles.floor(sampleU * matches)), matches - 1);
 			
 			if(matches == 0) {
 				return Optional.empty();
 			}
 			
-			final double u = Math.min(sampleU * matches - match, 0.99999994D);
+			final double u = Doubles.min(sampleU * matches - match, 0.99999994D);
 			final double v = sampleV;
 			
 			final Point2D p = new Point2D(u, v);
@@ -495,8 +495,8 @@ public abstract class Material {
 			final double u = intersection.getTextureCoordinates().x;
 			final double v = intersection.getTextureCoordinates().y;
 			
-			final boolean isU = Math.fractionalPart((u * this.angleRadiansCos - v * this.angleRadiansSin) * this.scaleU) > 0.5D;
-			final boolean isV = Math.fractionalPart((v * this.angleRadiansCos + u * this.angleRadiansSin) * this.scaleV) > 0.5D;
+			final boolean isU = Doubles.fractionalPart((u * this.angleRadiansCos - v * this.angleRadiansSin) * this.scaleU) > 0.5D;
+			final boolean isV = Doubles.fractionalPart((v * this.angleRadiansCos + u * this.angleRadiansSin) * this.scaleV) > 0.5D;
 			final boolean isMaterialA = isU ^ isV;
 			
 			return isMaterialA ? this.materialA.compute(intersection) : this.materialB.compute(intersection);
@@ -631,7 +631,7 @@ public abstract class Material {
 		}
 		
 		public static Color3D evaluateDielectricSchlick(final double cosTheta, final Color3D r0) {
-			return Color3D.add(r0, Color3D.multiply(Color3D.subtract(Color3D.WHITE, r0), Math.pow5(1.0D - cosTheta)));
+			return Color3D.add(r0, Color3D.multiply(Color3D.subtract(Color3D.WHITE, r0), Doubles.pow5(1.0D - cosTheta)));
 		}
 		
 		public static double evaluateDielectric(final double cosThetaI, final double etaI, final double etaT) {
@@ -660,7 +660,7 @@ public abstract class Material {
 		}
 		
 		public static double evaluateDielectricSchlick(final double cosTheta, final double r0) {
-			return r0 + (1.0D - r0) * Math.pow5(Doubles.saturate(1.0D - cosTheta));
+			return r0 + (1.0D - r0) * Doubles.pow5(Doubles.saturate(1.0D - cosTheta));
 		}
 	}
 	
@@ -745,7 +745,7 @@ public abstract class Material {
 		
 		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
-			return Color3D.divide(this.r, Math.PI);
+			return Color3D.divide(this.r, Doubles.PI);
 		}
 		
 		@Override
@@ -758,7 +758,7 @@ public abstract class Material {
 		
 		@Override
 		public double evaluatePDF(final Vector3D o, final Vector3D i) {
-			return Vector3D.sameHemisphereZ(o, i) ? i.cosThetaAbs() / Math.PI : 0.0D;
+			return Vector3D.sameHemisphereZ(o, i) ? i.cosThetaAbs() / Doubles.PI : 0.0D;
 		}
 	}
 	
@@ -882,7 +882,7 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		public static double convertRoughnessToAlpha(final double roughness) {
-			final double x = Math.log(Math.max(roughness, 1.0e-3D));
+			final double x = Doubles.log(Doubles.max(roughness, 1.0e-3D));
 			final double y = 1.62142D + 0.819955D * x + 0.1734D * x * x + 0.0171201D * x * x * x + 0.000640711D * x * x * x * x;
 			
 			return y;
@@ -968,8 +968,8 @@ public abstract class Material {
 		
 		@Override
 		public Optional<Result> compute(final Intersection intersection) {
-			final Color3D colorKD = Color3D.saturate(this.textureKD.compute(intersection), 0.0D, Math.MAX_VALUE);
-			final Color3D colorKS = Color3D.saturate(this.textureKS.compute(intersection), 0.0D, Math.MAX_VALUE);
+			final Color3D colorKD = Color3D.saturate(this.textureKD.compute(intersection), 0.0D, Doubles.MAX_VALUE);
+			final Color3D colorKS = Color3D.saturate(this.textureKS.compute(intersection), 0.0D, Doubles.MAX_VALUE);
 			
 			final boolean hasColorKD = !colorKD.isBlack();
 			final boolean hasColorKS = !colorKS.isBlack();
@@ -1023,8 +1023,8 @@ public abstract class Material {
 		
 		@Override
 		public Optional<Result> compute(final Intersection intersection) {
-			final Color3D colorKD = Color3D.saturate(this.textureKD.compute(intersection), 0.0D, Math.MAX_VALUE);
-			final Color3D colorKS = Color3D.saturate(this.textureKS.compute(intersection), 0.0D, Math.MAX_VALUE);
+			final Color3D colorKD = Color3D.saturate(this.textureKD.compute(intersection), 0.0D, Doubles.MAX_VALUE);
+			final Color3D colorKS = Color3D.saturate(this.textureKS.compute(intersection), 0.0D, Doubles.MAX_VALUE);
 			
 			if(!colorKD.isBlack() && !colorKS.isBlack()) {
 				final double roughnessU = this.isRemappingRoughness ? MicrofacetDistribution.convertRoughnessToAlpha(this.textureRoughnessU.compute(intersection).average()) : this.textureRoughnessU.compute(intersection).average();
@@ -1043,7 +1043,7 @@ public abstract class Material {
 				}
 				
 				final double t = Doubles.min(Randoms.nextDouble(), 0.99999994D);
-				final double u = t < 0.5D ? Math.min(2.0D * t, 0.99999994D) : Math.min(2.0D * (t - 0.5D), 0.99999994D);
+				final double u = t < 0.5D ? Doubles.min(2.0D * t, 0.99999994D) : Doubles.min(2.0D * (t - 0.5D), 0.99999994D);
 				final double v = Randoms.nextDouble();
 				
 				final Point2D p = new Point2D(u, v);
@@ -1072,17 +1072,17 @@ public abstract class Material {
 				final double cosThetaAbsI = iLS.cosThetaAbs();
 				final double cosThetaAbsO = oLS.cosThetaAbs();
 				
-				final double probabilityDensityFunctionValue = 0.5D * (cosThetaAbsI / Math.PI + microfacetDistribution.computePDF(oLS, hLSNormalized) / (4.0D * oDotH));
+				final double probabilityDensityFunctionValue = 0.5D * (cosThetaAbsI / Doubles.PI + microfacetDistribution.computePDF(oLS, hLSNormalized) / (4.0D * oDotH));
 				
 				if(Doubles.isZero(probabilityDensityFunctionValue)) {
 					return Optional.empty();
 				}
 				
-				final double a = 28.0D / (23.0D * Math.PI);
-				final double b = 1.0D - Math.pow5(1.0D - 0.5D * cosThetaAbsI);
-				final double c = 1.0D - Math.pow5(1.0D - 0.5D * cosThetaAbsO);
+				final double a = 28.0D / (23.0D * Doubles.PI);
+				final double b = 1.0D - Doubles.pow5(1.0D - 0.5D * cosThetaAbsI);
+				final double c = 1.0D - Doubles.pow5(1.0D - 0.5D * cosThetaAbsO);
 				final double d = microfacetDistribution.computeDifferentialArea(hLSNormalized);
-				final double e = 4.0D * iDotHAbs * Math.max(cosThetaAbsI, cosThetaAbsO);
+				final double e = 4.0D * iDotHAbs * Doubles.max(cosThetaAbsI, cosThetaAbsO);
 				final double f = d / e;
 				
 				final Color3D colorFresnel = Fresnel.evaluateDielectricSchlick(iDotH, colorKS);
@@ -1207,8 +1207,8 @@ public abstract class Material {
 		public TrowbridgeReitzMicrofacetDistribution(final boolean isSamplingVisibleArea, final boolean isSeparableModel, final double alphaX, final double alphaY) {
 			super(isSamplingVisibleArea, isSeparableModel);
 			
-			this.alphaX = Math.max(alphaX, 0.001D);
-			this.alphaY = Math.max(alphaY, 0.001D);
+			this.alphaX = Doubles.max(alphaX, 0.001D);
+			this.alphaY = Doubles.max(alphaY, 0.001D);
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1224,8 +1224,8 @@ public abstract class Material {
 				
 				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
 			} else {
-				final double phi = Doubles.atan(this.alphaY / this.alphaX * Math.tan(2.0D * Doubles.PI * p.y + 0.5D * Doubles.PI)) + (p.y > 0.5D ? Doubles.PI : 0.0D);
-				final double cosTheta = 1.0D / Doubles.sqrt(1.0D + ((1.0D / (Math.pow2(Doubles.cos(phi)) / (this.alphaX * this.alphaX) + Math.pow2(Doubles.sin(phi)) / (this.alphaY * this.alphaY))) * p.x / (1.0D - p.x)));
+				final double phi = Doubles.atan(this.alphaY / this.alphaX * Doubles.tan(2.0D * Doubles.PI * p.y + 0.5D * Doubles.PI)) + (p.y > 0.5D ? Doubles.PI : 0.0D);
+				final double cosTheta = 1.0D / Doubles.sqrt(1.0D + ((1.0D / (Doubles.pow2(Doubles.cos(phi)) / (this.alphaX * this.alphaX) + Doubles.pow2(Doubles.sin(phi)) / (this.alphaY * this.alphaY))) * p.x / (1.0D - p.x)));
 				final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
 				
 				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
@@ -1240,7 +1240,7 @@ public abstract class Material {
 				return 0.0D;
 			}
 			
-			return 1.0D / (Math.PI * this.alphaX * this.alphaY * h.cosThetaQuartic() * Math.pow2(1.0D + (h.cosPhiSquared() / (this.alphaX * this.alphaX) + h.sinPhiSquared() / (this.alphaY * this.alphaY)) * tanThetaSquared));
+			return 1.0D / (Doubles.PI * this.alphaX * this.alphaY * h.cosThetaQuartic() * Doubles.pow2(1.0D + (h.cosPhiSquared() / (this.alphaX * this.alphaX) + h.sinPhiSquared() / (this.alphaY * this.alphaY)) * tanThetaSquared));
 		}
 		
 		@Override
@@ -1251,7 +1251,7 @@ public abstract class Material {
 				return 0.0D;
 			}
 			
-			return (-1.0D + Doubles.sqrt(1.0D + Math.pow2(Doubles.sqrt(o.cosPhiSquared() * this.alphaX * this.alphaX + o.sinPhiSquared() * this.alphaY * this.alphaY) * tanThetaAbs))) / 2.0D;
+			return (-1.0D + Doubles.sqrt(1.0D + Doubles.pow2(Doubles.sqrt(o.cosPhiSquared() * this.alphaX * this.alphaX + o.sinPhiSquared() * this.alphaY * this.alphaY) * tanThetaAbs))) / 2.0D;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
