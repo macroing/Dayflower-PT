@@ -21,6 +21,11 @@ package org.dayflower.pt;
 import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
+import org.macroing.geo4j.Matrix44D;
+import org.macroing.geo4j.Point3D;
+import org.macroing.geo4j.Quaternion4D;
+import org.macroing.geo4j.Vector3D;
+
 public final class Transform {
 	private Matrix44D objectToWorld;
 	private Matrix44D worldToObject;

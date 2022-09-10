@@ -20,6 +20,10 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
+import org.macroing.geo4j.Matrix44D;
+import org.macroing.geo4j.Point3D;
+import org.macroing.geo4j.Ray3D;
+import org.macroing.geo4j.Vector3D;
 import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Ints;
 import org.macroing.java.lang.Strings;

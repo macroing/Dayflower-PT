@@ -26,6 +26,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.macroing.art4j.color.Color3D;
+import org.macroing.geo4j.OrthonormalBasis33D;
+import org.macroing.geo4j.Point2D;
+import org.macroing.geo4j.Point3D;
+import org.macroing.geo4j.Ray3D;
+import org.macroing.geo4j.Vector3D;
 import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Ints;
 import org.macroing.java.util.Randoms;

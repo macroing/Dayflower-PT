@@ -23,6 +23,12 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
+import org.macroing.geo4j.OrthonormalBasis33D;
+import org.macroing.geo4j.Point2D;
+import org.macroing.geo4j.Point3D;
+import org.macroing.geo4j.Ray3D;
+import org.macroing.geo4j.Vector3D;
+
 public final class Intersection {
 	private final Primitive primitive;
 	private final Ray3D rayOS;

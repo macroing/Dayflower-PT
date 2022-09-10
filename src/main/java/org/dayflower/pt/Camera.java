@@ -20,6 +20,10 @@ package org.dayflower.pt;
 
 import java.lang.reflect.Field;//TODO: Add unit tests!
 
+import org.macroing.geo4j.Point2D;
+import org.macroing.geo4j.Point3D;
+import org.macroing.geo4j.Ray3D;
+import org.macroing.geo4j.Vector3D;
 import org.macroing.java.lang.Doubles;
 
 public final class Camera {

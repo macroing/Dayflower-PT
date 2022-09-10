@@ -22,6 +22,8 @@ import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 import java.util.Optional;
 
+import org.macroing.geo4j.Matrix44D;
+import org.macroing.geo4j.Ray3D;
 import org.macroing.java.lang.Doubles;
 
 public final class Primitive {
