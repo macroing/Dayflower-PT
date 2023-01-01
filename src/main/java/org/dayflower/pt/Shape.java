@@ -21,6 +21,10 @@ package org.dayflower.pt;
 import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
+import org.macroing.geo4j.bv.BoundingVolume3D;
+import org.macroing.geo4j.bv.aabb.AxisAlignedBoundingBox3D;
+import org.macroing.geo4j.bv.bs.BoundingSphere3D;
+import org.macroing.geo4j.bv.ibv.InfiniteBoundingVolume3D;
 import org.macroing.geo4j.common.Point2D;
 import org.macroing.geo4j.common.Point3D;
 import org.macroing.geo4j.common.Vector2D;
@@ -38,7 +42,7 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public abstract BoundingVolume getBoundingVolume();
+	public abstract BoundingVolume3D getBoundingVolume();
 	
 	public abstract OrthonormalBasis33D computeOrthonormalBasis(final Ray3D ray, final double t);
 	
@@ -254,8 +258,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.radius, -this.radius, 0.0D), new Point3D(this.radius, this.radius, this.zMax));
+		public BoundingVolume3D getBoundingVolume() {
+			return new AxisAlignedBoundingBox3D(new Point3D(-this.radius, -this.radius, 0.0D), new Point3D(this.radius, this.radius, this.zMax));
 		}
 		
 		@Override
@@ -348,8 +352,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.radius, -this.radius, this.zMin), new Point3D(this.radius, this.radius, this.zMax));
+		public BoundingVolume3D getBoundingVolume() {
+			return new AxisAlignedBoundingBox3D(new Point3D(-this.radius, -this.radius, this.zMin), new Point3D(this.radius, this.radius, this.zMax));
 		}
 		
 		@Override
@@ -439,8 +443,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.radiusOuter, -this.radiusOuter, this.zMax), new Point3D(this.radiusOuter, this.radiusOuter, this.zMax));
+		public BoundingVolume3D getBoundingVolume() {
+			return new AxisAlignedBoundingBox3D(new Point3D(-this.radiusOuter, -this.radiusOuter, this.zMax), new Point3D(this.radiusOuter, this.radiusOuter, this.zMax));
 		}
 		
 		@Override
@@ -538,8 +542,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.rMax, -this.rMax, this.zMin), new Point3D(this.rMax, this.rMax, this.zMax));
+		public BoundingVolume3D getBoundingVolume() {
+			return new AxisAlignedBoundingBox3D(new Point3D(-this.rMax, -this.rMax, this.zMin), new Point3D(this.rMax, this.rMax, this.zMax));
 		}
 		
 		@Override
@@ -680,8 +684,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.axisAlignedBoundingBox(new Point3D(-this.radius, -this.radius, this.zMin), new Point3D(this.radius, this.radius, this.zMax));
+		public BoundingVolume3D getBoundingVolume() {
+			return new AxisAlignedBoundingBox3D(new Point3D(-this.radius, -this.radius, this.zMin), new Point3D(this.radius, this.radius, this.zMax));
 		}
 		
 		@Override
@@ -773,8 +777,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.infiniteBoundingVolume();
+		public BoundingVolume3D getBoundingVolume() {
+			return new InfiniteBoundingVolume3D();
 		}
 		
 		@Override
@@ -861,8 +865,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.axisAlignedBoundingBox(this.point3Ds);
+		public BoundingVolume3D getBoundingVolume() {
+			return AxisAlignedBoundingBox3D.fromPoints(this.point3Ds);
 		}
 		
 		@Override
@@ -1041,8 +1045,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.axisAlignedBoundingBox(this.a, this.b, this.c, this.d);
+		public BoundingVolume3D getBoundingVolume() {
+			return AxisAlignedBoundingBox3D.fromPoints(this.a, this.b, this.c, this.d);
 		}
 		
 		@Override
@@ -1191,8 +1195,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.axisAlignedBoundingBox(this.maximum, this.minimum);
+		public BoundingVolume3D getBoundingVolume() {
+			return new AxisAlignedBoundingBox3D(this.maximum, this.minimum);
 		}
 		
 		@Override
@@ -1310,8 +1314,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.boundingSphere(this.center, this.radius);
+		public BoundingVolume3D getBoundingVolume() {
+			return new BoundingSphere3D(this.radius, this.center);
 		}
 		
 		@Override
@@ -1386,8 +1390,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.boundingSphere(new Point3D(), this.radiusInner + this.radiusOuter);
+		public BoundingVolume3D getBoundingVolume() {
+			return new BoundingSphere3D(this.radiusInner + this.radiusOuter, new Point3D());
 		}
 		
 		@Override
@@ -1488,8 +1492,8 @@ public abstract class Shape {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
-		public BoundingVolume getBoundingVolume() {
-			return BoundingVolume.axisAlignedBoundingBox(this.a, this.b, this.c);
+		public BoundingVolume3D getBoundingVolume() {
+			return AxisAlignedBoundingBox3D.fromPoints(this.a, this.b, this.c);
 		}
 		
 		@Override
