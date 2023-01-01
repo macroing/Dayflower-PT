@@ -12,12 +12,6 @@ To clone this repository, you can type the following in Git Bash.
 git clone https://github.com/macroing/Dayflower-PT.git
 ```
 
-Supported Bounding Volumes
---------------------------
-* Axis Aligned Bounding Box
-* Bounding Sphere
-* Infinite Bounding Volume
-
 Supported Materials
 -------------------
 * Bullseye
@@ -65,6 +59,7 @@ Dependencies
 ------------
  - [Java 8](http://www.java.com)
  - [Macroing / Java](https://github.com/macroing/Java)
+ - [Macroing / Geo4J](https://github.com/macroing/Geo4J)
  - [Macroing / Art4J](https://github.com/macroing/Art4J)
 
 Note
