@@ -23,11 +23,11 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import org.macroing.geo4j.OrthonormalBasis33D;
-import org.macroing.geo4j.Point2D;
-import org.macroing.geo4j.Point3D;
-import org.macroing.geo4j.Ray3D;
-import org.macroing.geo4j.Vector3D;
+import org.macroing.geo4j.common.Point2D;
+import org.macroing.geo4j.common.Point3D;
+import org.macroing.geo4j.common.Vector3D;
+import org.macroing.geo4j.onb.OrthonormalBasis33D;
+import org.macroing.geo4j.ray.Ray3D;
 
 public final class Intersection {
 	private final Primitive primitive;
@@ -47,14 +47,14 @@ public final class Intersection {
 	public Intersection(final Primitive primitive, final Ray3D rayOS, final double tOS) {
 		this.primitive = Objects.requireNonNull(primitive, "primitive == null");
 		this.rayOS = Objects.requireNonNull(rayOS, "rayOS == null");
-		this.rayWS = Ray3D.transform(getPrimitive().getTransform().getObjectToWorld(), getRayOS());
+		this.rayWS = getPrimitive().getTransform().getObjectToWorld().transform(getRayOS());
 		this.tOS = tOS;
-		this.tWS = Ray3D.transformT(getPrimitive().getTransform().getObjectToWorld(), getRayOS(), getRayWS(), getTOS());
+		this.tWS = getPrimitive().getTransform().getObjectToWorld().transformT(getRayOS(), getRayWS(), getTOS());
 		this.orthonormalBasisOS = new LazySupplier<>(() -> getPrimitive().getShape().computeOrthonormalBasis(getRayOS(), getTOS()));
-		this.orthonormalBasisWS = new LazySupplier<>(() -> OrthonormalBasis33D.transformTranspose(getPrimitive().getTransform().getWorldToObject(), getOrthonormalBasisOS()));
+		this.orthonormalBasisWS = new LazySupplier<>(() -> getOrthonormalBasisOS().transformTranspose(getPrimitive().getTransform().getWorldToObject()));
 		this.textureCoordinates = new LazySupplier<>(() -> getPrimitive().getShape().computeTextureCoordinates(getRayOS(), getTOS()));
 		this.surfaceIntersectionPointOS = new LazySupplier<>(() -> Point3D.add(getRayOS().getOrigin(), getRayOS().getDirection(), getTOS()));
-		this.surfaceIntersectionPointWS = new LazySupplier<>(() -> Point3D.transformAndDivide(getPrimitive().getTransform().getObjectToWorld(), getSurfaceIntersectionPointOS()));
+		this.surfaceIntersectionPointWS = new LazySupplier<>(() -> getPrimitive().getTransform().getObjectToWorld().transformAndDivide(getSurfaceIntersectionPointOS()));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

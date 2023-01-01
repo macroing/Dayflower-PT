@@ -25,10 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.macroing.geo4j.Matrix44D;
-import org.macroing.geo4j.Point3D;
-import org.macroing.geo4j.Ray3D;
-import org.macroing.geo4j.Vector3D;
+
+import org.macroing.geo4j.common.Point3D;
+import org.macroing.geo4j.common.Vector3D;
+import org.macroing.geo4j.matrix.Matrix44D;
+import org.macroing.geo4j.ray.Ray3D;
 
 @SuppressWarnings("static-method")
 public final class BoundingVolumeUnitTests {

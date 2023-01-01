@@ -27,9 +27,9 @@ import org.macroing.art4j.image.Image;
 import org.macroing.art4j.noise.PerlinNoiseD;
 import org.macroing.art4j.noise.SimplexNoiseD;
 import org.macroing.art4j.pixel.PixelTransformer;
-import org.macroing.geo4j.Point2D;
-import org.macroing.geo4j.Point3D;
-import org.macroing.geo4j.Vector3D;
+import org.macroing.geo4j.common.Point2D;
+import org.macroing.geo4j.common.Point3D;
+import org.macroing.geo4j.common.Vector3D;
 import org.macroing.java.lang.Doubles;
 
 public interface Texture {

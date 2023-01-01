@@ -22,8 +22,8 @@ import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 import java.util.Optional;
 
-import org.macroing.geo4j.Matrix44D;
-import org.macroing.geo4j.Ray3D;
+import org.macroing.geo4j.matrix.Matrix44D;
+import org.macroing.geo4j.ray.Ray3D;
 import org.macroing.java.lang.Doubles;
 
 public final class Primitive {
@@ -59,9 +59,9 @@ public final class Primitive {
 		if(this.boundingVolume.contains(rayWS.getOrigin()) || this.boundingVolume.intersects(rayWS, tMinimum, tMaximum)) {
 			final Matrix44D worldToObject = this.transform.getWorldToObject();
 			
-			final Ray3D rayOS = Ray3D.transform(worldToObject, rayWS);
+			final Ray3D rayOS = worldToObject.transform(rayWS);
 			
-			final double tOS = this.shape.intersection(rayOS, tMinimum, Ray3D.transformT(worldToObject, rayWS, rayOS, tMaximum));
+			final double tOS = this.shape.intersection(rayOS, tMinimum, worldToObject.transformT(rayWS, rayOS, tMaximum));
 			
 			if(!Doubles.isNaN(tOS)) {
 				return Optional.of(new Intersection(this, rayOS, tOS));

@@ -20,10 +20,10 @@ package org.dayflower.pt;
 
 import java.lang.reflect.Field;//TODO: Add unit tests!
 
-import org.macroing.geo4j.Point2D;
-import org.macroing.geo4j.Point3D;
-import org.macroing.geo4j.Ray3D;
-import org.macroing.geo4j.Vector3D;
+import org.macroing.geo4j.common.Point2D;
+import org.macroing.geo4j.common.Point3D;
+import org.macroing.geo4j.common.Vector3D;
+import org.macroing.geo4j.ray.Ray3D;
 import org.macroing.java.lang.Doubles;
 
 public final class Camera {
@@ -87,7 +87,7 @@ public final class Camera {
 		final Vector3D v = Vector3D.multiply(this.v, sample.y);
 		final Vector3D w = this.w;
 		
-		final Vector3D direction = Vector3D.direction(u, v, w);
+		final Vector3D direction = Vector3D.add(u, v, w);
 		
 		final Point3D origin = Point3D.add(this.eye, Vector3D.multiply(direction, 140.0D));
 		

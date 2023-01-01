@@ -26,11 +26,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.macroing.art4j.color.Color3D;
-import org.macroing.geo4j.OrthonormalBasis33D;
-import org.macroing.geo4j.Point2D;
-import org.macroing.geo4j.Point3D;
-import org.macroing.geo4j.Ray3D;
-import org.macroing.geo4j.Vector3D;
+import org.macroing.geo4j.common.Point2D;
+import org.macroing.geo4j.common.Point3D;
+import org.macroing.geo4j.common.Vector3D;
+import org.macroing.geo4j.onb.OrthonormalBasis33D;
+import org.macroing.geo4j.ray.Ray3D;
 import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Ints;
 import org.macroing.java.util.Randoms;
@@ -363,7 +363,7 @@ public abstract class Material {
 			
 			final Vector3D nWS = intersection.getSurfaceNormalWSCorrectlyOriented();
 			final Vector3D oWS = Vector3D.negate(intersection.getRayWS().getDirection());
-			final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, orthonormalBasis);
+			final Vector3D oLS = orthonormalBasis.transformReverseNormalize(oWS);
 			
 			if(Doubles.isZero(oLS.z)) {
 				return Optional.empty();
@@ -393,7 +393,7 @@ public abstract class Material {
 			}
 			
 			final Vector3D iLS = iLSOptional.get();
-			final Vector3D iWS = Vector3D.transformNormalize(iLS, orthonormalBasis);
+			final Vector3D iWS = orthonormalBasis.transformNormalize(iLS);
 			
 			Color3D result = bXDF.evaluateDF(oLS, iLS);
 			
@@ -684,7 +684,7 @@ public abstract class Material {
 			final Vector3D direction = intersection.getRayWS().getDirection();
 			
 			final Vector3D surfaceNormal = intersection.getSurfaceNormalWS();
-			final Vector3D surfaceNormalCorrectlyOriented = Vector3D.orientNormal(direction, surfaceNormal);
+			final Vector3D surfaceNormalCorrectlyOriented = Vector3D.orientNormalNegated(direction, surfaceNormal);
 			
 			final boolean isEntering = Vector3D.dotProduct(surfaceNormal, surfaceNormalCorrectlyOriented) > 0.0D;
 			
@@ -786,7 +786,7 @@ public abstract class Material {
 		@Override
 		public Optional<Result> compute(final Intersection intersection) {
 			final Vector3D s = Vector3D.sampleHemisphereCosineDistribution();
-			final Vector3D w = Vector3D.orientNormal(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS());
+			final Vector3D w = Vector3D.orientNormalNegated(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS());
 			final Vector3D u = Vector3D.normalize(Vector3D.crossProduct(Doubles.abs(w.x) > 0.1D ? Vector3D.y() : Vector3D.x(), w));
 			final Vector3D v = Vector3D.normalize(Vector3D.crossProduct(w, u));
 			
@@ -1041,7 +1041,7 @@ public abstract class Material {
 				
 				final Vector3D nWS = intersection.getSurfaceNormalWSCorrectlyOriented();
 				final Vector3D oWS = Vector3D.negate(intersection.getRayWS().getDirection());
-				final Vector3D oLS = Vector3D.transformReverseNormalize(oWS, orthonormalBasis);
+				final Vector3D oLS = orthonormalBasis.transformReverseNormalize(oWS);
 				
 				if(Doubles.isZero(oLS.z)) {
 					return Optional.empty();
@@ -1055,7 +1055,7 @@ public abstract class Material {
 				
 				final Vector3D i = t < 0.5D ? Vector3D.sampleHemisphereCosineDistribution(p) : Vector3D.reflection(oLS, microfacetDistribution.sampleH(oLS, p));
 				final Vector3D iLS = t < 0.5D && oLS.z < 0.0D ? Vector3D.negate(i) : i;
-				final Vector3D iWS = Vector3D.transformNormalize(iLS, orthonormalBasis);
+				final Vector3D iWS = orthonormalBasis.transformNormalize(iLS);
 				
 				if(!Vector3D.sameHemisphereZ(oLS, iLS)) {
 					return Optional.empty();

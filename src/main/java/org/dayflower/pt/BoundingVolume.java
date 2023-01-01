@@ -20,10 +20,10 @@ package org.dayflower.pt;
 
 import java.util.Objects;
 
-import org.macroing.geo4j.Matrix44D;
-import org.macroing.geo4j.Point3D;
-import org.macroing.geo4j.Ray3D;
-import org.macroing.geo4j.Vector3D;
+import org.macroing.geo4j.common.Point3D;
+import org.macroing.geo4j.common.Vector3D;
+import org.macroing.geo4j.matrix.Matrix44D;
+import org.macroing.geo4j.ray.Ray3D;
 import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Ints;
 import org.macroing.java.lang.Strings;
@@ -78,14 +78,14 @@ public abstract class BoundingVolume {
 		@Override
 		public AxisAlignedBoundingBox transform(final Matrix44D m) {
 			final Point3D[] points = new Point3D[] {
-				Point3D.transformAndDivide(m, new Point3D(this.minimum.x, this.minimum.y, this.minimum.z)),
-				Point3D.transformAndDivide(m, new Point3D(this.maximum.x, this.minimum.y, this.minimum.z)),
-				Point3D.transformAndDivide(m, new Point3D(this.minimum.x, this.maximum.y, this.minimum.z)),
-				Point3D.transformAndDivide(m, new Point3D(this.minimum.x, this.minimum.y, this.maximum.z)),
-				Point3D.transformAndDivide(m, new Point3D(this.minimum.x, this.maximum.y, this.maximum.z)),
-				Point3D.transformAndDivide(m, new Point3D(this.maximum.x, this.maximum.y, this.minimum.z)),
-				Point3D.transformAndDivide(m, new Point3D(this.maximum.x, this.minimum.y, this.maximum.z)),
-				Point3D.transformAndDivide(m, new Point3D(this.maximum.x, this.maximum.y, this.maximum.z))
+				m.transformAndDivide(new Point3D(this.minimum.x, this.minimum.y, this.minimum.z)),
+				m.transformAndDivide(new Point3D(this.maximum.x, this.minimum.y, this.minimum.z)),
+				m.transformAndDivide(new Point3D(this.minimum.x, this.maximum.y, this.minimum.z)),
+				m.transformAndDivide(new Point3D(this.minimum.x, this.minimum.y, this.maximum.z)),
+				m.transformAndDivide(new Point3D(this.minimum.x, this.maximum.y, this.maximum.z)),
+				m.transformAndDivide(new Point3D(this.maximum.x, this.maximum.y, this.minimum.z)),
+				m.transformAndDivide(new Point3D(this.maximum.x, this.minimum.y, this.maximum.z)),
+				m.transformAndDivide(new Point3D(this.maximum.x, this.maximum.y, this.maximum.z))
 			};
 			
 			Point3D maximum = Point3D.MIN;
@@ -180,10 +180,10 @@ public abstract class BoundingVolume {
 		
 		@Override
 		public BoundingSphere transform(final Matrix44D m) {
-			final Point3D c = Point3D.transformAndDivide(m, this.center);
-			final Point3D x = Point3D.transformAndDivide(m, new Point3D(this.center.x + this.radius, this.center.y,               this.center.z));
-			final Point3D y = Point3D.transformAndDivide(m, new Point3D(this.center.x,               this.center.y + this.radius, this.center.z));
-			final Point3D z = Point3D.transformAndDivide(m, new Point3D(this.center.x,               this.center.y,               this.center.z + this.radius));
+			final Point3D c = m.transformAndDivide(this.center);
+			final Point3D x = m.transformAndDivide(new Point3D(this.center.x + this.radius, this.center.y,               this.center.z));
+			final Point3D y = m.transformAndDivide(new Point3D(this.center.x,               this.center.y + this.radius, this.center.z));
+			final Point3D z = m.transformAndDivide(new Point3D(this.center.x,               this.center.y,               this.center.z + this.radius));
 			
 			final double r = Doubles.sqrt(Doubles.max(Point3D.distanceSquared(c, x), Point3D.distanceSquared(c, y), Point3D.distanceSquared(c, z)));
 			

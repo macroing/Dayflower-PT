@@ -21,10 +21,10 @@ package org.dayflower.pt;
 import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
-import org.macroing.geo4j.Matrix44D;
-import org.macroing.geo4j.Point3D;
-import org.macroing.geo4j.Quaternion4D;
-import org.macroing.geo4j.Vector3D;
+import org.macroing.geo4j.common.Point3D;
+import org.macroing.geo4j.common.Vector3D;
+import org.macroing.geo4j.matrix.Matrix44D;
+import org.macroing.geo4j.quaternion.Quaternion4D;
 
 public final class Transform {
 	private Matrix44D objectToWorld;
@@ -158,7 +158,7 @@ public final class Transform {
 	
 	private void doAttemptToComputeObjectToWorld() {
 		if(this.objectToWorld == null) {
-			this.objectToWorld = Matrix44D.multiply(Matrix44D.multiply(Matrix44D.translate(this.position), Matrix44D.rotate(this.rotation)), Matrix44D.scale(this.scale));
+			this.objectToWorld = Matrix44D.multiply(Matrix44D.multiply(Matrix44D.translate(this.position), this.rotation.toMatrix()), Matrix44D.scale(this.scale));
 		}
 	}
 	

@@ -21,12 +21,12 @@ package org.dayflower.pt;
 import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
-import org.macroing.geo4j.OrthonormalBasis33D;
-import org.macroing.geo4j.Point2D;
-import org.macroing.geo4j.Point3D;
-import org.macroing.geo4j.Ray3D;
-import org.macroing.geo4j.Vector2D;
-import org.macroing.geo4j.Vector3D;
+import org.macroing.geo4j.common.Point2D;
+import org.macroing.geo4j.common.Point3D;
+import org.macroing.geo4j.common.Vector2D;
+import org.macroing.geo4j.common.Vector3D;
+import org.macroing.geo4j.onb.OrthonormalBasis33D;
+import org.macroing.geo4j.ray.Ray3D;
 import org.macroing.java.lang.Doubles;
 import org.macroing.java.lang.Ints;
 import org.macroing.java.util.Arrays;
