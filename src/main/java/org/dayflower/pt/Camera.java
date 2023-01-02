@@ -26,6 +26,14 @@ import org.macroing.geo4j.common.Vector3D;
 import org.macroing.geo4j.ray.Ray3D;
 import org.macroing.java.lang.Doubles;
 
+/**
+ * A {@code Camera} represents a camera.
+ * <p>
+ * This class is immutable and thread-safe.
+ * 
+ * @since 1.0.0
+ * @author J&#246;rgen Lundgren
+ */
 public final class Camera {
 	private final Point3D eye;
 	private final Vector3D u;
@@ -46,6 +54,7 @@ public final class Camera {
 	 * }
 	 * </pre>
 	 */
+//	TODO: Add unit tests!
 	public Camera() {
 		this(1024.0D, 768.0D);
 	}
@@ -56,17 +65,25 @@ public final class Camera {
 	 * Calling this constructor is equivalent to the following:
 	 * <pre>
 	 * {@code
-	 * new Camera(resolutionX, resolutionY, 2.0D * Math.tan(Doubles.toRadians(28.799323D) * 0.5D));
+	 * new Camera(resolutionX, resolutionY, 2.0D * Doubles.tan(Doubles.toRadians(28.799323D) * 0.5D));
 	 * }
 	 * </pre>
 	 * 
 	 * @param resolutionX the resolution along the X-axis
 	 * @param resolutionY the resolution along the Y-axis
 	 */
+//	TODO: Add unit tests!
 	public Camera(final double resolutionX, final double resolutionY) {
 		this(resolutionX, resolutionY, 2.0D * Doubles.tan(Doubles.toRadians(28.799323D) * 0.5D));
 	}
 	
+	/**
+	 * Constructs a new {@code Camera} instance.
+	 * 
+	 * @param resolutionX the resolution along the X-axis
+	 * @param resolutionY the resolution along the Y-axis
+	 * @param fieldOfViewX the field of view along the X-axis
+	 */
 //	TODO: Add unit tests!
 	public Camera(final double resolutionX, final double resolutionY, final double fieldOfViewX) {
 		this.eye = new Point3D(50.0D, 50.0D, 295.6D);
@@ -79,6 +96,17 @@ public final class Camera {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	/**
+	 * Generates a ray.
+	 * <p>
+	 * Returns a {@link Ray3D} instance.
+	 * 
+	 * @param pixelX the X-component of the pixel, in the range [0, resolutionX)
+	 * @param pixelY the Y-component of the pixel, in the range [0, resolutionY)
+	 * @param sampleU the U-component of the sample, in the range [0, 5)
+	 * @param sampleV the V-component of the sample, in the range [0, 5)
+	 * @return a {@code Ray3D} instance
+	 */
 //	TODO: Add unit tests!
 	public Ray3D generatePrimaryRay(final double pixelX, final double pixelY, final double sampleU, final double sampleV) {
 		final Point2D sample = doSample(pixelX, pixelY, sampleU, sampleV);
@@ -88,24 +116,38 @@ public final class Camera {
 		final Vector3D w = this.w;
 		
 		final Vector3D direction = Vector3D.add(u, v, w);
+		final Vector3D directionNormalized = Vector3D.normalize(direction);
 		
 		final Point3D origin = Point3D.add(this.eye, Vector3D.multiply(direction, 140.0D));
-		
-		final Vector3D directionNormalized = Vector3D.normalize(direction);
 		
 		return new Ray3D(origin, directionNormalized);
 	}
 	
+	/**
+	 * Returns the U-direction.
+	 * 
+	 * @return the U-direction
+	 */
 //	TODO: Add unit tests!
 	public Vector3D getU() {
 		return this.u;
 	}
 	
+	/**
+	 * Returns the V-direction.
+	 * 
+	 * @return the V-direction
+	 */
 //	TODO: Add unit tests!
 	public Vector3D getV() {
 		return this.v;
 	}
 	
+	/**
+	 * Returns the W-direction.
+	 * 
+	 * @return the W-direction
+	 */
 //	TODO: Add unit tests!
 	public Vector3D getW() {
 		return this.w;
@@ -114,14 +156,31 @@ public final class Camera {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private Point2D doSample(final double pixelX, final double pixelY, final double sampleU, final double sampleV) {
-//		Generate a Point2D instance whose x and y fields contains doubles in the range [-1.0D, +1.0D]:
+		/*
+		 * pixelX = [0, resolutionX)
+		 * pixelY = [0, resolutionY)
+		 * 
+		 * sampleU = [0, 5)
+		 * sampleV = [0, 5)
+		 * 
+		 * sample.x = [-1.0, 1.0]
+		 * sample.y = [-1.0, 1.0]
+		 * 
+		 * sampleU1 = [-0.25, 3.25]
+		 * sampleV1 = [-0.25, 3.25]
+		 * 
+		 * sampleU2 = [~-0.5, ~0.5]
+		 * sampleV2 = [~-0.5, ~0.5]
+		 */
+		
+//		Generate a Point2D instance whose x and y fields contains doubles in the range [-1.0D, 1.0D]:
 		final Point2D sample = Point2D.sampleExactInverseTentFilter();
 		
-//		The variables sampleU and sampleV are in the range [0.0D, 1.0D]:
+//		The variables sampleU and sampleV are in the range [0, 5):
 		final double sampleU1 = (sampleU + 0.5D + sample.x) / 2.0D;
 		final double sampleV1 = (sampleV + 0.5D + sample.y) / 2.0D;
 		
-//		The variables sampleU1 and sampleV1 are in the range [-0.25D, +1.25D]:
+//		The variables sampleU1 and sampleV1 are in the range [-0.25D, 3.25D]:
 		final double sampleU2 = (sampleU1 + pixelX) / this.resolutionX - 0.5D;
 		final double sampleV2 = (sampleV1 + pixelY) / this.resolutionY - 0.5D;
 		
