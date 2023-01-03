@@ -18,8 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
-
 import org.macroing.art4j.color.Color3D;
 import org.macroing.art4j.color.Color4D;
 import org.macroing.art4j.image.Image;
@@ -46,7 +44,6 @@ public final class PathTracer {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public void render() {
 		final long currentTimeMillisA = System.currentTimeMillis();
 		

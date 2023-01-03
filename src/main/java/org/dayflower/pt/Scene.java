@@ -18,7 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,7 +37,6 @@ public final class Scene {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public Scene(final Camera camera) {
 		this.camera = Objects.requireNonNull(camera, "camera == null");
 		this.primitives = new ArrayList<>();
@@ -46,17 +44,14 @@ public final class Scene {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public Camera getCamera() {
 		return this.camera;
 	}
 	
-//	TODO: Add unit tests!
 	public Color3D radiance(final Ray3D ray) {
 		return radiance(ray, 0);
 	}
 	
-//	TODO: Add unit tests!
 	public Color3D radiance(final Ray3D ray, final int depth) {
 		final Optional<Intersection> optionalIntersection = intersection(ray);
 		
@@ -87,17 +82,14 @@ public final class Scene {
 		return Color3D.BLACK;
 	}
 	
-//	TODO: Add unit tests!
 	public List<Primitive> getPrimitives() {
 		return new ArrayList<>(this.primitives);
 	}
 	
-//	TODO: Add unit tests!
 	public Optional<Intersection> intersection(final Ray3D rayWS) {
 		return intersection(rayWS, Math.EPSILON, Doubles.MAX_VALUE);
 	}
 	
-//	TODO: Add unit tests!
 	public Optional<Intersection> intersection(final Ray3D rayWS, final double tMinimum, final double tMaximum) {
 		Intersection intersection = null;
 		
@@ -112,14 +104,12 @@ public final class Scene {
 		return Optional.ofNullable(intersection);
 	}
 	
-//	TODO: Add unit tests!
 	public void addPrimitive(final Primitive primitive) {
 		this.primitives.add(Objects.requireNonNull(primitive, "primitive == null"));
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public static Scene createScene(final Camera camera) {
 		final
 		Scene scene = new Scene(camera);
@@ -157,7 +147,6 @@ public final class Scene {
 		return scene;
 	}
 	
-//	TODO: Add unit tests!
 	public static Scene createSceneSmallPT(final Camera camera) {
 		final
 		Scene scene = new Scene(camera);

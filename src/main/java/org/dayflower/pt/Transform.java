@@ -18,7 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 import org.macroing.geo4j.common.Point3D;
@@ -35,22 +34,18 @@ public final class Transform {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public Transform() {
 		this(new Point3D());
 	}
 	
-//	TODO: Add unit tests!
 	public Transform(final Point3D position) {
 		this(position, new Quaternion4D());
 	}
 	
-//	TODO: Add unit tests!
 	public Transform(final Point3D position, final Quaternion4D rotation) {
 		this(position, rotation, new Vector3D(1.0D, 1.0D, 1.0D));
 	}
 	
-//	TODO: Add unit tests!
 	public Transform(final Point3D position, final Quaternion4D rotation, final Vector3D scale) {
 		this.position = Objects.requireNonNull(position, "position == null");
 		this.rotation = Objects.requireNonNull(rotation, "rotation == null");
@@ -59,42 +54,35 @@ public final class Transform {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public Matrix44D getObjectToWorld() {
 		doAttemptToComputeObjectToWorld();
 		
 		return this.objectToWorld;
 	}
 	
-//	TODO: Add unit tests!
 	public Matrix44D getWorldToObject() {
 		doAttemptToComputeWorldToObject();
 		
 		return this.worldToObject;
 	}
 	
-//	TODO: Add unit tests!
 	public Point3D getPosition() {
 		return this.position;
 	}
 	
-//	TODO: Add unit tests!
 	public Quaternion4D getRotation() {
 		return this.rotation;
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		return String.format("new Transform(%s, %s, %s)", this.position, this.rotation, this.scale);
 	}
 	
-//	TODO: Add unit tests!
 	public Vector3D getScale() {
 		return this.scale;
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -106,7 +94,6 @@ public final class Transform {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	public boolean equals(final Transform transform) {
 		if(transform == this) {
 			return true;
@@ -127,27 +114,23 @@ public final class Transform {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.objectToWorld, this.worldToObject, this.position, this.rotation, this.scale);
 	}
 	
-//	TODO: Add unit tests!
 	public void setPosition(final Point3D position) {
 		this.position = Objects.requireNonNull(position, "position == null");
 		this.objectToWorld = null;
 		this.worldToObject = null;
 	}
 	
-//	TODO: Add unit tests!
 	public void setRotation(final Quaternion4D rotation) {
 		this.rotation = Objects.requireNonNull(rotation, "rotation == null");
 		this.objectToWorld = null;
 		this.worldToObject = null;
 	}
 	
-//	TODO: Add unit tests!
 	public void setScale(final Vector3D scale) {
 		this.scale = Objects.requireNonNull(scale, "scale == null");
 		this.objectToWorld = null;

@@ -18,8 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
-
 import org.macroing.geo4j.common.Point2D;
 import org.macroing.geo4j.common.Point3D;
 import org.macroing.geo4j.common.Vector3D;
@@ -54,7 +52,6 @@ public final class Camera {
 	 * }
 	 * </pre>
 	 */
-//	TODO: Add unit tests!
 	public Camera() {
 		this(1024.0D, 768.0D);
 	}
@@ -72,7 +69,6 @@ public final class Camera {
 	 * @param resolutionX the resolution along the X-axis
 	 * @param resolutionY the resolution along the Y-axis
 	 */
-//	TODO: Add unit tests!
 	public Camera(final double resolutionX, final double resolutionY) {
 		this(resolutionX, resolutionY, 2.0D * Doubles.tan(Doubles.toRadians(28.799323D) * 0.5D));
 	}
@@ -84,7 +80,6 @@ public final class Camera {
 	 * @param resolutionY the resolution along the Y-axis
 	 * @param fieldOfViewX the field of view along the X-axis
 	 */
-//	TODO: Add unit tests!
 	public Camera(final double resolutionX, final double resolutionY, final double fieldOfViewX) {
 		this.eye = new Point3D(50.0D, 50.0D, 295.6D);
 		this.w = Vector3D.normalize(new Vector3D(0.0D, -0.042612D, -1.0D));
@@ -107,7 +102,6 @@ public final class Camera {
 	 * @param sampleV the V-component of the sample, in the range [0, 5)
 	 * @return a {@code Ray3D} instance
 	 */
-//	TODO: Add unit tests!
 	public Ray3D generatePrimaryRay(final double pixelX, final double pixelY, final double sampleU, final double sampleV) {
 		final Point2D sample = doSample(pixelX, pixelY, sampleU, sampleV);
 		
@@ -128,7 +122,6 @@ public final class Camera {
 	 * 
 	 * @return the U-direction
 	 */
-//	TODO: Add unit tests!
 	public Vector3D getU() {
 		return this.u;
 	}
@@ -138,7 +131,6 @@ public final class Camera {
 	 * 
 	 * @return the V-direction
 	 */
-//	TODO: Add unit tests!
 	public Vector3D getV() {
 		return this.v;
 	}
@@ -148,7 +140,6 @@ public final class Camera {
 	 * 
 	 * @return the W-direction
 	 */
-//	TODO: Add unit tests!
 	public Vector3D getW() {
 		return this.w;
 	}

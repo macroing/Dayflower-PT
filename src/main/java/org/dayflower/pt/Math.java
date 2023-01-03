@@ -18,8 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
-
 import org.macroing.java.lang.Doubles;
 
 public final class Math {
@@ -34,7 +32,6 @@ public final class Math {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public static double[] solveQuartic(final double a, final double b, final double c, final double d, final double e) {
 		final double aReciprocal = 1.0D / a;
 		final double bA = b * aReciprocal;

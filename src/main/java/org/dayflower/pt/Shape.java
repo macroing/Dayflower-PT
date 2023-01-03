@@ -18,7 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 
 import org.macroing.geo4j.bv.BoundingVolume3D;
@@ -54,194 +53,156 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public static Shape cone() {
 		return cone(360.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape cone(final double phiMax) {
 		return cone(phiMax, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape cone(final double phiMax, final double radius) {
 		return cone(phiMax, radius, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape cone(final double phiMax, final double radius, final double zMax) {
 		return new Cone(Doubles.toRadians(phiMax), radius, zMax);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape cylinder() {
 		return cylinder(360.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape cylinder(final double phiMax) {
 		return cylinder(phiMax, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape cylinder(final double phiMax, final double radius) {
 		return cylinder(phiMax, radius, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape cylinder(final double phiMax, final double radius, final double zMax) {
 		return cylinder(phiMax, radius, zMax, -1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape cylinder(final double phiMax, final double radius, final double zMax, final double zMin) {
 		return new Cylinder(Doubles.toRadians(phiMax), radius, zMax, zMin);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape disk() {
 		return disk(360.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape disk(final double phiMax) {
 		return disk(phiMax, 0.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape disk(final double phiMax, final double radiusInner) {
 		return disk(phiMax, radiusInner, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape disk(final double phiMax, final double radiusInner, final double radiusOuter) {
 		return disk(phiMax, radiusInner, radiusOuter, 0.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape disk(final double phiMax, final double radiusInner, final double radiusOuter, final double zMax) {
 		return new Disk(Doubles.toRadians(phiMax), radiusInner, radiusOuter, zMax);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape hyperboloid() {
 		return hyperboloid(new Point3D(0.0001D, 0.0001D, 0.0D));
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape hyperboloid(final Point3D a) {
 		return hyperboloid(a, new Point3D(1.0D, 1.0D, 1.0D));
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape hyperboloid(final Point3D a, final Point3D b) {
 		return hyperboloid(a, b, 360.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape hyperboloid(final Point3D a, final Point3D b, final double phiMax) {
 		return Hyperboloid.create(a, b, Doubles.toRadians(phiMax));
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape paraboloid() {
 		return paraboloid(360.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape paraboloid(final double phiMax) {
 		return paraboloid(phiMax, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape paraboloid(final double phiMax, final double radius) {
 		return paraboloid(phiMax, radius, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape paraboloid(final double phiMax, final double radius, final double zMax) {
 		return paraboloid(phiMax, radius, zMax, 0.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape paraboloid(final double phiMax, final double radius, final double zMax, final double zMin) {
 		return new Paraboloid(Doubles.toRadians(phiMax), radius, zMax, zMin);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape plane() {
 		return plane(new Point3D(0.0D, 0.0D, 0.0D), new Point3D(0.0D, 0.0D, 1.0D), new Point3D(1.0D, 0.0D, 0.0D));
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape plane(final Point3D a, final Point3D b, final Point3D c) {
 		return new Plane(a, b, c);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape polygon(final Point3D... points) {
 		return Polygon.create(points);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape rectangle() {
 		return rectangle(new Point3D(-2.0D, +2.0D, 0.0D), new Point3D(+2.0D, +2.0D, 0.0D), new Point3D(+2.0D, -2.0D, 0.0D), new Point3D(-2.0D, -2.0D, 0.0D));
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape rectangle(final Point3D a, final Point3D b, final Point3D c, final Point3D d) {
 		return Rectangle.create(a, b, c, d);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape rectangularCuboid() {
 		return rectangularCuboid(new Point3D(-0.5D, -0.5D, -0.5D), new Point3D(0.5D, 0.5D, 0.5D));
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape rectangularCuboid(final Point3D a, final Point3D b) {
 		return RectangularCuboid.create(a, b);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape sphere() {
 		return sphere(new Point3D());
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape sphere(final Point3D center) {
 		return sphere(center, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape sphere(final Point3D center, final double radius) {
 		return new Sphere(center, radius);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape torus() {
 		return torus(0.25D, 1.0D);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape torus(final double radiusInner, final double radiusOuter) {
 		return new Torus(radiusInner, radiusOuter);
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape triangle() {
 		return triangle(new Point3D(0.0D, 1.0D, 0.0D), new Point3D(1.0D, -1.0D, 0.0D), new Point3D(-1.0D, -1.0D, 0.0D));
 	}
 	
-//	TODO: Add unit tests!
 	public static Shape triangle(final Point3D a, final Point3D b, final Point3D c) {
 		return new Triangle(a, b, c);
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Cone extends Shape {
 		private final double phiMax;
 		private final double radius;
@@ -333,7 +294,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Cylinder extends Shape {
 		private final double phiMax;
 		private final double radius;
@@ -424,7 +384,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Disk extends Shape {
 		private final double phiMax;
 		private final double radiusInner;
@@ -515,7 +474,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Hyperboloid extends Shape {
 		private final Point3D a;
 		private final Point3D b;
@@ -665,7 +623,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Paraboloid extends Shape {
 		private final double phiMax;
 		private final double radius;
@@ -758,7 +715,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Plane extends Shape {
 		private final Point3D a;
 		private final Point3D b;
@@ -848,7 +804,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Polygon extends Shape {
 		private final Point2D[] point2Ds;
 		private final Point3D[] point3Ds;
@@ -1024,7 +979,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Rectangle extends Shape {
 		private final Point3D a;
 		private final Point3D b;
@@ -1180,7 +1134,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class RectangularCuboid extends Shape {
 		private final Point3D maximum;
 		private final Point3D minimum;
@@ -1299,7 +1252,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Sphere extends Shape {
 		private final Point3D center;
 		private final double radius;
@@ -1375,7 +1327,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Torus extends Shape {
 		private final double radiusInner;
 		private final double radiusOuter;
@@ -1473,7 +1424,6 @@ public abstract class Shape {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	private static final class Triangle extends Shape {
 		private final Point3D a;
 		private final Point3D b;

@@ -18,7 +18,6 @@
  */
 package org.dayflower.pt;
 
-import java.lang.reflect.Field;//TODO: Add unit tests!
 import java.util.Objects;
 import java.util.Optional;
 
@@ -35,12 +34,10 @@ public final class Primitive {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public Primitive(final Material material, final Shape shape) {
 		this(material, shape, new Transform());
 	}
 	
-//	TODO: Add unit tests!
 	public Primitive(final Material material, final Shape shape, final Transform transform) {
 		this.material = Objects.requireNonNull(material, "material == null");
 		this.shape = Objects.requireNonNull(shape, "shape == null");
@@ -50,12 +47,10 @@ public final class Primitive {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-//	TODO: Add unit tests!
 	public Material getMaterial() {
 		return this.material;
 	}
 	
-//	TODO: Add unit tests!
 	public Optional<Intersection> intersection(final Ray3D rayWS, final double tMinimum, final double tMaximum) {
 		if(this.boundingVolume.contains(rayWS.getOrigin()) || this.boundingVolume.intersects(rayWS, tMinimum, tMaximum)) {
 			final Matrix44D worldToObject = this.transform.getWorldToObject();
@@ -72,23 +67,19 @@ public final class Primitive {
 		return Optional.empty();
 	}
 	
-//	TODO: Add unit tests!
 	public Shape getShape() {
 		return this.shape;
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public String toString() {
 		return String.format("new Primitive(%s, %s, %s)", this.material, this.shape, this.transform);
 	}
 	
-//	TODO: Add unit tests!
 	public Transform getTransform() {
 		return this.transform;
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public boolean equals(final Object object) {
 		if(object == this) {
@@ -100,7 +91,6 @@ public final class Primitive {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	public boolean equals(final Primitive primitive) {
 		if(primitive == this) {
 			return true;
@@ -119,7 +109,6 @@ public final class Primitive {
 		}
 	}
 	
-//	TODO: Add unit tests!
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.boundingVolume, this.material, this.shape, this.transform);
