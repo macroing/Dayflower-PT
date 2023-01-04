@@ -45,24 +45,119 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	/**
+	 * Returns a {@link Material} instance with a bullseye pattern.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Material.bullseye(Material.matte(new Color3D(0.5D)));
+	 * }
+	 * </pre>
+	 * 
+	 * @return a {@code Material} instance with a bullseye pattern
+	 */
 	public static Material bullseye() {
 		return bullseye(matte(new Color3D(0.5D)));
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a bullseye pattern.
+	 * <p>
+	 * If {@code materialA} is {@code null}, a {@code NullPointerException} will be thrown.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Material.bullseye(materialA, Material.matte(Color3D.WHITE));
+	 * }
+	 * </pre>
+	 * 
+	 * @param materialA a {@code Material} instance
+	 * @return a {@code Material} instance with a bullseye pattern
+	 * @throws NullPointerException thrown if, and only if, {@code materialA} is {@code null}
+	 */
 	public static Material bullseye(final Material materialA) {
 		return bullseye(materialA, matte(Color3D.WHITE));
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a bullseye pattern.
+	 * <p>
+	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Material.bullseye(materialA, materialB, new Point3D(0.0D, 10.0D, 0.0D));
+	 * }
+	 * </pre>
+	 * 
+	 * @param materialA a {@code Material} instance
+	 * @param materialB a {@code Material} instance
+	 * @return a {@code Material} instance with a bullseye pattern
+	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
+	 */
 	public static Material bullseye(final Material materialA, final Material materialB) {
 		return bullseye(materialA, materialB, new Point3D(0.0D, 10.0D, 0.0D));
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a bullseye pattern.
+	 * <p>
+	 * If either {@code materialA}, {@code materialB} or {@code origin} are {@code null}, a {@code NullPointerException} will be thrown.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Material.bullseye(materialA, materialB, origin, 1.0D);
+	 * }
+	 * </pre>
+	 * 
+	 * @param materialA a {@code Material} instance
+	 * @param materialB a {@code Material} instance
+	 * @param origin a {@link Point3D} instance
+	 * @return a {@code Material} instance with a bullseye pattern
+	 * @throws NullPointerException thrown if, and only if, either {@code materialA}, {@code materialB} or {@code origin} are {@code null}
+	 */
 	public static Material bullseye(final Material materialA, final Material materialB, final Point3D origin) {
 		return bullseye(materialA, materialB, origin, 1.0D);
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a bullseye pattern.
+	 * <p>
+	 * If either {@code materialA}, {@code materialB} or {@code origin} are {@code null}, a {@code NullPointerException} will be thrown.
+	 * 
+	 * @param materialA a {@code Material} instance
+	 * @param materialB a {@code Material} instance
+	 * @param origin a {@link Point3D} instance
+	 * @param scale a {@code double} value with a scale factor
+	 * @return a {@code Material} instance with a bullseye pattern
+	 * @throws NullPointerException thrown if, and only if, either {@code materialA}, {@code materialB} or {@code origin} are {@code null}
+	 */
 	public static Material bullseye(final Material materialA, final Material materialB, final Point3D origin, final double scale) {
 		return new BullseyeMaterial(materialA, materialB, origin, scale);
+	}
+	
+	public static Material checkerboard() {
+		return checkerboard(matte(new Color3D(0.5D)));
+	}
+	
+	public static Material checkerboard(final Material materialA) {
+		return checkerboard(materialA, matte(Color3D.WHITE));
+	}
+	
+	public static Material checkerboard(final Material materialA, final Material materialB) {
+		return checkerboard(materialA, materialB, 0.0D);
+	}
+	
+	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees) {
+		return checkerboard(materialA, materialB, angleDegrees, 1.0D);
+	}
+	
+	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees, final double scale) {
+		return checkerboard(materialA, materialB, angleDegrees, scale, scale);
 	}
 	
 	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees, final double scaleU, final double scaleV) {
