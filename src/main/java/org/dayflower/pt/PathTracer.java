@@ -18,6 +18,8 @@
  */
 package org.dayflower.pt;
 
+import java.util.concurrent.CountDownLatch;
+
 import org.macroing.art4j.color.Color3D;
 import org.macroing.art4j.color.Color4D;
 import org.macroing.art4j.image.Image;
@@ -47,6 +49,43 @@ public final class PathTracer {
 	public void render() {
 		final long currentTimeMillisA = System.currentTimeMillis();
 		
+		final int threadCount = 8;
+		final int pixelCount = RESOLUTION_X * RESOLUTION_Y;
+		final int pixelCountPerThread = pixelCount / threadCount;
+		
+		final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
+		
+		for(int threadIndex = 0; threadIndex < threadCount; threadIndex++) {
+			final int pixelIndexStart = threadIndex * pixelCountPerThread;
+			final int pixelIndexEnd = pixelIndexStart + pixelCountPerThread;
+			
+			new Thread(() -> {
+				for(int pixelIndex = pixelIndexStart; pixelIndex < pixelIndexEnd; pixelIndex++) {
+					final int pixelX = pixelIndex % RESOLUTION_X;
+					final int pixelY = pixelIndex / RESOLUTION_X;
+					
+					Color3D totalRadiance = Color3D.BLACK;
+					
+					for(int sampleY = 0; sampleY < SAMPLE_RESOLUTION_Y; sampleY++) {
+						for(int sampleX = 0; sampleX < SAMPLE_RESOLUTION_X; sampleX++) {
+							Color3D radiance = Color3D.BLACK;
+							
+							for(int sample = 0; sample < SAMPLES; sample++) {
+								radiance = Color3D.add(radiance, Color3D.divide(this.scene.radiance(this.scene.getCamera().generatePrimaryRay(pixelX, pixelY, sampleX, sampleY)), SAMPLES));
+							}
+							
+							totalRadiance = Color3D.add(totalRadiance, Color3D.divide(Color3D.saturate(radiance), SAMPLE_RESOLUTION_X * SAMPLE_RESOLUTION_Y));
+						}
+					}
+					
+					this.image.setColor3D(totalRadiance, pixelIndex);
+				}
+				
+				countDownLatch.countDown();
+			}).start();
+		}
+		
+		/*
 		for(int pixelY = 0; pixelY < RESOLUTION_Y; pixelY++) {
 			for(int pixelX = 0, pixelIndex = (RESOLUTION_Y - pixelY - 1) * RESOLUTION_X; pixelX < RESOLUTION_X; pixelX++, pixelIndex++) {
 				Color3D totalRadiance = Color3D.BLACK;
@@ -66,11 +105,19 @@ public final class PathTracer {
 				this.image.setColor3D(totalRadiance, pixelIndex);
 			}
 		}
+		*/
+		
+		try {
+			countDownLatch.await();
+		} catch(final InterruptedException e) {
+			e.printStackTrace();
+		}
 		
 		final long currentTimeMillisB = System.currentTimeMillis();
 		final long currentTimeMillisC =  currentTimeMillisB -  currentTimeMillisA;
 		
 		this.image.fillD(Color4DPixelOperator.redoGammaCorrection());
+		this.image.flipY();
 		this.image.save(String.format("./PT-%s.png", Long.toString(System.currentTimeMillis())));
 		
 		System.out.println("Rendering completed in " + currentTimeMillisC + " milliseconds.");
