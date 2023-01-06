@@ -1064,6 +1064,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@SuppressWarnings("unused")
 	private static final class SpecularBRDF implements BXDF {
 		private final Color3D r;
 		private final Fresnel fresnel;
@@ -1089,6 +1090,65 @@ public abstract class Material {
 			final Color3D result = Color3D.divide(Color3D.multiply(this.fresnel.evaluate(i.cosTheta()), this.r), i.cosThetaAbs());
 			
 			final float pDF = 1.0F;
+			
+			return Optional.of(new BXDFResult(result, i, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			return 0.0D;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@SuppressWarnings("unused")
+	private static final class SpecularBTDF implements BXDF {
+		private final Color3D t;
+		private final Fresnel fresnel;
+		private final double etaA;
+		private final double etaB;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public SpecularBTDF(final Color3D t, final double etaA, final double etaB) {
+			this.t = Objects.requireNonNull(t, "t == null");
+			this.fresnel = new DielectricFresnel(etaA, etaB);
+			this.etaA = etaA;
+			this.etaB = etaB;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			return Color3D.BLACK;
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			final boolean isEntering = o.cosTheta() > 0.0D;
+			
+			final double etaI = isEntering ? this.etaA : this.etaB;
+			final double etaT = isEntering ? this.etaB : this.etaA;
+			
+			final Optional<Vector3D> optionalI = Vector3D.refraction(o, Vector3D.orientNormal(o, Vector3D.z()), etaI / etaT);
+			
+			if(optionalI.isEmpty()) {
+				return Optional.empty();
+			}
+			
+			final Vector3D i = optionalI.get();
+			
+			final Color3D a = Color3D.WHITE;
+			final Color3D b = this.fresnel.evaluate(i.cosTheta());
+			final Color3D c = Color3D.subtract(a, b);
+			final Color3D d = Color3D.multiply(this.t, c);
+			final Color3D e = Color3D.multiply(d, (etaI * etaI) / (etaT * etaT));
+			
+			final Color3D result = Color3D.divide(e, i.cosThetaAbs());
+			
+			final double pDF = 1.0D;
 			
 			return Optional.of(new BXDFResult(result, i, pDF));
 		}
@@ -1245,7 +1305,7 @@ public abstract class Material {
 			}
 			
 			final Vector3D hNormalized = Vector3D.normalize(h);
-			final Vector3D hNormalizedCorrectlyOriented = Vector3D.dotProduct(hNormalized, Vector3D.z()) < 0.0D ? Vector3D.negate(hNormalized) : hNormalized;
+			final Vector3D hNormalizedCorrectlyOriented = Vector3D.orientNormal(Vector3D.z(), hNormalized);
 			
 			final double cosThetaI = Vector3D.dotProduct(i, hNormalizedCorrectlyOriented);
 			
@@ -1301,6 +1361,7 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@SuppressWarnings("unused")
 	private static final class TorranceSparrowBTDF implements BXDF {
 		private final Color3D t;
 		private final Fresnel fresnel;
