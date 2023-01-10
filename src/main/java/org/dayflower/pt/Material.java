@@ -164,6 +164,11 @@ public abstract class Material {
 		return new CheckerboardMaterial(materialA, materialB, angleDegrees, scaleU, scaleV);
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with glass.
+	 * 
+	 * @return a {@code Material} instance with glass
+	 */
 	public static Material glass() {
 		return new GlassMaterial();
 	}
