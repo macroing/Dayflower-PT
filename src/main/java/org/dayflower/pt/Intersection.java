@@ -81,10 +81,20 @@ public final class Intersection {
 		return this.primitive;
 	}
 	
+	/**
+	 * Returns the {@link Ray3D} instance in object space.
+	 * 
+	 * @return the {@code Ray3D} instance in object space
+	 */
 	public Ray3D getRayOS() {
 		return this.rayOS;
 	}
 	
+	/**
+	 * Returns the {@link Ray3D} instance in world space.
+	 * 
+	 * @return the {@code Ray3D} instance in world space
+	 */
 	public Ray3D getRayWS() {
 		return this.rayWS;
 	}
