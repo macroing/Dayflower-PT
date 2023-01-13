@@ -140,26 +140,121 @@ public abstract class Material {
 		return new BullseyeMaterial(materialA, materialB, origin, scale);
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a checkerboard pattern.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Material.checkerboard(Material.matte(new Color3D(0.5D)));
+	 * }
+	 * </pre>
+	 * 
+	 * @return a {@code Material} instance with a checkerboard pattern
+	 */
 	public static Material checkerboard() {
 		return checkerboard(matte(new Color3D(0.5D)));
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a checkerboard pattern.
+	 * <p>
+	 * If {@code materialA} is {@code null}, a {@code NullPointerException} will be thrown.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Material.checkerboard(materialA, Material.matte(Color3D.WHITE));
+	 * }
+	 * </pre>
+	 * 
+	 * @param materialA a {@code Material} instance
+	 * @return a {@code Material} instance with a checkerboard pattern
+	 * @throws NullPointerException thrown if, and only if, {@code materialA} is {@code null}
+	 */
 	public static Material checkerboard(final Material materialA) {
 		return checkerboard(materialA, matte(Color3D.WHITE));
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a checkerboard pattern.
+	 * <p>
+	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Material.checkerboard(materialA, materialB, 0.0D);
+	 * }
+	 * </pre>
+	 * 
+	 * @param materialA a {@code Material} instance
+	 * @param materialB a {@code Material} instance
+	 * @return a {@code Material} instance with a checkerboard pattern
+	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
+	 */
 	public static Material checkerboard(final Material materialA, final Material materialB) {
 		return checkerboard(materialA, materialB, 0.0D);
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a checkerboard pattern.
+	 * <p>
+	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Material.checkerboard(materialA, materialB, angleDegrees, 1.0D);
+	 * }
+	 * </pre>
+	 * 
+	 * @param materialA a {@code Material} instance
+	 * @param materialB a {@code Material} instance
+	 * @param angleDegrees a {@code double} value with an angle in degrees
+	 * @return a {@code Material} instance with a checkerboard pattern
+	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
+	 */
 	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees) {
 		return checkerboard(materialA, materialB, angleDegrees, 1.0D);
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a checkerboard pattern.
+	 * <p>
+	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
+	 * <p>
+	 * Calling this method is equivalent to the following:
+	 * <pre>
+	 * {@code
+	 * Material.checkerboard(materialA, materialB, angleDegrees, scale, scale);
+	 * }
+	 * </pre>
+	 * 
+	 * @param materialA a {@code Material} instance
+	 * @param materialB a {@code Material} instance
+	 * @param angleDegrees a {@code double} value with an angle in degrees
+	 * @param scale a {@code double} value with a scale factor
+	 * @return a {@code Material} instance with a checkerboard pattern
+	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
+	 */
 	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees, final double scale) {
 		return checkerboard(materialA, materialB, angleDegrees, scale, scale);
 	}
 	
+	/**
+	 * Returns a {@link Material} instance with a checkerboard pattern.
+	 * <p>
+	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
+	 * 
+	 * @param materialA a {@code Material} instance
+	 * @param materialB a {@code Material} instance
+	 * @param angleDegrees a {@code double} value with an angle in degrees
+	 * @param scaleU a {@code double} value with a scale factor along the U-direction
+	 * @param scaleV a {@code double} value with a scale factor along the V-direction
+	 * @return a {@code Material} instance with a checkerboard pattern
+	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
+	 */
 	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees, final double scaleU, final double scaleV) {
 		return new CheckerboardMaterial(materialA, materialB, angleDegrees, scaleU, scaleV);
 	}
