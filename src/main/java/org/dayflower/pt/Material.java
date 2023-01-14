@@ -268,6 +268,34 @@ public abstract class Material {
 		return new GlassMaterial();
 	}
 	
+	public static Material glossy() {
+		return glossy(Color3D.GRAY);
+	}
+	
+	public static Material glossy(final Color3D colorKR) {
+		return glossy(colorKR, new Color3D(0.2D));
+	}
+	
+	public static Material glossy(final Color3D colorKR, final Color3D colorRoughness) {
+		return glossy(colorKR, colorRoughness, Color3D.BLACK);
+	}
+	
+	public static Material glossy(final Color3D colorKR, final Color3D colorRoughness, final Color3D colorEmission) {
+		return new GlossyMaterial(Texture.constant(colorKR), Texture.constant(colorRoughness), Texture.constant(colorEmission));
+	}
+	
+	public static Material glossy(final Texture textureKR) {
+		return glossy(textureKR, Texture.constant(new Color3D(0.2D)));
+	}
+	
+	public static Material glossy(final Texture textureKR, final Texture textureRoughness) {
+		return glossy(textureKR, textureRoughness, Texture.constant(Color3D.BLACK));
+	}
+	
+	public static Material glossy(final Texture textureKR, final Texture textureRoughness, final Texture textureEmission) {
+		return new GlossyMaterial(textureKR, textureRoughness, textureEmission);
+	}
+	
 	public static Material matte() {
 		return matte(new Color3D(0.5D));
 	}
@@ -475,6 +503,86 @@ public abstract class Material {
 		
 		public Ray3D getRay() {
 			return this.ray;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class AshikhminShirleyBRDF implements BXDF {
+		private final Color3D r;
+		private final double exponent;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public AshikhminShirleyBRDF(final Color3D r, final double roughness) {
+			this.r = Objects.requireNonNull(r, "r == null");
+			this.exponent = 1.0F / (roughness * roughness);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			final double cosThetaAbsO = o.cosThetaAbs();
+			final double cosThetaAbsI = i.cosThetaAbs();
+			
+			if(Doubles.isZero(cosThetaAbsO) || Doubles.isZero(cosThetaAbsI)) {
+				return Color3D.BLACK;
+			}
+			
+			final Vector3D h = Vector3D.add(o, i);
+			
+			if(h.isZero()) {
+				return Color3D.BLACK;
+			}
+			
+			final Vector3D hNormalized = Vector3D.normalize(h);
+			
+			final double d = (this.exponent + 1.0D) * Doubles.pow(Doubles.abs(hNormalized.cosTheta()), this.exponent) * Doubles.PI_MULTIPLIED_BY_2_RECIPROCAL;
+			final double f = Schlick.fresnelDielectric(Vector3D.dotProduct(o, hNormalized), 1.0D);
+			
+			final Color3D r = this.r;
+			
+			return Color3D.divide(Color3D.multiply(Color3D.multiply(r, d), f), 4.0F * cosThetaAbsI * cosThetaAbsO);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			if(Doubles.isZero(o.z)) {
+				return Optional.empty();
+			}
+			
+			final Vector3D hSample = Vector3D.sampleHemispherePowerCosineDistribution(p, this.exponent);
+			final Vector3D h = Vector3D.dotProduct(Vector3D.z(), o) < 0.0D ? Vector3D.negate(hSample) : hSample;
+			
+			final double oDotH = Vector3D.dotProduct(o, h);
+			
+			if(oDotH < 0.0D) {
+				return Optional.empty();
+			}
+			
+			final Vector3D i = Vector3D.reflection(o, h);
+			
+			if(!Vector3D.sameHemisphereZ(o, i)) {
+				return Optional.empty();
+			}
+			
+			final Color3D result = evaluateDF(o, i);
+			
+			final double pDF = evaluatePDF(o, i);
+			
+			return Optional.of(new BXDFResult(result, i, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			if(!Vector3D.sameHemisphereZ(o, i)) {
+				return 0.0D;
+			}
+			
+			final Vector3D h = Vector3D.normalize(Vector3D.add(o, i));
+			
+			return (this.exponent + 1.0D) * Doubles.pow(Doubles.abs(h.cosTheta()), this.exponent) / (Doubles.PI * 8.0D * Doubles.abs(Vector3D.dotProduct(o, h)));
 		}
 	}
 	
@@ -899,6 +1007,35 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	private static final class GlossyMaterial extends Material {
+		private final Texture textureEmission;
+		private final Texture textureKR;
+		private final Texture textureRoughness;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public GlossyMaterial(final Texture textureKR, final Texture textureRoughness, final Texture textureEmission) {
+			this.textureKR = Objects.requireNonNull(textureKR, "textureKR == null");
+			this.textureRoughness = Objects.requireNonNull(textureRoughness, "textureRoughness == null");
+			this.textureEmission = Objects.requireNonNull(textureEmission, "textureEmission == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Optional<Result> compute(final Intersection intersection) {
+			final Color3D colorKR = this.textureKR.compute(intersection);
+			
+			final double roughness = this.textureRoughness.compute(intersection).average();
+			
+			final BSDF bSDF = new BSDF(new AshikhminShirleyBRDF(colorKR, roughness));
+			
+			return bSDF.compute(intersection, this.textureEmission.compute(intersection));
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	private static final class LambertianBRDF implements BXDF {
 		private final Color3D r;
 		
@@ -1159,6 +1296,24 @@ public abstract class Material {
 			}
 			
 			return Optional.empty();
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class Schlick {
+		private Schlick() {
+			
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public static double fresnelDielectric(final double cosTheta, final double r0) {
+			return r0 + (1.0D - r0) * fresnelWeight(cosTheta);
+		}
+		
+		public static double fresnelWeight(final double cosTheta) {
+			return Doubles.pow5(Doubles.saturate(1.0D - cosTheta));
 		}
 	}
 	

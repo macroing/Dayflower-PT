@@ -17,6 +17,7 @@ Supported Materials
 * Bullseye
 * Checkerboard
 * Glass
+* Glossy
 * Matte
 * Metal
 * Mirror
