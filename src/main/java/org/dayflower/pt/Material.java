@@ -273,7 +273,7 @@ public abstract class Material {
 	}
 	
 	public static Material glossy(final Color3D colorKR) {
-		return glossy(colorKR, new Color3D(0.2D));
+		return glossy(colorKR, new Color3D(0.1D));
 	}
 	
 	public static Material glossy(final Color3D colorKR, final Color3D colorRoughness) {
@@ -285,7 +285,7 @@ public abstract class Material {
 	}
 	
 	public static Material glossy(final Texture textureKR) {
-		return glossy(textureKR, Texture.constant(new Color3D(0.2D)));
+		return glossy(textureKR, Texture.constant(new Color3D(0.1D)));
 	}
 	
 	public static Material glossy(final Texture textureKR, final Texture textureRoughness) {
