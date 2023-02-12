@@ -24,6 +24,8 @@ import org.macroing.art4j.color.Color3D;
 import org.macroing.art4j.color.Color4D;
 import org.macroing.art4j.image.Image;
 import org.macroing.art4j.pixel.Color4DPixelOperator;
+import org.macroing.java.lang.Doubles;
+import org.macroing.java.lang.Ints;
 
 public final class PathTracer {
 	private static final int RESOLUTION_X = 1024;
@@ -52,13 +54,13 @@ public final class PathTracer {
 		final int threadCount = 6;
 		
 		final int pixelCount = RESOLUTION_X * RESOLUTION_Y;
-		final int pixelCountPerThread = (int)(Math.ceil((double)(pixelCount) / (double)(threadCount)));
+		final int pixelCountPerThread = (int)(Doubles.ceil((double)(pixelCount) / (double)(threadCount)));
 		
 		final CountDownLatch countDownLatch = new CountDownLatch(threadCount);
 		
 		for(int threadIndex = 0; threadIndex < threadCount; threadIndex++) {
 			final int pixelIndexStart = threadIndex * pixelCountPerThread;
-			final int pixelIndexEnd = Math.min(pixelIndexStart + pixelCountPerThread, pixelCount);
+			final int pixelIndexEnd = Ints.min(pixelIndexStart + pixelCountPerThread, pixelCount);
 			
 			new Thread(() -> {
 				for(int pixelIndex = pixelIndexStart; pixelIndex < pixelIndexEnd; pixelIndex++) {

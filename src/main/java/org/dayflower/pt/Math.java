@@ -32,10 +32,6 @@ public final class Math {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	public static double ceil(final double value) {
-		return java.lang.Math.ceil(value);
-	}
-	
 	public static double[] solveQuartic(final double a, final double b, final double c, final double d, final double e) {
 		final double aReciprocal = 1.0D / a;
 		final double bA = b * aReciprocal;
@@ -110,10 +106,6 @@ public final class Math {
 		} else {
 			return new double[0];
 		}
-	}
-	
-	public static int min(final int a, final int b) {
-		return java.lang.Math.min(a, b);
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////

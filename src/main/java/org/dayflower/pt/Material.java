@@ -539,7 +539,7 @@ public abstract class Material {
 			final Vector3D hNormalized = Vector3D.normalize(h);
 			
 			final double d = (this.exponent + 1.0D) * Doubles.pow(Doubles.abs(hNormalized.cosTheta()), this.exponent) * Doubles.PI_MULTIPLIED_BY_2_RECIPROCAL;
-			final double f = Schlick.fresnelDielectric(Vector3D.dotProduct(o, hNormalized), 1.0D);
+			final double f = Fresnel.evaluateDielectricSchlick(Vector3D.dotProduct(o, hNormalized), 1.0D);
 			
 			final Color3D r = this.r;
 			
@@ -824,6 +824,102 @@ public abstract class Material {
 		@Override
 		public Color3D evaluate(final double cosThetaI) {
 			return new Color3D(evaluateDielectric(cosThetaI, this.etaI, this.etaT));
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@SuppressWarnings("unused")
+	private static final class DisneyClearCoatBRDF implements BXDF {
+		private final float gloss;
+		private final float weight;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public DisneyClearCoatBRDF(final float gloss, final float weight) {
+			this.gloss = gloss;
+			this.weight = weight;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			final Vector3D h = Vector3D.add(i, o);
+			
+			if(h.isZero()) {
+				return Color3D.BLACK;
+			}
+			
+			final Vector3D hNormalized = Vector3D.normalize(h);
+			
+			final double d = doGTR1(hNormalized.cosThetaAbs(), this.gloss);
+			final double f = Doubles.lerp(0.04D, 1.0D, Doubles.pow5(Doubles.saturate(1.0D - Vector3D.dotProduct(o, hNormalized))));
+			final double g = doSmithGGGX(o.cosThetaAbs(), 0.25D) * doSmithGGGX(i.cosThetaAbs(), 0.25D);
+			
+			return new Color3D(this.weight * g * f * d / 4.0D);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			if(Doubles.isZero(o.z)) {
+				return Optional.empty();
+			}
+			
+			final double alphaSquared = this.gloss * this.gloss;
+			final double cosTheta = Doubles.sqrt(Doubles.max(0.0D, (1.0D - Doubles.pow(alphaSquared, 1.0D - p.x)) / (1.0D - alphaSquared)));
+			final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
+			final double phi = 2.0D * Doubles.PI * p.y;
+			
+			final Vector3D hSample = Vector3D.directionSpherical(sinTheta, cosTheta, phi);
+			final Vector3D h = Vector3D.sameHemisphereZ(o, hSample) ? hSample : Vector3D.negate(hSample);
+			final Vector3D i = Vector3D.reflection(o, h);
+			
+			if(!Vector3D.sameHemisphereZ(o, i)) {
+				return Optional.empty();
+			}
+			
+			final Color3D result = evaluateDF(o, i);
+			
+			final double pDF = evaluatePDF(o, i);
+			
+			return Optional.of(new BXDFResult(result, i, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			if(!Vector3D.sameHemisphereZ(o, i)) {
+				return 0.0D;
+			}
+			
+			final Vector3D h = Vector3D.add(i, o);
+			
+			if(h.isZero()) {
+				return 0.0D;
+			}
+			
+			final Vector3D hNormalized = Vector3D.normalize(h);
+			
+			final double cosThetaAbsH = hNormalized.cosThetaAbs();
+			
+			return doGTR1(cosThetaAbsH, this.gloss) * cosThetaAbsH / (4.0D * Vector3D.dotProduct(o, hNormalized));
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private static double doGTR1(final double cosTheta, final double alpha) {
+			final double a = alpha * alpha;
+			final double b = (a - 1.0D) / (Doubles.PI * Doubles.log(a) * (1.0D + (a - 1.0D) * cosTheta * cosTheta));
+			
+			return b;
+		}
+		
+		private static double doSmithGGGX(final double cosTheta, final double alpha) {
+			final double a = alpha * alpha;
+			final double b = cosTheta * cosTheta;
+			final double c = 1.0D / (cosTheta + Doubles.sqrt(a + b - a * b));
+			
+			return c;
 		}
 	}
 	
@@ -1296,24 +1392,6 @@ public abstract class Material {
 			}
 			
 			return Optional.empty();
-		}
-	}
-	
-	////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	private static final class Schlick {
-		private Schlick() {
-			
-		}
-		
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		public static double fresnelDielectric(final double cosTheta, final double r0) {
-			return r0 + (1.0D - r0) * fresnelWeight(cosTheta);
-		}
-		
-		public static double fresnelWeight(final double cosTheta) {
-			return Doubles.pow5(Doubles.saturate(1.0D - cosTheta));
 		}
 	}
 	
