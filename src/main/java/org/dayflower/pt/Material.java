@@ -973,6 +973,128 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@SuppressWarnings("unused")
+	private static final class DisneyFakeSSBRDF implements BXDF {
+		private final Color3D reflectance;
+		private final double roughness;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public DisneyFakeSSBRDF(final Color3D reflectance, final double roughness) {
+			this.reflectance = Objects.requireNonNull(reflectance, "reflectance == null");
+			this.roughness = roughness;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			final Vector3D h = Vector3D.add(i, o);
+			
+			if(h.isZero()) {
+				return Color3D.BLACK;
+			}
+			
+			final Vector3D hNormalized = Vector3D.normalize(h);
+			
+			final double cosThetaD = Vector3D.dotProduct(i, hNormalized);
+			final double cosThetaAbsO = o.cosThetaAbs();
+			final double cosThetaAbsI = i.cosThetaAbs();
+			
+			final double fresnelO = Fresnel.evaluateDielectricSchlickWeight(cosThetaAbsO);
+			final double fresnelI = Fresnel.evaluateDielectricSchlickWeight(cosThetaAbsI);
+			
+			final double fresnelSS90 = cosThetaD * cosThetaD * this.roughness;
+			final double fresnelSS = Doubles.lerp(1.0D, fresnelSS90, fresnelO) * Doubles.lerp(1.0D, fresnelSS90, fresnelI);
+			
+			final double scaleSS = 1.25D * (fresnelSS * (1.0D / (cosThetaAbsO + cosThetaAbsI) - 0.5D) + 0.5D);
+			
+			final double r = this.reflectance.r * Doubles.PI_RECIPROCAL * scaleSS;
+			final double g = this.reflectance.g * Doubles.PI_RECIPROCAL * scaleSS;
+			final double b = this.reflectance.b * Doubles.PI_RECIPROCAL * scaleSS;
+			
+			return new Color3D(r, g, b);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			final Vector3D iSample = Vector3D.sampleHemisphereCosineDistribution(p);
+			final Vector3D i = o.z < 0.0D ? Vector3D.negateZ(iSample) : iSample;
+			
+			final Color3D result = evaluateDF(o, i);
+			
+			final double pDF = evaluatePDF(o, i);
+			
+			return Optional.of(new BXDFResult(result, i, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			return Vector3D.sameHemisphereZ(o, i) ? i.cosThetaAbs() * Doubles.PI_RECIPROCAL : 0.0D;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@SuppressWarnings("unused")
+	private static final class DisneyRetroBRDF implements BXDF {
+		private final Color3D reflectance;
+		private final double roughness;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public DisneyRetroBRDF(final Color3D reflectance, final double roughness) {
+			this.reflectance = Objects.requireNonNull(reflectance, "reflectance == null");
+			this.roughness = roughness;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			final Vector3D h = Vector3D.add(i, o);
+			
+			if(h.isZero()) {
+				return Color3D.BLACK;
+			}
+			
+			final Vector3D hNormalized = Vector3D.normalize(h);
+			
+			final double cosThetaD = Vector3D.dotProduct(i, hNormalized);
+			
+			final double fresnelO = Fresnel.evaluateDielectricSchlickWeight(o.cosThetaAbs());
+			final double fresnelI = Fresnel.evaluateDielectricSchlickWeight(i.cosThetaAbs());
+			
+			final double fresnelA = 2.0D * this.roughness * cosThetaD * cosThetaD;
+			final double fresnelB = fresnelO + fresnelI + fresnelO * fresnelI * (fresnelA - 1.0D);
+			
+			final double r = this.reflectance.r * Doubles.PI_RECIPROCAL * fresnelA * fresnelB;
+			final double g = this.reflectance.g * Doubles.PI_RECIPROCAL * fresnelA * fresnelB;
+			final double b = this.reflectance.b * Doubles.PI_RECIPROCAL * fresnelA * fresnelB;
+			
+			return new Color3D(r, g, b);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			final Vector3D iSample = Vector3D.sampleHemisphereCosineDistribution(p);
+			final Vector3D i = o.z < 0.0D ? Vector3D.negateZ(iSample) : iSample;
+			
+			final Color3D result = evaluateDF(o, i);
+			
+			final double pDF = evaluatePDF(o, i);
+			
+			return Optional.of(new BXDFResult(result, i, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			return Vector3D.sameHemisphereZ(o, i) ? i.cosThetaAbs() * Doubles.PI_RECIPROCAL : 0.0D;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	private static abstract class Fresnel {
 		protected Fresnel() {
 			
