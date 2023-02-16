@@ -866,8 +866,9 @@ public abstract class Material {
 				return Optional.empty();
 			}
 			
-			final double alphaSquared = this.gloss * this.gloss;
-			final double cosTheta = Doubles.sqrt(Doubles.max(0.0D, (1.0D - Doubles.pow(alphaSquared, 1.0D - p.x)) / (1.0D - alphaSquared)));
+			final double glossSquared = this.gloss * this.gloss;
+			
+			final double cosTheta = Doubles.sqrt(Doubles.max(0.0D, (1.0D - Doubles.pow(glossSquared, 1.0D - p.x)) / (1.0D - glossSquared)));
 			final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
 			final double phi = 2.0D * Doubles.PI * p.y;
 			
@@ -920,6 +921,53 @@ public abstract class Material {
 			final double c = 1.0D / (cosTheta + Doubles.sqrt(a + b - a * b));
 			
 			return c;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@SuppressWarnings("unused")
+	private static final class DisneyDiffuseBRDF implements BXDF {
+		private final Color3D reflectance;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public DisneyDiffuseBRDF(final Color3D reflectance) {
+			this.reflectance = Objects.requireNonNull(reflectance, "reflectance == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			final double fresnelOA = Fresnel.evaluateDielectricSchlickWeight(o.cosThetaAbs());
+			final double fresnelIA = Fresnel.evaluateDielectricSchlickWeight(i.cosThetaAbs());
+			
+			final double fresnelOB = 1.0D - fresnelOA / 2.0D;
+			final double fresnelIB = 1.0D - fresnelIA / 2.0D;
+			
+			final double r = this.reflectance.r * Doubles.PI_RECIPROCAL * fresnelOB * fresnelIB;
+			final double g = this.reflectance.g * Doubles.PI_RECIPROCAL * fresnelOB * fresnelIB;
+			final double b = this.reflectance.b * Doubles.PI_RECIPROCAL * fresnelOB * fresnelIB;
+			
+			return new Color3D(r, g, b);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			final Vector3D iSample = Vector3D.sampleHemisphereCosineDistribution(p);
+			final Vector3D i = o.z < 0.0D ? Vector3D.negateZ(iSample) : iSample;
+			
+			final Color3D result = evaluateDF(o, i);
+			
+			final double pDF = evaluatePDF(o, i);
+			
+			return Optional.of(new BXDFResult(result, i, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			return Vector3D.sameHemisphereZ(o, i) ? i.cosThetaAbs() * Doubles.PI_RECIPROCAL : 0.0D;
 		}
 	}
 	
@@ -1033,7 +1081,11 @@ public abstract class Material {
 		}
 		
 		public static double evaluateDielectricSchlick(final double cosTheta, final double r0) {
-			return r0 + (1.0D - r0) * Doubles.pow5(Doubles.saturate(1.0D - cosTheta));
+			return r0 + (1.0D - r0) * evaluateDielectricSchlickWeight(cosTheta);
+		}
+		
+		public static double evaluateDielectricSchlickWeight(final double cosTheta) {
+			return Doubles.pow5(Doubles.saturate(1.0D - cosTheta));
 		}
 	}
 	
