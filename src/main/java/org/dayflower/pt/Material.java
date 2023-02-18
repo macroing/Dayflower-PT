@@ -1037,6 +1037,34 @@ public abstract class Material {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	@SuppressWarnings("unused")
+	private static final class DisneyFresnel extends Fresnel {
+		private final Color3D r0;
+		private final double eta;
+		private final double metallic;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public DisneyFresnel(final Color3D r0, final double eta, final double metallic) {
+			this.r0 = Objects.requireNonNull(r0, "r0 == null");
+			this.eta = eta;
+			this.metallic = metallic;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluate(final double cosThetaI) {
+			final Color3D a = new Color3D(Fresnel.evaluateDielectric(cosThetaI, 1.0D, this.eta));
+			final Color3D b = Color3D.blend(this.r0, Color3D.WHITE, Fresnel.evaluateDielectricSchlickWeight(cosThetaI));
+			final Color3D c = Color3D.blend(a, b, this.metallic);
+			
+			return c;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@SuppressWarnings("unused")
 	private static final class DisneyRetroBRDF implements BXDF {
 		private final Color3D reflectance;
 		private final double roughness;
@@ -1071,6 +1099,59 @@ public abstract class Material {
 			final double r = this.reflectance.r * Doubles.PI_RECIPROCAL * fresnelA * fresnelB;
 			final double g = this.reflectance.g * Doubles.PI_RECIPROCAL * fresnelA * fresnelB;
 			final double b = this.reflectance.b * Doubles.PI_RECIPROCAL * fresnelA * fresnelB;
+			
+			return new Color3D(r, g, b);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			final Vector3D iSample = Vector3D.sampleHemisphereCosineDistribution(p);
+			final Vector3D i = o.z < 0.0D ? Vector3D.negateZ(iSample) : iSample;
+			
+			final Color3D result = evaluateDF(o, i);
+			
+			final double pDF = evaluatePDF(o, i);
+			
+			return Optional.of(new BXDFResult(result, i, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			return Vector3D.sameHemisphereZ(o, i) ? i.cosThetaAbs() * Doubles.PI_RECIPROCAL : 0.0D;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@SuppressWarnings("unused")
+	private static final class DisneySheenBRDF implements BXDF {
+		private final Color3D reflectance;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public DisneySheenBRDF(final Color3D reflectance) {
+			this.reflectance = Objects.requireNonNull(reflectance, "reflectance == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			final Vector3D h = Vector3D.add(i, o);
+			
+			if(h.isZero()) {
+				return Color3D.BLACK;
+			}
+			
+			final Vector3D hNormalized = Vector3D.normalize(h);
+			
+			final double cosThetaD = Vector3D.dotProduct(i, hNormalized);
+			
+			final double fresnel = Fresnel.evaluateDielectricSchlickWeight(cosThetaD);
+			
+			final double r = this.reflectance.r * fresnel;
+			final double g = this.reflectance.g * fresnel;
+			final double b = this.reflectance.b * fresnel;
 			
 			return new Color3D(r, g, b);
 		}
@@ -1327,9 +1408,9 @@ public abstract class Material {
 			final Vector3D i = Vector3D.sampleHemisphereCosineDistribution(p);
 			final Vector3D iCorrectlyOriented = o.z < 0.0D ? Vector3D.negateZ(i) : i;
 			
-			final Color3D result = evaluateDF(o, i);
+			final Color3D result = evaluateDF(o, iCorrectlyOriented);
 			
-			final double pDF = evaluatePDF(o, i);
+			final double pDF = evaluatePDF(o, iCorrectlyOriented);
 			
 			return Optional.of(new BXDFResult(result, iCorrectlyOriented, pDF));
 		}
@@ -1337,6 +1418,43 @@ public abstract class Material {
 		@Override
 		public double evaluatePDF(final Vector3D o, final Vector3D i) {
 			return Vector3D.sameHemisphereZ(o, i) ? i.cosThetaAbs() / Doubles.PI : 0.0D;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@SuppressWarnings("unused")
+	private static final class LambertianBTDF implements BXDF {
+		private final Color3D t;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public LambertianBTDF(final Color3D t) {
+			this.t = Objects.requireNonNull(t, "t == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			return Color3D.divide(this.t, Doubles.PI);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			final Vector3D i = Vector3D.sampleHemisphereCosineDistribution(p);
+			final Vector3D iCorrectlyOriented = o.z > 0.0D ? Vector3D.negateZ(i) : i;
+			
+			final Color3D result = evaluateDF(o, iCorrectlyOriented);
+			
+			final double pDF = evaluatePDF(o, iCorrectlyOriented);
+			
+			return Optional.of(new BXDFResult(result, iCorrectlyOriented, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			return Vector3D.sameHemisphereZ(o, i) ? 0.0D : i.cosThetaAbs() / Doubles.PI;
 		}
 	}
 	
