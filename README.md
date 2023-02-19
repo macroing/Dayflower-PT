@@ -12,10 +12,26 @@ To clone this repository, you can type the following in Git Bash.
 git clone https://github.com/macroing/Dayflower-PT.git
 ```
 
+Supported BXDFs
+---------------
+* Ashikhmin Shirley BRDF
+* Disney Clear Coat BRDF
+* Disney Diffuse BRDF
+* Disney Fake SS BRDF
+* Disney Retro BRDF
+* Disney Sheen BRDF
+* Lambertian BRDF
+* Lambertian BTDF
+* Specular BRDF
+* Specular BTDF
+* Torrance Sparrow BRDF
+* Torrance Sparrow BTDF
+
 Supported Materials
 -------------------
 * Bullseye
 * Checkerboard
+* Disney
 * Glass
 * Glossy
 * Matte
