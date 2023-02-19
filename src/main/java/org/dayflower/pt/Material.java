@@ -45,216 +45,46 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	/**
-	 * Returns a {@link Material} instance with a bullseye pattern.
-	 * <p>
-	 * Calling this method is equivalent to the following:
-	 * <pre>
-	 * {@code
-	 * Material.bullseye(Material.matte(new Color3D(0.5D)));
-	 * }
-	 * </pre>
-	 * 
-	 * @return a {@code Material} instance with a bullseye pattern
-	 */
 	public static Material bullseye() {
 		return bullseye(matte(new Color3D(0.5D)));
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a bullseye pattern.
-	 * <p>
-	 * If {@code materialA} is {@code null}, a {@code NullPointerException} will be thrown.
-	 * <p>
-	 * Calling this method is equivalent to the following:
-	 * <pre>
-	 * {@code
-	 * Material.bullseye(materialA, Material.matte(Color3D.WHITE));
-	 * }
-	 * </pre>
-	 * 
-	 * @param materialA a {@code Material} instance
-	 * @return a {@code Material} instance with a bullseye pattern
-	 * @throws NullPointerException thrown if, and only if, {@code materialA} is {@code null}
-	 */
 	public static Material bullseye(final Material materialA) {
 		return bullseye(materialA, matte(Color3D.WHITE));
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a bullseye pattern.
-	 * <p>
-	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
-	 * <p>
-	 * Calling this method is equivalent to the following:
-	 * <pre>
-	 * {@code
-	 * Material.bullseye(materialA, materialB, new Point3D(0.0D, 10.0D, 0.0D));
-	 * }
-	 * </pre>
-	 * 
-	 * @param materialA a {@code Material} instance
-	 * @param materialB a {@code Material} instance
-	 * @return a {@code Material} instance with a bullseye pattern
-	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
-	 */
 	public static Material bullseye(final Material materialA, final Material materialB) {
 		return bullseye(materialA, materialB, new Point3D(0.0D, 10.0D, 0.0D));
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a bullseye pattern.
-	 * <p>
-	 * If either {@code materialA}, {@code materialB} or {@code origin} are {@code null}, a {@code NullPointerException} will be thrown.
-	 * <p>
-	 * Calling this method is equivalent to the following:
-	 * <pre>
-	 * {@code
-	 * Material.bullseye(materialA, materialB, origin, 1.0D);
-	 * }
-	 * </pre>
-	 * 
-	 * @param materialA a {@code Material} instance
-	 * @param materialB a {@code Material} instance
-	 * @param origin a {@link Point3D} instance
-	 * @return a {@code Material} instance with a bullseye pattern
-	 * @throws NullPointerException thrown if, and only if, either {@code materialA}, {@code materialB} or {@code origin} are {@code null}
-	 */
 	public static Material bullseye(final Material materialA, final Material materialB, final Point3D origin) {
 		return bullseye(materialA, materialB, origin, 1.0D);
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a bullseye pattern.
-	 * <p>
-	 * If either {@code materialA}, {@code materialB} or {@code origin} are {@code null}, a {@code NullPointerException} will be thrown.
-	 * 
-	 * @param materialA a {@code Material} instance
-	 * @param materialB a {@code Material} instance
-	 * @param origin a {@link Point3D} instance
-	 * @param scale a {@code double} value with a scale factor
-	 * @return a {@code Material} instance with a bullseye pattern
-	 * @throws NullPointerException thrown if, and only if, either {@code materialA}, {@code materialB} or {@code origin} are {@code null}
-	 */
 	public static Material bullseye(final Material materialA, final Material materialB, final Point3D origin, final double scale) {
 		return new BullseyeMaterial(materialA, materialB, origin, scale);
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a checkerboard pattern.
-	 * <p>
-	 * Calling this method is equivalent to the following:
-	 * <pre>
-	 * {@code
-	 * Material.checkerboard(Material.matte(new Color3D(0.5D)));
-	 * }
-	 * </pre>
-	 * 
-	 * @return a {@code Material} instance with a checkerboard pattern
-	 */
 	public static Material checkerboard() {
 		return checkerboard(matte(new Color3D(0.5D)));
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a checkerboard pattern.
-	 * <p>
-	 * If {@code materialA} is {@code null}, a {@code NullPointerException} will be thrown.
-	 * <p>
-	 * Calling this method is equivalent to the following:
-	 * <pre>
-	 * {@code
-	 * Material.checkerboard(materialA, Material.matte(Color3D.WHITE));
-	 * }
-	 * </pre>
-	 * 
-	 * @param materialA a {@code Material} instance
-	 * @return a {@code Material} instance with a checkerboard pattern
-	 * @throws NullPointerException thrown if, and only if, {@code materialA} is {@code null}
-	 */
 	public static Material checkerboard(final Material materialA) {
 		return checkerboard(materialA, matte(Color3D.WHITE));
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a checkerboard pattern.
-	 * <p>
-	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
-	 * <p>
-	 * Calling this method is equivalent to the following:
-	 * <pre>
-	 * {@code
-	 * Material.checkerboard(materialA, materialB, 0.0D);
-	 * }
-	 * </pre>
-	 * 
-	 * @param materialA a {@code Material} instance
-	 * @param materialB a {@code Material} instance
-	 * @return a {@code Material} instance with a checkerboard pattern
-	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
-	 */
 	public static Material checkerboard(final Material materialA, final Material materialB) {
 		return checkerboard(materialA, materialB, 0.0D);
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a checkerboard pattern.
-	 * <p>
-	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
-	 * <p>
-	 * Calling this method is equivalent to the following:
-	 * <pre>
-	 * {@code
-	 * Material.checkerboard(materialA, materialB, angleDegrees, 1.0D);
-	 * }
-	 * </pre>
-	 * 
-	 * @param materialA a {@code Material} instance
-	 * @param materialB a {@code Material} instance
-	 * @param angleDegrees a {@code double} value with an angle in degrees
-	 * @return a {@code Material} instance with a checkerboard pattern
-	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
-	 */
 	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees) {
 		return checkerboard(materialA, materialB, angleDegrees, 1.0D);
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a checkerboard pattern.
-	 * <p>
-	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
-	 * <p>
-	 * Calling this method is equivalent to the following:
-	 * <pre>
-	 * {@code
-	 * Material.checkerboard(materialA, materialB, angleDegrees, scale, scale);
-	 * }
-	 * </pre>
-	 * 
-	 * @param materialA a {@code Material} instance
-	 * @param materialB a {@code Material} instance
-	 * @param angleDegrees a {@code double} value with an angle in degrees
-	 * @param scale a {@code double} value with a scale factor
-	 * @return a {@code Material} instance with a checkerboard pattern
-	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
-	 */
 	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees, final double scale) {
 		return checkerboard(materialA, materialB, angleDegrees, scale, scale);
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with a checkerboard pattern.
-	 * <p>
-	 * If either {@code materialA} or {@code materialB} are {@code null}, a {@code NullPointerException} will be thrown.
-	 * 
-	 * @param materialA a {@code Material} instance
-	 * @param materialB a {@code Material} instance
-	 * @param angleDegrees a {@code double} value with an angle in degrees
-	 * @param scaleU a {@code double} value with a scale factor along the U-direction
-	 * @param scaleV a {@code double} value with a scale factor along the V-direction
-	 * @return a {@code Material} instance with a checkerboard pattern
-	 * @throws NullPointerException thrown if, and only if, either {@code materialA} or {@code materialB} are {@code null}
-	 */
 	public static Material checkerboard(final Material materialA, final Material materialB, final double angleDegrees, final double scaleU, final double scaleV) {
 		return new CheckerboardMaterial(materialA, materialB, angleDegrees, scaleU, scaleV);
 	}
@@ -327,11 +157,6 @@ public abstract class Material {
 		return new DisneyMaterial(textureColor, textureEmission, textureScatterDistance, textureAnisotropic, textureClearCoat, textureClearCoatGloss, textureDiffuseTransmission, textureEta, textureFlatness, textureMetallic, textureRoughness, textureSheen, textureSheenTint, textureSpecularTint, textureSpecularTransmission, isThin);
 	}
 	
-	/**
-	 * Returns a {@link Material} instance with glass.
-	 * 
-	 * @return a {@code Material} instance with glass
-	 */
 	public static Material glass() {
 		return new GlassMaterial();
 	}
@@ -590,6 +415,11 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.GLOSSY_REFLECTION;
+		}
+		
+		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
 			final double cosThetaAbsO = o.cosThetaAbs();
 			final double cosThetaAbsI = i.cosThetaAbs();
@@ -639,7 +469,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override
@@ -685,19 +515,22 @@ public abstract class Material {
 			final double sampleU = Randoms.nextDouble();
 			final double sampleV = Randoms.nextDouble();
 			
-			final int matches = this.bXDFs.size();
-			final int match = Ints.min((int)(Doubles.floor(sampleU * matches)), matches - 1);
+			final BXDF[] bXDFs = new BXDF[8];
+			
+			final int matches = doComputeMatches(BXDFType.ALL, bXDFs);
 			
 			if(matches == 0) {
 				return Optional.empty();
 			}
 			
+			final int match = Ints.min((int)(Doubles.floor(sampleU * matches)), matches - 1);
+			
+			final BXDF bXDF = bXDFs[match];
+			
 			final double u = Doubles.min(sampleU * matches - match, 0.99999994D);
 			final double v = sampleV;
 			
 			final Point2D p = new Point2D(u, v);
-			
-			final BXDF bXDF = this.bXDFs.get(match);
 			
 			final Optional<BXDFResult> optionalBXDFResult = bXDF.sampleDF(oLS, p);
 			
@@ -724,11 +557,20 @@ public abstract class Material {
 			
 			final Ray3D ray = new Ray3D(intersection.getSurfaceIntersectionPointWS(), iWS);
 			
-			if(matches > 1) {
+			if(matches > 1 && !bXDFResult.getBXDF().getBXDFType().isSpecular()) {
+				final double iDotN = Vector3D.dotProduct(iWS, nWS);
+				final double oDotN = Vector3D.dotProduct(oWS, nWS);
+				
+				final boolean isReflecting = iDotN * oDotN > 0.0D;
+				
+				result = Color3D.BLACK;
+				
 				for(final BXDF currentBXDF : this.bXDFs) {
 					if(currentBXDF != bXDF) {
 						probabilityDensityFunctionValue += currentBXDF.evaluatePDF(oLS, iLS);
-						
+					}
+					
+					if(isReflecting && bXDF.getBXDFType().hasReflection() || !isReflecting && bXDF.getBXDFType().hasTransmission()) {
 						result = Color3D.add(result, currentBXDF.evaluateDF(oLS, iLS));
 					}
 				}
@@ -740,11 +582,29 @@ public abstract class Material {
 			
 			return Optional.of(new Result(emission, reflectance, ray));
 		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private int doComputeMatches(final BXDFType bXDFType, final BXDF[] matchingBXDFs) {
+			int matches = 0;
+			
+			for(final BXDF bXDF : this.bXDFs) {
+				if(bXDF.getBXDFType().matches(bXDFType)) {
+					matchingBXDFs[matches] = bXDF;
+					
+					matches++;
+				}
+			}
+			
+			return matches;
+		}
 	}
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private static interface BXDF {
+		BXDFType getBXDFType();
+		
 		Color3D evaluateDF(final Vector3D o, final Vector3D i);
 		
 		Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p);
@@ -755,19 +615,25 @@ public abstract class Material {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private static final class BXDFResult {
+		private final BXDF bXDF;
 		private final Color3D result;
 		private final Vector3D i;
 		private final double pDF;
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		public BXDFResult(final Color3D result, final Vector3D i, final double pDF) {
+		public BXDFResult(final BXDF bXDF, final Color3D result, final Vector3D i, final double pDF) {
+			this.bXDF = Objects.requireNonNull(bXDF, "bXDF == null");
 			this.result = Objects.requireNonNull(result, "result == null");
 			this.i = Objects.requireNonNull(i, "i == null");
 			this.pDF = pDF;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public BXDF getBXDF() {
+			return this.bXDF;
+		}
 		
 		public Color3D getResult() {
 			return this.result;
@@ -779,6 +645,149 @@ public abstract class Material {
 		
 		public double getPDF() {
 			return this.pDF;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class BXDFType {
+		public static final BXDFType ALL = new BXDFType(true, true, true, true, true);
+//		public static final BXDFType ALL_EXCEPT_SPECULAR = new BXDFType(true, true, true, true, false);
+		public static final BXDFType DIFFUSE_REFLECTION = doCreateReflection(true, false, false);
+//		public static final BXDFType DIFFUSE_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(true, false, false);
+		public static final BXDFType DIFFUSE_TRANSMISSION = doCreateTransmission(true, false, false);
+		public static final BXDFType GLOSSY_REFLECTION = doCreateReflection(false, true, false);
+//		public static final BXDFType GLOSSY_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(false, true, false);
+		public static final BXDFType GLOSSY_TRANSMISSION = doCreateTransmission(false, true, false);
+		public static final BXDFType SPECULAR_REFLECTION = doCreateReflection(false, false, true);
+//		public static final BXDFType SPECULAR_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(false, false, true);
+		public static final BXDFType SPECULAR_TRANSMISSION = doCreateTransmission(false, false, true);
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private static final int BIT_FLAG_HAS_REFLECTION = 1 << 0;
+		private static final int BIT_FLAG_HAS_TRANSMISSION = 1 << 1;
+		private static final int BIT_FLAG_IS_DIFFUSE = 1 << 2;
+		private static final int BIT_FLAG_IS_GLOSSY = 1 << 3;
+		private static final int BIT_FLAG_IS_SPECULAR = 1 << 4;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private final int bitFlags;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private BXDFType(final boolean hasReflection, final boolean hasTransmission, final boolean isDiffuse, final boolean isGlossy, final boolean isSpecular) {
+			this.bitFlags = doCreateBitFlags(hasReflection, hasTransmission, isDiffuse, isGlossy, isSpecular);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public String toString() {
+			if(isDiffuse() && hasReflection() && hasTransmission()) {
+				return "BXDFType.DIFFUSE_REFLECTION_AND_TRANSMISSION";
+			} else if(isDiffuse() && hasReflection()) {
+				return "BXDFType.DIFFUSE_REFLECTION";
+			} else if(isDiffuse() && hasTransmission()) {
+				return "BXDFType.DIFFUSE_TRANSMISSION";
+			} else if(isGlossy() && hasReflection() && hasTransmission()) {
+				return "BXDFType.GLOSSY_REFLECTION_AND_TRANSMISSION";
+			} else if(isGlossy() && hasReflection()) {
+				return "BXDFType.GLOSSY_REFLECTION";
+			} else if(isGlossy() && hasTransmission()) {
+				return "BXDFType.GLOSSY_TRANSMISSION";
+			} else if(isSpecular() && hasReflection() && hasTransmission()) {
+				return "BXDFType.SPECULAR_REFLECTION_AND_TRANSMISSION";
+			} else if(isSpecular() && hasReflection()) {
+				return "BXDFType.SPECULAR_REFLECTION";
+			} else if(isSpecular() && hasTransmission()) {
+				return "BXDFType.SPECULAR_TRANSMISSION";
+			} else {
+				return "";
+			}
+		}
+		
+		@Override
+		public boolean equals(final Object object) {
+			if(object == this) {
+				return true;
+			} else if(!(object instanceof BXDFType)) {
+				return false;
+			} else if(this.bitFlags != BXDFType.class.cast(object).bitFlags) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+		
+		public boolean hasReflection() {
+			return (this.bitFlags & BIT_FLAG_HAS_REFLECTION) == BIT_FLAG_HAS_REFLECTION;
+		}
+		
+		public boolean hasTransmission() {
+			return (this.bitFlags & BIT_FLAG_HAS_TRANSMISSION) == BIT_FLAG_HAS_TRANSMISSION;
+		}
+		
+		public boolean isDiffuse() {
+			return (this.bitFlags & BIT_FLAG_IS_DIFFUSE) == BIT_FLAG_IS_DIFFUSE;
+		}
+		
+		public boolean isGlossy() {
+			return (this.bitFlags & BIT_FLAG_IS_GLOSSY) == BIT_FLAG_IS_GLOSSY;
+		}
+		
+		public boolean isSpecular() {
+			return (this.bitFlags & BIT_FLAG_IS_SPECULAR) == BIT_FLAG_IS_SPECULAR;
+		}
+		
+		public boolean matches(final BXDFType bXDFType) {
+			return (this.bitFlags & bXDFType.bitFlags) == this.bitFlags;
+		}
+		
+		@Override
+		public int hashCode() {
+			return Objects.hash(Integer.valueOf(this.bitFlags));
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private static BXDFType doCreateReflection(final boolean isDiffuse, final boolean isGlossy, final boolean isSpecular) {
+			return new BXDFType(true, false, isDiffuse, isGlossy, isSpecular);
+		}
+		
+//		private static BXDFType doCreateReflectionAndTransmission(final boolean isDiffuse, final boolean isGlossy, final boolean isSpecular) {
+//			return new BXDFType(true, true, isDiffuse, isGlossy, isSpecular);
+//		}
+		
+		private static BXDFType doCreateTransmission(final boolean isDiffuse, final boolean isGlossy, final boolean isSpecular) {
+			return new BXDFType(false, true, isDiffuse, isGlossy, isSpecular);
+		}
+		
+		private static int doCreateBitFlags(final boolean hasReflection, final boolean hasTransmission, final boolean isDiffuse, final boolean isGlossy, final boolean isSpecular) {
+			int bitFlags = 0;
+			
+			if(hasReflection) {
+				bitFlags |= BIT_FLAG_HAS_REFLECTION;
+			}
+			
+			if(hasTransmission) {
+				bitFlags |= BIT_FLAG_HAS_TRANSMISSION;
+			}
+			
+			if(isDiffuse) {
+				bitFlags |= BIT_FLAG_IS_DIFFUSE;
+			}
+			
+			if(isGlossy) {
+				bitFlags |= BIT_FLAG_IS_GLOSSY;
+			}
+			
+			if(isSpecular) {
+				bitFlags |= BIT_FLAG_IS_SPECULAR;
+			}
+			
+			return bitFlags;
 		}
 	}
 	
@@ -911,6 +920,11 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.GLOSSY_REFLECTION;
+		}
+		
+		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
 			final Vector3D h = Vector3D.add(i, o);
 			
@@ -951,7 +965,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override
@@ -1005,6 +1019,11 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.DIFFUSE_REFLECTION;
+		}
+		
+		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
 			final double fresnelOA = Fresnel.evaluateDielectricSchlickWeight(o.cosThetaAbs());
 			final double fresnelIA = Fresnel.evaluateDielectricSchlickWeight(i.cosThetaAbs());
@@ -1028,7 +1047,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override
@@ -1051,6 +1070,11 @@ public abstract class Material {
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.DIFFUSE_REFLECTION;
+		}
 		
 		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
@@ -1090,7 +1114,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override
@@ -1277,6 +1301,11 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.DIFFUSE_REFLECTION;
+		}
+		
+		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
 			final Vector3D h = Vector3D.add(i, o);
 			
@@ -1310,7 +1339,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override
@@ -1331,6 +1360,11 @@ public abstract class Material {
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.DIFFUSE_REFLECTION;
+		}
 		
 		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
@@ -1362,7 +1396,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override
@@ -1596,6 +1630,11 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.DIFFUSE_REFLECTION;
+		}
+		
+		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
 			return Color3D.divide(this.r, Doubles.PI);
 		}
@@ -1609,7 +1648,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, iCorrectlyOriented);
 			
-			return Optional.of(new BXDFResult(result, iCorrectlyOriented, pDF));
+			return Optional.of(new BXDFResult(this, result, iCorrectlyOriented, pDF));
 		}
 		
 		@Override
@@ -1632,6 +1671,11 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.DIFFUSE_TRANSMISSION;
+		}
+		
+		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
 			return Color3D.divide(this.t, Doubles.PI);
 		}
@@ -1645,7 +1689,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, iCorrectlyOriented);
 			
-			return Optional.of(new BXDFResult(result, iCorrectlyOriented, pDF));
+			return Optional.of(new BXDFResult(this, result, iCorrectlyOriented, pDF));
 		}
 		
 		@Override
@@ -1900,6 +1944,11 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.SPECULAR_REFLECTION;
+		}
+		
+		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
 			return Color3D.BLACK;
 		}
@@ -1912,7 +1961,7 @@ public abstract class Material {
 			
 			final float pDF = 1.0F;
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override
@@ -1939,6 +1988,11 @@ public abstract class Material {
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.SPECULAR_TRANSMISSION;
+		}
 		
 		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
@@ -1970,7 +2024,7 @@ public abstract class Material {
 			
 			final double pDF = 1.0D;
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override
@@ -2110,6 +2164,11 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.GLOSSY_REFLECTION;
+		}
+		
+		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
 			final double cosThetaAbsO = o.cosThetaAbs();
 			final double cosThetaAbsI = i.cosThetaAbs();
@@ -2162,7 +2221,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override
@@ -2199,6 +2258,11 @@ public abstract class Material {
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.GLOSSY_TRANSMISSION;
+		}
 		
 		@Override
 		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
@@ -2265,7 +2329,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(result, i, pDF));
+			return Optional.of(new BXDFResult(this, result, i, pDF));
 		}
 		
 		@Override

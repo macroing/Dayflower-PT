@@ -28,14 +28,6 @@ import org.macroing.geo4j.common.Vector3D;
 import org.macroing.geo4j.onb.OrthonormalBasis33D;
 import org.macroing.geo4j.ray.Ray3D;
 
-/**
- * An {@code Intersection} represents an intersection.
- * <p>
- * This class is indirectly mutable and not thread-safe.
- * 
- * @since 1.0.0
- * @author J&#246;rgen Lundgren
- */
 public final class Intersection {
 	private final Primitive primitive;
 	private final Ray3D rayOS;
@@ -50,16 +42,6 @@ public final class Intersection {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	/**
-	 * Constructs a new {@code Intersection} instance.
-	 * <p>
-	 * If either {@code primitive} or {@code rayOS} are {@code null}, a {@code NullPointerException} will be thrown.
-	 * 
-	 * @param primitive the {@link Primitive} instance
-	 * @param rayOS a {@link Ray3D} instance with the ray in object space
-	 * @param tOS a {@code double} with the parametric distance (t) to the intersection in object space
-	 * @throws NullPointerException thrown if, and only if, either {@code primitive} or {@code rayOS} are {@code null}
-	 */
 	public Intersection(final Primitive primitive, final Ray3D rayOS, final double tOS) {
 		this.primitive = Objects.requireNonNull(primitive, "primitive == null");
 		this.rayOS = Objects.requireNonNull(rayOS, "rayOS == null");
@@ -75,128 +57,58 @@ public final class Intersection {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	/**
-	 * Returns an {@link OrthonormalBasis33D} instance with the orthonormal basis in object space.
-	 * 
-	 * @return an {@code OrthonormalBasis33D} instance with the orthonormal basis in object space
-	 */
 	public OrthonormalBasis33D getOrthonormalBasisOS() {
 		return this.orthonormalBasisOS.get();
 	}
 	
-	/**
-	 * Returns an {@link OrthonormalBasis33D} instance with the orthonormal basis in world space.
-	 * 
-	 * @return an {@code OrthonormalBasis33D} instance with the orthonormal basis in world space
-	 */
 	public OrthonormalBasis33D getOrthonormalBasisWS() {
 		return this.orthonormalBasisWS.get();
 	}
 	
-	/**
-	 * Returns a {@link Point2D} instance with the texture coordinates.
-	 * 
-	 * @return a {@code Point2D} instance with the texture coordinates
-	 */
 	public Point2D getTextureCoordinates() {
 		return this.textureCoordinates.get();
 	}
 	
-	/**
-	 * Returns a {@link Point3D} instance with the surface intersection point in object space.
-	 * 
-	 * @return a {@code Point3D} instance with the surface intersection point in object space
-	 */
 	public Point3D getSurfaceIntersectionPointOS() {
 		return this.surfaceIntersectionPointOS.get();
 	}
 	
-	/**
-	 * Returns a {@link Point3D} instance with the surface intersection point in world space.
-	 * 
-	 * @return a {@code Point3D} instance with the surface intersection point in world space
-	 */
 	public Point3D getSurfaceIntersectionPointWS() {
 		return this.surfaceIntersectionPointWS.get();
 	}
 	
-	/**
-	 * Returns the {@link Primitive} instance.
-	 * 
-	 * @return the {@code Primitive} instance
-	 */
 	public Primitive getPrimitive() {
 		return this.primitive;
 	}
 	
-	/**
-	 * Returns a {@link Ray3D} instance with the ray in object space.
-	 * 
-	 * @return a {@code Ray3D} instance with the ray in object space
-	 */
 	public Ray3D getRayOS() {
 		return this.rayOS;
 	}
 	
-	/**
-	 * Returns a {@link Ray3D} instance with the ray in world space.
-	 * 
-	 * @return a {@code Ray3D} instance with the ray in world space
-	 */
 	public Ray3D getRayWS() {
 		return this.rayWS;
 	}
 	
-	/**
-	 * Returns a {@link Vector3D} instance with the surface normal in object space.
-	 * 
-	 * @return a {@code Vector3D} instance with the surface normal in object space
-	 */
 	public Vector3D getSurfaceNormalOS() {
 		return getOrthonormalBasisOS().w;
 	}
 	
-	/**
-	 * Returns a {@link Vector3D} instance with the correctly oriented surface normal in object space.
-	 * 
-	 * @return a {@code Vector3D} instance with the correctly oriented surface normal in object space
-	 */
 	public Vector3D getSurfaceNormalOSCorrectlyOriented() {
 		return Vector3D.dotProduct(getSurfaceNormalOS(), getRayOS().getDirection()) > 0.0D ? Vector3D.negate(getSurfaceNormalOS()) : getSurfaceNormalOS();
 	}
 	
-	/**
-	 * Returns a {@link Vector3D} instance with the surface normal in world space.
-	 * 
-	 * @return a {@code Vector3D} instance with the surface normal in world space
-	 */
 	public Vector3D getSurfaceNormalWS() {
 		return getOrthonormalBasisWS().w;
 	}
 	
-	/**
-	 * Returns a {@link Vector3D} instance with the correctly oriented surface normal in world space.
-	 * 
-	 * @return a {@code Vector3D} instance with the correctly oriented surface normal in world space
-	 */
 	public Vector3D getSurfaceNormalWSCorrectlyOriented() {
 		return Vector3D.dotProduct(getSurfaceNormalWS(), getRayOS().getDirection()) > 0.0D ? Vector3D.negate(getSurfaceNormalWS()) : getSurfaceNormalWS();
 	}
 	
-	/**
-	 * Returns a {@code double} with the parametric distance (t) to the intersection in object space.
-	 * 
-	 * @return a {@code double} with the parametric distance (t) to the intersection in object space
-	 */
 	public double getTOS() {
 		return this.tOS;
 	}
 	
-	/**
-	 * Returns a {@code double} with the parametric distance (t) to the intersection in world space.
-	 * 
-	 * @return a {@code double} with the parametric distance (t) to the intersection in world space
-	 */
 	public double getTWS() {
 		return this.tWS;
 	}
