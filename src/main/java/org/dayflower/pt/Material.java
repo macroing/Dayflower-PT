@@ -90,7 +90,71 @@ public abstract class Material {
 	}
 	
 	public static Material disney() {
-		return disney(Texture.constant(Color3D.GRAY));
+		return disney(Color3D.GRAY);
+	}
+	
+	public static Material disney(final Color3D colorColor) {
+		return disney(colorColor, Color3D.BLACK);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission) {
+		return disney(colorColor, colorEmission, Color3D.BLACK);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance) {
+		return disney(colorColor, colorEmission, colorScatterDistance, 0.0D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, 0.0D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, 1.0D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, 1.0D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, doubleDiffuseTransmission, 1.5D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission, final double doubleEta) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, doubleDiffuseTransmission, doubleEta, 0.0D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission, final double doubleEta, final double doubleFlatness) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, doubleDiffuseTransmission, doubleEta, doubleFlatness, 0.0D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission, final double doubleEta, final double doubleFlatness, final double doubleMetallic) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, doubleDiffuseTransmission, doubleEta, doubleFlatness, doubleMetallic, 0.5D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission, final double doubleEta, final double doubleFlatness, final double doubleMetallic, final double doubleRoughness) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, doubleDiffuseTransmission, doubleEta, doubleFlatness, doubleMetallic, doubleRoughness, 0.0D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission, final double doubleEta, final double doubleFlatness, final double doubleMetallic, final double doubleRoughness, final double doubleSheen) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, doubleDiffuseTransmission, doubleEta, doubleFlatness, doubleMetallic, doubleRoughness, doubleSheen, 0.5D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission, final double doubleEta, final double doubleFlatness, final double doubleMetallic, final double doubleRoughness, final double doubleSheen, final double doubleSheenTint) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, doubleDiffuseTransmission, doubleEta, doubleFlatness, doubleMetallic, doubleRoughness, doubleSheen, doubleSheenTint, 0.0D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission, final double doubleEta, final double doubleFlatness, final double doubleMetallic, final double doubleRoughness, final double doubleSheen, final double doubleSheenTint, final double doubleSpecularTint) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, doubleDiffuseTransmission, doubleEta, doubleFlatness, doubleMetallic, doubleRoughness, doubleSheen, doubleSheenTint, doubleSpecularTint, 0.0D);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission, final double doubleEta, final double doubleFlatness, final double doubleMetallic, final double doubleRoughness, final double doubleSheen, final double doubleSheenTint, final double doubleSpecularTint, final double doubleSpecularTransmission) {
+		return disney(colorColor, colorEmission, colorScatterDistance, doubleAnisotropic, doubleClearCoat, doubleClearCoatGloss, doubleDiffuseTransmission, doubleEta, doubleFlatness, doubleMetallic, doubleRoughness, doubleSheen, doubleSheenTint, doubleSpecularTint, doubleSpecularTransmission, false);
+	}
+	
+	public static Material disney(final Color3D colorColor, final Color3D colorEmission, final Color3D colorScatterDistance, final double doubleAnisotropic, final double doubleClearCoat, final double doubleClearCoatGloss, final double doubleDiffuseTransmission, final double doubleEta, final double doubleFlatness, final double doubleMetallic, final double doubleRoughness, final double doubleSheen, final double doubleSheenTint, final double doubleSpecularTint, final double doubleSpecularTransmission, final boolean isThin) {
+		return disney(Texture.constant(colorColor), Texture.constant(colorEmission), Texture.constant(colorScatterDistance), Texture.constant(doubleAnisotropic), Texture.constant(doubleClearCoat), Texture.constant(doubleClearCoatGloss), Texture.constant(doubleDiffuseTransmission), Texture.constant(doubleEta), Texture.constant(doubleFlatness), Texture.constant(doubleMetallic), Texture.constant(doubleRoughness), Texture.constant(doubleSheen), Texture.constant(doubleSheenTint), Texture.constant(doubleSpecularTint), Texture.constant(doubleSpecularTransmission), isThin);
 	}
 	
 	public static Material disney(final Texture textureColor) {
@@ -1197,86 +1261,86 @@ public abstract class Material {
 		public Optional<Result> compute(final Intersection intersection) {
 			final List<BXDF> bXDFs = new ArrayList<>();
 			
-			final double floatAnisotropic = this.textureAnisotropic.compute(intersection).average();
-			final double floatClearCoat = this.textureClearCoat.compute(intersection).average();
-			final double floatDiffuseTransmission = this.textureDiffuseTransmission.compute(intersection).average() / 2.0D;
-			final double floatEta = this.textureEta.compute(intersection).average();
-			final double floatMetallic = this.textureMetallic.compute(intersection).average();
-			final double floatRoughness = this.textureRoughness.compute(intersection).average();
-			final double floatSheen = this.textureSheen.compute(intersection).average();
-			final double floatSpecularTint = this.textureSpecularTint.compute(intersection).average();
-			final double floatSpecularTransmission = this.textureSpecularTransmission.compute(intersection).average();
+			final double doubleAnisotropic = this.textureAnisotropic.compute(intersection).average();
+			final double doubleClearCoat = this.textureClearCoat.compute(intersection).average();
+			final double doubleDiffuseTransmission = this.textureDiffuseTransmission.compute(intersection).average() / 2.0D;
+			final double doubleEta = this.textureEta.compute(intersection).average();
+			final double doubleMetallic = this.textureMetallic.compute(intersection).average();
+			final double doubleRoughness = this.textureRoughness.compute(intersection).average();
+			final double doubleSheen = this.textureSheen.compute(intersection).average();
+			final double doubleSpecularTint = this.textureSpecularTint.compute(intersection).average();
+			final double doubleSpecularTransmission = this.textureSpecularTransmission.compute(intersection).average();
 			
 			final Color3D colorColor = Color3D.saturate(this.textureColor.compute(intersection), 0.0D, Doubles.MAX_VALUE);
 			final Color3D colorTint = Color3D.normalizeRelativeLuminance(colorColor);
-			final Color3D colorSheen = floatSheen > 0.0D ? Color3D.blend(Color3D.WHITE, colorTint, this.textureSheenTint.compute(intersection).average()) : Color3D.BLACK;
+			final Color3D colorSheen = doubleSheen > 0.0D ? Color3D.blend(Color3D.WHITE, colorTint, this.textureSheenTint.compute(intersection).average()) : Color3D.BLACK;
 			
-			final double diffuseWeight = (1.0D - floatMetallic) * (1.0D - floatSpecularTransmission);
+			final double diffuseWeight = (1.0D - doubleMetallic) * (1.0D - doubleSpecularTransmission);
 			
 			if(diffuseWeight > 0.0D) {
 				if(this.isThin) {
 					final double floatFlatness = this.textureFlatness.compute(intersection).average();
 					
-					final Color3D colorReflectanceScale0 = Color3D.multiply(colorColor, diffuseWeight * (1.0D - floatFlatness) * (1.0D - floatDiffuseTransmission));
-					final Color3D colorReflectanceScale1 = Color3D.multiply(colorColor, diffuseWeight * (0.0D + floatFlatness) * (1.0D - floatDiffuseTransmission));
+					final Color3D colorReflectanceScale0 = Color3D.multiply(colorColor, diffuseWeight * (1.0D - floatFlatness) * (1.0D - doubleDiffuseTransmission));
+					final Color3D colorReflectanceScale1 = Color3D.multiply(colorColor, diffuseWeight * (0.0D + floatFlatness) * (1.0D - doubleDiffuseTransmission));
 					
 					bXDFs.add(new DisneyDiffuseBRDF(colorReflectanceScale0));
-					bXDFs.add(new DisneyFakeSSBRDF(colorReflectanceScale1, floatRoughness));
+					bXDFs.add(new DisneyFakeSSBRDF(colorReflectanceScale1, doubleRoughness));
 				} else {
 					final Color3D colorScatterDistance = this.textureScatterDistance.compute(intersection);
 					
 					if(colorScatterDistance.isBlack()) {
 						bXDFs.add(new DisneyDiffuseBRDF(Color3D.multiply(colorColor, diffuseWeight)));
 					} else {
-						bXDFs.add(new SpecularBTDF(Color3D.WHITE, 1.0D, floatEta));
+						bXDFs.add(new SpecularBTDF(Color3D.WHITE, 1.0D, doubleEta));
 					}
 				}
 				
-				bXDFs.add(new DisneyRetroBRDF(Color3D.multiply(colorColor, diffuseWeight), floatRoughness));
+				bXDFs.add(new DisneyRetroBRDF(Color3D.multiply(colorColor, diffuseWeight), doubleRoughness));
 				
-				if(floatSheen > 0.0D) {
-					bXDFs.add(new DisneySheenBRDF(Color3D.multiply(colorSheen, diffuseWeight * floatSheen)));
+				if(doubleSheen > 0.0D) {
+					bXDFs.add(new DisneySheenBRDF(Color3D.multiply(colorSheen, diffuseWeight * doubleSheen)));
 				}
 			}
 			
-			final double aspect = Doubles.sqrt(1.0D - floatAnisotropic * 0.9D);
+			final double aspect = Doubles.sqrt(1.0D - doubleAnisotropic * 0.9D);
 			
-			final double alphaX = Doubles.max(0.001D, floatRoughness * floatRoughness / aspect);
-			final double alphaY = Doubles.max(0.001D, floatRoughness * floatRoughness * aspect);
+			final double alphaX = Doubles.max(0.001D, doubleRoughness * doubleRoughness / aspect);
+			final double alphaY = Doubles.max(0.001D, doubleRoughness * doubleRoughness * aspect);
 			
 			final MicrofacetDistribution microfacetDistribution = new TrowbridgeReitzMicrofacetDistribution(true, true, alphaX, alphaY);
 			
-			final double floatR0 = ((floatEta - 1.0D) * (floatEta - 1.0D)) / ((floatEta + 1.0D) * (floatEta + 1.0D));
+			final double floatR0 = ((doubleEta - 1.0D) * (doubleEta - 1.0D)) / ((doubleEta + 1.0D) * (doubleEta + 1.0D));
 			
-			final Color3D colorSpecularR0 = Color3D.blend(Color3D.multiply(Color3D.blend(Color3D.WHITE, colorTint, floatSpecularTint), floatR0), colorColor, floatMetallic);
+			final Color3D colorSpecularR0 = Color3D.blend(Color3D.multiply(Color3D.blend(Color3D.WHITE, colorTint, doubleSpecularTint), floatR0), colorColor, doubleMetallic);
 			
-			final Fresnel fresnel = new DisneyFresnel(colorSpecularR0, floatEta, floatMetallic);
+			final Fresnel fresnel = new DisneyFresnel(colorSpecularR0, doubleEta, doubleMetallic);
 			
 			bXDFs.add(new TorranceSparrowBRDF(Color3D.WHITE, fresnel, microfacetDistribution));
 			
-			if(floatClearCoat > 0.0D) {
-				bXDFs.add(new DisneyClearCoatBRDF(Doubles.lerp(0.1D, 0.001D, this.textureClearCoatGloss.compute(intersection).average()), floatClearCoat));
+			if(doubleClearCoat > 0.0D) {
+				bXDFs.add(new DisneyClearCoatBRDF(Doubles.lerp(0.1D, 0.001D, this.textureClearCoatGloss.compute(intersection).average()), doubleClearCoat));
 			}
 			
-			if(floatSpecularTransmission > 0.0D) {
-				final Color3D transmittanceScale = Color3D.multiply(Color3D.sqrt(colorColor), floatSpecularTransmission);
+			if(doubleSpecularTransmission > 0.0D) {
+				final Color3D transmittanceScale = Color3D.multiply(Color3D.sqrt(colorColor), doubleSpecularTransmission);
 				
 				if(this.isThin) {
-					final double floatRoughnessScaled = (0.65D * floatEta - 0.35D) * floatRoughness;
+					final double floatRoughnessScaled = (0.65D * doubleEta - 0.35D) * doubleRoughness;
 					
 					final double alphaXScaled = Doubles.max(0.001D, floatRoughnessScaled * floatRoughnessScaled / aspect);
 					final double alphaYScaled = Doubles.max(0.001D, floatRoughnessScaled * floatRoughnessScaled * aspect);
 					
 					final MicrofacetDistribution microfacetDistributionScaled = new TrowbridgeReitzMicrofacetDistribution(true, false, alphaXScaled, alphaYScaled);
 					
-					bXDFs.add(new TorranceSparrowBTDF(transmittanceScale, microfacetDistributionScaled, 1.0D, floatEta));
+					bXDFs.add(new TorranceSparrowBTDF(transmittanceScale, microfacetDistributionScaled, 1.0D, doubleEta));
 				} else {
-					bXDFs.add(new TorranceSparrowBTDF(transmittanceScale, microfacetDistribution, 1.0D, floatEta));
+					bXDFs.add(new TorranceSparrowBTDF(transmittanceScale, microfacetDistribution, 1.0D, doubleEta));
 				}
 			}
 			
 			if(this.isThin) {
-				bXDFs.add(new LambertianBTDF(Color3D.multiply(colorColor, floatDiffuseTransmission)));
+				bXDFs.add(new LambertianBTDF(Color3D.multiply(colorColor, doubleDiffuseTransmission)));
 			}
 			
 			final BSDF bSDF = new BSDF(bXDFs);
