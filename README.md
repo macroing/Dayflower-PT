@@ -22,6 +22,7 @@ Supported BXDFs
 * Disney Sheen BRDF
 * Lambertian BRDF
 * Lambertian BTDF
+* Oren Nayar BRDF
 * Specular BRDF
 * Specular BTDF
 * Torrance Sparrow BRDF

@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.macroing.art4j.color.Color3D;
+import org.macroing.geo4j.common.AngleD;
 import org.macroing.geo4j.common.Point2D;
 import org.macroing.geo4j.common.Point3D;
 import org.macroing.geo4j.common.Vector3D;
@@ -262,7 +263,11 @@ public abstract class Material {
 	}
 	
 	public static Material matte(final Color3D colorKD, final Color3D colorEmission) {
-		return matte(Texture.constant(colorKD), Texture.constant(colorEmission));
+		return matte(colorKD, colorEmission, 0.0D);
+	}
+	
+	public static Material matte(final Color3D colorKD, final Color3D colorEmission, final double doubleAngle) {
+		return matte(Texture.constant(colorKD), Texture.constant(colorEmission), Texture.constant(doubleAngle));
 	}
 	
 	public static Material matte(final Texture textureKD) {
@@ -270,7 +275,11 @@ public abstract class Material {
 	}
 	
 	public static Material matte(final Texture textureKD, final Texture textureEmission) {
-		return new MatteMaterial(textureKD, textureEmission);
+		return new MatteMaterial(textureKD, textureEmission, Texture.constant(0.0D));
+	}
+	
+	public static Material matte(final Texture textureKD, final Texture textureEmission, final Texture textureAngle) {
+		return new MatteMaterial(textureKD, textureEmission, textureAngle);
 	}
 	
 	public static Material metal() {
@@ -1765,29 +1774,47 @@ public abstract class Material {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private static final class MatteMaterial extends Material {
+		private final Texture textureAngle;
 		private final Texture textureEmission;
 		private final Texture textureKD;
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		public MatteMaterial(final Texture textureKD, final Texture textureEmission) {
+		public MatteMaterial(final Texture textureKD, final Texture textureEmission, final Texture textureAngle) {
 			this.textureKD = Objects.requireNonNull(textureKD, "textureKD == null");
 			this.textureEmission = Objects.requireNonNull(textureEmission, "textureEmission == null");
+			this.textureAngle = Objects.requireNonNull(textureAngle, "textureAngle == null");
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		@Override
 		public Optional<Result> compute(final Intersection intersection) {
-			final Vector3D s = Vector3D.sampleHemisphereCosineDistribution();
-			final Vector3D w = Vector3D.orientNormalNegated(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS());
-			final Vector3D u = Vector3D.normalize(Vector3D.crossProduct(Doubles.abs(w.x) > 0.1D ? Vector3D.y() : Vector3D.x(), w));
-			final Vector3D v = Vector3D.normalize(Vector3D.crossProduct(w, u));
+//			final Vector3D s = Vector3D.sampleHemisphereCosineDistribution();
+//			final Vector3D w = Vector3D.orientNormalNegated(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS());
+//			final Vector3D u = Vector3D.normalize(Vector3D.crossProduct(Doubles.abs(w.x) > 0.1D ? Vector3D.y() : Vector3D.x(), w));
+//			final Vector3D v = Vector3D.normalize(Vector3D.crossProduct(w, u));
 			
-			final Color3D colorEmission = this.textureEmission.compute(intersection);
-			final Color3D colorKD = this.textureKD.compute(intersection);
+//			final Color3D colorEmission = this.textureEmission.compute(intersection);
+//			final Color3D colorKD = this.textureKD.compute(intersection);
 			
-			return Optional.of(new Result(colorEmission, colorKD, new Ray3D(intersection.getSurfaceIntersectionPointWS(), Vector3D.directionNormalized(u, v, w, s))));
+//			return Optional.of(new Result(colorEmission, colorKD, new Ray3D(intersection.getSurfaceIntersectionPointWS(), Vector3D.directionNormalized(u, v, w, s))));
+			
+			final Color3D colorKD = Color3D.saturate(this.textureKD.compute(intersection), 0.0D, Doubles.MAX_VALUE);
+			
+			final double doubleAngle = this.textureAngle.compute(intersection).average();
+			
+			final AngleD angle = AngleD.degrees(Doubles.saturate(doubleAngle, 0.0D, 90.0D));
+			
+			if(colorKD.isBlack()) {
+				return Optional.empty();
+			}
+			
+			final BXDF bXDF = Doubles.isZero(angle.getDegrees()) ? new LambertianBRDF(colorKD) : new OrenNayarBRDF(angle, colorKD);
+			
+			final BSDF bSDF = new BSDF(bXDF);
+			
+			return bSDF.compute(intersection, this.textureEmission.compute(intersection));
 		}
 	}
 	
@@ -1907,6 +1934,68 @@ public abstract class Material {
 			final Color3D colorKR = this.textureKR.compute(intersection);
 			
 			return Optional.of(new Result(colorEmission, colorKR, new Ray3D(intersection.getSurfaceIntersectionPointWS(), Vector3D.reflection(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS(), true))));
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class OrenNayarBRDF implements BXDF {
+		private final Color3D r;
+		private final double a;
+		private final double b;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public OrenNayarBRDF(final AngleD angle, final Color3D r) {
+			Objects.requireNonNull(angle, "angle == null");
+			
+			this.r = Objects.requireNonNull(r, "r == null");
+			this.a = 1.0D - ((angle.getRadians() * angle.getRadians()) / (2.0D * ((angle.getRadians() * angle.getRadians()) + 0.33D)));
+			this.b = 0.45D * (angle.getRadians() * angle.getRadians()) / ((angle.getRadians() * angle.getRadians()) + 0.09D);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.DIFFUSE_REFLECTION;
+		}
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			final double cosThetaAbsI = i.cosThetaAbs();
+			final double cosThetaAbsO = o.cosThetaAbs();
+			
+			final double sinThetaI = i.sinTheta();
+			final double sinThetaO = o.sinTheta();
+			
+			final double maxCos = sinThetaI > 1.0e-4D && sinThetaO > 1.0e-4D ? Doubles.max(0.0D, i.cosPhi() * o.cosPhi() + i.sinPhi() * o.sinPhi()) : 0.0D;
+			
+			final double sinA = cosThetaAbsI > cosThetaAbsO ? sinThetaO : sinThetaI;
+			final double tanB = cosThetaAbsI > cosThetaAbsO ? sinThetaI / cosThetaAbsI : sinThetaO / cosThetaAbsO;
+			
+			final double a = this.a;
+			final double b = this.b;
+			final double c = (a + b * maxCos * sinA * tanB);
+			
+			return Color3D.multiply(Color3D.multiply(this.r, Doubles.PI_RECIPROCAL), c);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			final Vector3D i = Vector3D.sampleHemisphereCosineDistribution(p);
+			final Vector3D iCorrectlyOriented = o.z < 0.0D ? Vector3D.negateZ(i) : i;
+			
+			final Color3D result = evaluateDF(o, iCorrectlyOriented);
+			
+			final double pDF = evaluatePDF(o, iCorrectlyOriented);
+			
+			return Optional.of(new BXDFResult(this, result, iCorrectlyOriented, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			return Vector3D.sameHemisphereZ(o, i) ? i.cosThetaAbs() / Doubles.PI : 0.0D;
 		}
 	}
 	
