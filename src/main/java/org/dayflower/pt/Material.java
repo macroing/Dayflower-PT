@@ -958,6 +958,29 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	private static final class ConstantFresnel extends Fresnel {
+		private final Color3D light;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public ConstantFresnel() {
+			this(Color3D.WHITE);
+		}
+		
+		public ConstantFresnel(final Color3D light) {
+			this.light = Objects.requireNonNull(light, "light == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Color3D evaluate(final double cosThetaI) {
+			return this.light;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	private static final class DielectricFresnel extends Fresnel {
 		private final double etaI;
 		private final double etaT;
@@ -1930,10 +1953,20 @@ public abstract class Material {
 		
 		@Override
 		public Optional<Result> compute(final Intersection intersection) {
-			final Color3D colorEmission = this.textureEmission.compute(intersection);
-			final Color3D colorKR = this.textureKR.compute(intersection);
+//			final Color3D colorEmission = this.textureEmission.compute(intersection);
+//			final Color3D colorKR = this.textureKR.compute(intersection);
 			
-			return Optional.of(new Result(colorEmission, colorKR, new Ray3D(intersection.getSurfaceIntersectionPointWS(), Vector3D.reflection(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS(), true))));
+//			return Optional.of(new Result(colorEmission, colorKR, new Ray3D(intersection.getSurfaceIntersectionPointWS(), Vector3D.reflection(intersection.getRayWS().getDirection(), intersection.getSurfaceNormalWS(), true))));
+			
+			final Color3D colorKR = Color3D.saturate(this.textureKR.compute(intersection), 0.0D, Doubles.MAX_VALUE);
+			
+			if(!colorKR.isBlack()) {
+				final BSDF bSDF = new BSDF(new SpecularBRDF(colorKR, new ConstantFresnel()));
+				
+				return bSDF.compute(intersection, this.textureEmission.compute(intersection));
+			}
+			
+			return Optional.empty();
 		}
 	}
 	
@@ -2082,7 +2115,6 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	@SuppressWarnings("unused")
 	private static final class SpecularBRDF implements BXDF {
 		private final Color3D r;
 		private final Fresnel fresnel;
