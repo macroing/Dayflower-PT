@@ -223,7 +223,63 @@ public abstract class Material {
 	}
 	
 	public static Material glass() {
-		return new GlassMaterial();
+		return glass(Color3D.WHITE);
+	}
+	
+	public static Material glass(final Color3D colorK) {
+		return glass(colorK, colorK);
+	}
+	
+	public static Material glass(final Color3D colorKR, final Color3D colorKT) {
+		return glass(colorKR, colorKT, Color3D.BLACK);
+	}
+	
+	public static Material glass(final Color3D colorKR, final Color3D colorKT, final Color3D colorEmission) {
+		return glass(colorKR, colorKT, colorEmission, 1.5D);
+	}
+	
+	public static Material glass(final Color3D colorKR, final Color3D colorKT, final Color3D colorEmission, final double doubleEta) {
+		return glass(colorKR, colorKT, colorEmission, doubleEta, 0.0D);
+	}
+	
+	public static Material glass(final Color3D colorKR, final Color3D colorKT, final Color3D colorEmission, final double doubleEta, final double doubleRoughness) {
+		return glass(colorKR, colorKT, colorEmission, doubleEta, doubleRoughness, doubleRoughness);
+	}
+	
+	public static Material glass(final Color3D colorKR, final Color3D colorKT, final Color3D colorEmission, final double doubleEta, final double doubleRoughnessU, final double doubleRoughnessV) {
+		return glass(colorKR, colorKT, colorEmission, doubleEta, doubleRoughnessU, doubleRoughnessV, true);
+	}
+	
+	public static Material glass(final Color3D colorKR, final Color3D colorKT, final Color3D colorEmission, final double doubleEta, final double doubleRoughnessU, final double doubleRoughnessV, final boolean isRemappingRoughness) {
+		return glass(Texture.constant(colorKR), Texture.constant(colorKT), Texture.constant(colorEmission), Texture.constant(doubleEta), Texture.constant(doubleRoughnessU), Texture.constant(doubleRoughnessV), isRemappingRoughness);
+	}
+	
+	public static Material glass(final Texture textureK) {
+		return glass(textureK, textureK);
+	}
+	
+	public static Material glass(final Texture textureKR, final Texture textureKT) {
+		return glass(textureKR, textureKT, Texture.constant(Color3D.BLACK));
+	}
+	
+	public static Material glass(final Texture textureKR, final Texture textureKT, final Texture textureEmission) {
+		return glass(textureKR, textureKT, textureEmission, Texture.constant(1.5D));
+	}
+	
+	public static Material glass(final Texture textureKR, final Texture textureKT, final Texture textureEmission, final Texture textureEta) {
+		return glass(textureKR, textureKT, textureEmission, textureEta, Texture.constant(0.0D));
+	}
+	
+	public static Material glass(final Texture textureKR, final Texture textureKT, final Texture textureEmission, final Texture textureEta, final Texture textureRoughness) {
+		return glass(textureKR, textureKT, textureEmission, textureEta, textureRoughness, textureRoughness);
+	}
+	
+	public static Material glass(final Texture textureKR, final Texture textureKT, final Texture textureEmission, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV) {
+		return glass(textureKR, textureKT, textureEmission, textureEta, textureRoughnessU, textureRoughnessV, true);
+	}
+	
+	public static Material glass(final Texture textureKR, final Texture textureKT, final Texture textureEmission, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness) {
+		return new GlassMaterial(textureKR, textureKT, textureEmission, textureEta, textureRoughnessU, textureRoughnessV, isRemappingRoughness);
 	}
 	
 	public static Material glossy() {
@@ -542,7 +598,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
@@ -630,7 +686,7 @@ public abstract class Material {
 			
 			final Ray3D ray = new Ray3D(intersection.getSurfaceIntersectionPointWS(), iWS);
 			
-			if(matches > 1 && !bXDFResult.getBXDF().getBXDFType().isSpecular()) {
+			if(matches > 1 && !bXDFResult.getBXDFType().isSpecular()) {
 				final double iDotN = Vector3D.dotProduct(iWS, nWS);
 				final double oDotN = Vector3D.dotProduct(oWS, nWS);
 				
@@ -688,15 +744,15 @@ public abstract class Material {
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private static final class BXDFResult {
-		private final BXDF bXDF;
+		private final BXDFType bXDFType;
 		private final Color3D result;
 		private final Vector3D i;
 		private final double pDF;
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		public BXDFResult(final BXDF bXDF, final Color3D result, final Vector3D i, final double pDF) {
-			this.bXDF = Objects.requireNonNull(bXDF, "bXDF == null");
+		public BXDFResult(final BXDFType bXDFType, final Color3D result, final Vector3D i, final double pDF) {
+			this.bXDFType = Objects.requireNonNull(bXDFType, "bXDFType == null");
 			this.result = Objects.requireNonNull(result, "result == null");
 			this.i = Objects.requireNonNull(i, "i == null");
 			this.pDF = pDF;
@@ -704,8 +760,8 @@ public abstract class Material {
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		public BXDF getBXDF() {
-			return this.bXDF;
+		public BXDFType getBXDFType() {
+			return this.bXDFType;
 		}
 		
 		public Color3D getResult() {
@@ -733,7 +789,7 @@ public abstract class Material {
 //		public static final BXDFType GLOSSY_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(false, true, false);
 		public static final BXDFType GLOSSY_TRANSMISSION = doCreateTransmission(false, true, false);
 		public static final BXDFType SPECULAR_REFLECTION = doCreateReflection(false, false, true);
-//		public static final BXDFType SPECULAR_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(false, false, true);
+		public static final BXDFType SPECULAR_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(false, false, true);
 		public static final BXDFType SPECULAR_TRANSMISSION = doCreateTransmission(false, false, true);
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -829,9 +885,9 @@ public abstract class Material {
 			return new BXDFType(true, false, isDiffuse, isGlossy, isSpecular);
 		}
 		
-//		private static BXDFType doCreateReflectionAndTransmission(final boolean isDiffuse, final boolean isGlossy, final boolean isSpecular) {
-//			return new BXDFType(true, true, isDiffuse, isGlossy, isSpecular);
-//		}
+		private static BXDFType doCreateReflectionAndTransmission(final boolean isDiffuse, final boolean isGlossy, final boolean isSpecular) {
+			return new BXDFType(true, true, isDiffuse, isGlossy, isSpecular);
+		}
 		
 		private static BXDFType doCreateTransmission(final boolean isDiffuse, final boolean isGlossy, final boolean isSpecular) {
 			return new BXDFType(false, true, isDiffuse, isGlossy, isSpecular);
@@ -1061,7 +1117,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
@@ -1143,7 +1199,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
@@ -1210,7 +1266,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
@@ -1435,7 +1491,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
@@ -1492,7 +1548,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
@@ -1621,9 +1677,100 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
-	private static final class GlassMaterial extends Material {
-		public GlassMaterial() {
+	@SuppressWarnings("unused")
+	private static final class FresnelSpecularBXDF implements BXDF {
+		private final Color3D reflectance;
+		private final Color3D transmittance;
+		private final double etaA;
+		private final double etaB;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public FresnelSpecularBXDF(final Color3D reflectance, final Color3D transmittance, final double etaA, final double etaB) {
+			this.reflectance = Objects.requireNonNull(reflectance, "reflectance == null");
+			this.transmittance = Objects.requireNonNull(transmittance, "transmittance == null");
+			this.etaA = etaA;
+			this.etaB = etaB;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.SPECULAR_REFLECTION_AND_TRANSMISSION;
+		}
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			return Color3D.BLACK;
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			final double reflectance = Fresnel.evaluateDielectric(o.cosTheta(), this.etaA, this.etaB);
 			
+			if(p.x < reflectance) {
+				final BXDFType bXDFType = BXDFType.SPECULAR_REFLECTION;
+				
+				final Vector3D i = new Vector3D(-o.x, -o.y, o.z);
+				
+				final Color3D result = Color3D.divide(Color3D.multiply(this.reflectance, reflectance), i.cosThetaAbs());
+				
+				final double pDF = reflectance;
+				
+				return Optional.of(new BXDFResult(bXDFType, result, i, pDF));
+			}
+			
+			final boolean isEntering = o.cosTheta() > 0.0D;
+			
+			final double etaI = isEntering ? this.etaA : this.etaB;
+			final double etaT = isEntering ? this.etaB : this.etaA;
+			
+			final Optional<Vector3D> optionalI = Vector3D.refraction(o, Vector3D.orientNormal(o, Vector3D.z()), etaI / etaT);
+			
+			if(optionalI.isPresent()) {
+				final BXDFType bXDFType = BXDFType.SPECULAR_TRANSMISSION;
+				
+				final Vector3D i = optionalI.get();
+				
+				final Color3D result = Color3D.divide(Color3D.multiply(Color3D.multiply(this.transmittance, 1.0D - reflectance), (etaI * etaI) / (etaT * etaT)), i.cosThetaAbs());
+				
+				final double pDF = 1.0D - reflectance;
+				
+				return Optional.of(new BXDFResult(bXDFType, result, i, pDF));
+			}
+			
+			return Optional.empty();
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			return 0.0D;
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	@SuppressWarnings("unused")
+	private static final class GlassMaterial extends Material {
+		private final Texture textureEmission;
+		private final Texture textureEta;
+		private final Texture textureKR;
+		private final Texture textureKT;
+		private final Texture textureRoughnessU;
+		private final Texture textureRoughnessV;
+		private final boolean isRemappingRoughness;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public GlassMaterial(final Texture textureKR, final Texture textureKT, final Texture textureEmission, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness) {
+			this.textureKR = Objects.requireNonNull(textureKR, "textureKR == null");
+			this.textureKT = Objects.requireNonNull(textureKT, "textureKT == null");
+			this.textureEmission = Objects.requireNonNull(textureEmission, "textureEmission == null");
+			this.textureEta = Objects.requireNonNull(textureEta, "textureEta == null");
+			this.textureRoughnessU = Objects.requireNonNull(textureRoughnessU, "textureRoughnessU == null");
+			this.textureRoughnessV = Objects.requireNonNull(textureRoughnessV, "textureRoughnessV == null");
+			this.isRemappingRoughness = isRemappingRoughness;
 		}
 		
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1680,6 +1827,61 @@ public abstract class Material {
 			}
 			
 			return Optional.of(new Result(Color3D.BLACK, Color3D.WHITE, reflectionRay));
+			
+			/*
+			final Color3D colorKR = Color3D.saturate(this.textureKR.compute(intersection), 0.0D, Doubles.MAX_VALUE);
+			final Color3D colorKT = Color3D.saturate(this.textureKT.compute(intersection), 0.0D, Doubles.MAX_VALUE);
+			
+			final double eta = this.textureEta.compute(intersection).average();
+			final double roughnessU = this.textureRoughnessU.compute(intersection).average();
+			final double roughnessV = this.textureRoughnessV.compute(intersection).average();
+			
+			if(colorKR.isBlack() && colorKT.isBlack()) {
+				return Optional.empty();
+			}
+			
+			final boolean isAllowingMultipleLobes = true;
+			final boolean isSpecular = Doubles.isZero(roughnessU) && Doubles.isZero(roughnessV);
+			
+			if(isSpecular && isAllowingMultipleLobes) {
+				return new BSDF(new FresnelSpecularBXDF(colorKR, colorKT, 1.0D, eta)).compute(intersection, this.textureEmission.compute(intersection));
+			}
+			
+			if(isSpecular) {
+				final List<BXDF> bXDFs = new ArrayList<>();
+				
+				if(!colorKR.isBlack()) {
+					final Fresnel fresnel = new DielectricFresnel(1.0D, eta);
+					
+					bXDFs.add(new SpecularBRDF(colorKR, fresnel));
+				}
+				
+				if(!colorKT.isBlack()) {
+					bXDFs.add(new SpecularBTDF(colorKT, 1.0D, eta));
+				}
+				
+				return new BSDF(bXDFs).compute(intersection, this.textureEmission.compute(intersection));
+			}
+			
+			final List<BXDF> bXDFs = new ArrayList<>();
+			
+			final double roughnessURemapped = this.isRemappingRoughness ? MicrofacetDistribution.convertRoughnessToAlpha(roughnessU) : roughnessU;
+			final double roughnessVRemapped = this.isRemappingRoughness ? MicrofacetDistribution.convertRoughnessToAlpha(roughnessV) : roughnessV;
+			
+			final MicrofacetDistribution microfacetDistribution = new TrowbridgeReitzMicrofacetDistribution(true, false, roughnessURemapped, roughnessVRemapped);
+			
+			if(!colorKR.isBlack()) {
+				final Fresnel fresnel = new DielectricFresnel(1.0D, eta);
+				
+				bXDFs.add(new TorranceSparrowBRDF(colorKR, fresnel, microfacetDistribution));
+			}
+			
+			if(!colorKT.isBlack()) {
+				bXDFs.add(new TorranceSparrowBTDF(colorKT, microfacetDistribution, 1.0D, eta));
+			}
+			
+			return new BSDF(bXDFs).compute(intersection, this.textureEmission.compute(intersection));
+			*/
 		}
 	}
 	
@@ -1744,7 +1946,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, iCorrectlyOriented);
 			
-			return Optional.of(new BXDFResult(this, result, iCorrectlyOriented, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, iCorrectlyOriented, pDF));
 		}
 		
 		@Override
@@ -1785,7 +1987,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, iCorrectlyOriented);
 			
-			return Optional.of(new BXDFResult(this, result, iCorrectlyOriented, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, iCorrectlyOriented, pDF));
 		}
 		
 		@Override
@@ -2023,7 +2225,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, iCorrectlyOriented);
 			
-			return Optional.of(new BXDFResult(this, result, iCorrectlyOriented, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, iCorrectlyOriented, pDF));
 		}
 		
 		@Override
@@ -2146,7 +2348,7 @@ public abstract class Material {
 			
 			final float pDF = 1.0F;
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
@@ -2209,7 +2411,7 @@ public abstract class Material {
 			
 			final double pDF = 1.0D;
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
@@ -2406,7 +2608,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
@@ -2514,7 +2716,7 @@ public abstract class Material {
 			
 			final double pDF = evaluatePDF(o, i);
 			
-			return Optional.of(new BXDFResult(this, result, i, pDF));
+			return Optional.of(new BXDFResult(getBXDFType(), result, i, pDF));
 		}
 		
 		@Override
