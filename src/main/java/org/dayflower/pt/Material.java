@@ -570,7 +570,7 @@ public abstract class Material {
 			
 			final Color3D r = this.r;
 			
-			return Color3D.divide(Color3D.multiply(Color3D.multiply(r, d), f), 4.0F * cosThetaAbsI * cosThetaAbsO);
+			return Color3D.divide(Color3D.multiply(Color3D.multiply(r, d), f), 4.0D * cosThetaAbsI * cosThetaAbsO);
 		}
 		
 		@Override
@@ -621,7 +621,7 @@ public abstract class Material {
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		
 		public BSDF(final BXDF bXDF) {
-			this(Arrays.asList(bXDF));
+			this.bXDFs = Arrays.asList(bXDF);
 		}
 		
 		public BSDF(final List<BXDF> bXDFs) {
@@ -694,7 +694,9 @@ public abstract class Material {
 				
 				result = Color3D.BLACK;
 				
-				for(final BXDF currentBXDF : this.bXDFs) {
+				for(int i = 0; i < matches; i++) {
+					final BXDF currentBXDF = bXDFs[i];
+					
 					if(currentBXDF != bXDF) {
 						probabilityDensityFunctionValue += currentBXDF.evaluatePDF(oLS, iLS);
 					}
