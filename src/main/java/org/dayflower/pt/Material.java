@@ -1679,6 +1679,104 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	private static final class FresnelBlendBRDF implements BXDF {
+		private final Color3D reflectanceScaleDiffuse;
+		private final Color3D reflectanceScaleSpecular;
+		private final MicrofacetDistribution microfacetDistribution;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public FresnelBlendBRDF(final Color3D reflectanceScaleDiffuse, final Color3D reflectanceScaleSpecular, final MicrofacetDistribution microfacetDistribution) {
+			this.reflectanceScaleDiffuse = Objects.requireNonNull(reflectanceScaleDiffuse, "r == null");
+			this.reflectanceScaleSpecular = Objects.requireNonNull(reflectanceScaleSpecular, "reflectanceScaleSpecular == null");
+			this.microfacetDistribution = Objects.requireNonNull(microfacetDistribution, "microfacetDistribution == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.GLOSSY_REFLECTION;
+		}
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			final Vector3D h = Vector3D.add(o, i);
+			
+			if(h.isZero()) {
+				return Color3D.BLACK;
+			}
+			
+			final Vector3D hNormalized = Vector3D.normalize(h);
+			
+			final double a = 28.0D / (23.0D * Doubles.PI);
+			final double b = 1.0D - Doubles.pow5(1.0D - 0.5D * i.cosThetaAbs());
+			final double c = 1.0D - Doubles.pow5(1.0D - 0.5D * o.cosThetaAbs());
+			final double d = this.microfacetDistribution.computeDifferentialArea(hNormalized);
+			final double e = 4.0D * Doubles.abs(Vector3D.dotProduct(i, hNormalized)) * Doubles.max(i.cosThetaAbs(), o.cosThetaAbs());
+			final double f = d / e;
+			
+			final Color3D reflectanceScaleDiffuse = this.reflectanceScaleDiffuse;
+			final Color3D reflectanceScaleSpecular = this.reflectanceScaleSpecular;
+			final Color3D fresnel = Fresnel.evaluateDielectricSchlick(Vector3D.dotProduct(i, hNormalized), reflectanceScaleSpecular);
+			final Color3D colorDiffuse = Color3D.multiply(Color3D.multiply(Color3D.multiply(Color3D.multiply(reflectanceScaleDiffuse, a), Color3D.subtract(Color3D.WHITE, reflectanceScaleSpecular)), b), c);
+			final Color3D colorSpecular = Color3D.multiply(fresnel, f);
+			
+			return Color3D.add(colorDiffuse, colorSpecular);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			if(p.x < 0.5D) {
+				final double u = Doubles.min(2.0D * p.x, 0.99999994D);
+				final double v = p.y;
+				
+				final Vector3D iSample = Vector3D.sampleHemisphereCosineDistribution(new Point2D(u, v));
+				final Vector3D i = o.z < 0.0D ? Vector3D.negate(iSample) : iSample;
+				
+				final BXDFType bXDFType = getBXDFType();
+				
+				final Color3D result = evaluateDF(o, i);
+				
+				final double pDF = evaluatePDF(o, i);
+				
+				return Optional.of(new BXDFResult(bXDFType, result, i, pDF));
+			}
+			
+			final double u = Doubles.min(2.0D * (p.x - 0.5D), 0.99999994D);
+			final double v = p.y;
+			
+			final Vector3D h = this.microfacetDistribution.sampleH(o, new Point2D(u, v));
+			
+			final Vector3D i = Vector3D.reflection(o, h);
+			
+			if(!Vector3D.sameHemisphereZ(o, i)) {
+				return Optional.empty();
+			}
+			
+			final BXDFType bXDFType = getBXDFType();
+			
+			final Color3D result = evaluateDF(o, i);
+			
+			final double pDF = evaluatePDF(o, i);
+			
+			return Optional.of(new BXDFResult(bXDFType, result, i, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			if(!Vector3D.sameHemisphereZ(o, i)) {
+				return 0.0D;
+			}
+			
+			final Vector3D h = Vector3D.normalize(Vector3D.add(o, i));
+			
+			return 0.5D * (i.cosThetaAbs() * Doubles.PI_RECIPROCAL + this.microfacetDistribution.computePDF(o, h) / (4.0D * Vector3D.dotProduct(o, h)));
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	@SuppressWarnings("unused")
 	private static final class FresnelSpecularBXDF implements BXDF {
 		private final Color3D reflectance;
@@ -2456,79 +2554,9 @@ public abstract class Material {
 				
 				final MicrofacetDistribution microfacetDistribution = new TrowbridgeReitzMicrofacetDistribution(true, false, roughnessU, roughnessV);
 				
-				final OrthonormalBasis33D orthonormalBasis = intersection.getOrthonormalBasisWS();
+				final BSDF bSDF = new BSDF(new FresnelBlendBRDF(colorKD, colorKS, microfacetDistribution));
 				
-				final Vector3D nWS = intersection.getSurfaceNormalWSCorrectlyOriented();
-				final Vector3D oWS = Vector3D.negate(intersection.getRayWS().getDirection());
-				final Vector3D oLS = orthonormalBasis.transformReverseNormalize(oWS);
-				
-				if(Doubles.isZero(oLS.z)) {
-					return Optional.empty();
-				}
-				
-				final double t = Doubles.min(Randoms.nextDouble(), 0.99999994D);
-				final double u = t < 0.5D ? Doubles.min(2.0D * t, 0.99999994D) : Doubles.min(2.0D * (t - 0.5D), 0.99999994D);
-				final double v = Randoms.nextDouble();
-				
-				final Point2D p = new Point2D(u, v);
-				
-				final Vector3D i = t < 0.5D ? Vector3D.sampleHemisphereCosineDistribution(p) : Vector3D.reflection(oLS, microfacetDistribution.sampleH(oLS, p));
-				final Vector3D iLS = t < 0.5D && oLS.z < 0.0D ? Vector3D.negate(i) : i;
-				final Vector3D iWS = orthonormalBasis.transformNormalize(iLS);
-				
-				if(!Vector3D.sameHemisphereZ(oLS, iLS)) {
-					return Optional.empty();
-				}
-				
-				final Vector3D hLS = Vector3D.add(oLS, iLS);
-				
-				if(hLS.isZero()) {
-					return Optional.empty();
-				}
-				
-				final Vector3D hLSNormalized = Vector3D.normalize(hLS);
-				
-				final double iDotH = Vector3D.dotProduct(iLS, hLSNormalized);
-				final double iDotHAbs = Doubles.abs(iDotH);
-				final double iDotNAbs = Vector3D.dotProductAbs(iWS, nWS);
-				final double oDotH = Vector3D.dotProduct(oLS, hLSNormalized);
-				
-				final double cosThetaAbsI = iLS.cosThetaAbs();
-				final double cosThetaAbsO = oLS.cosThetaAbs();
-				
-				final double probabilityDensityFunctionValue = 0.5D * (cosThetaAbsI / Doubles.PI + microfacetDistribution.computePDF(oLS, hLSNormalized) / (4.0D * oDotH));
-				
-				if(Doubles.isZero(probabilityDensityFunctionValue)) {
-					return Optional.empty();
-				}
-				
-				final double a = 28.0D / (23.0D * Doubles.PI);
-				final double b = 1.0D - Doubles.pow5(1.0D - 0.5D * cosThetaAbsI);
-				final double c = 1.0D - Doubles.pow5(1.0D - 0.5D * cosThetaAbsO);
-				final double d = microfacetDistribution.computeDifferentialArea(hLSNormalized);
-				final double e = 4.0D * iDotHAbs * Doubles.max(cosThetaAbsI, cosThetaAbsO);
-				final double f = d / e;
-				
-				final Color3D colorFresnel = Fresnel.evaluateDielectricSchlick(iDotH, colorKS);
-				
-				final double resultR = colorKD.r * a * (1.0D - colorKS.r) * b * c + colorFresnel.r * f;
-				final double resultG = colorKD.g * a * (1.0D - colorKS.g) * b * c + colorFresnel.g * f;
-				final double resultB = colorKD.b * a * (1.0D - colorKS.b) * b * c + colorFresnel.b * f;
-				
-				if(Doubles.isZero(resultR) && Doubles.isZero(resultG) && Doubles.isZero(resultB)) {
-					return Optional.empty();
-				}
-				
-				final double reflectanceR = resultR * iDotNAbs / probabilityDensityFunctionValue;
-				final double reflectanceG = resultG * iDotNAbs / probabilityDensityFunctionValue;
-				final double reflectanceB = resultB * iDotNAbs / probabilityDensityFunctionValue;
-				
-				final Color3D emission = this.textureEmission.compute(intersection);
-				final Color3D reflectance = new Color3D(reflectanceR, reflectanceG, reflectanceB);
-				
-				final Ray3D ray = new Ray3D(intersection.getSurfaceIntersectionPointWS(), iWS);
-				
-				return Optional.of(new Result(emission, reflectance, ray));
+				return bSDF.compute(intersection, this.textureEmission.compute(intersection));
 			}
 			
 			return Optional.empty();
