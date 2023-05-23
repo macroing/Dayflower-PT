@@ -1727,28 +1727,11 @@ public abstract class Material {
 		
 		@Override
 		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
-			if(p.x < 0.5D) {
-				final double u = Doubles.min(2.0D * p.x, 0.99999994D);
-				final double v = p.y;
-				
-				final Vector3D iSample = Vector3D.sampleHemisphereCosineDistribution(new Point2D(u, v));
-				final Vector3D i = o.z < 0.0D ? Vector3D.negate(iSample) : iSample;
-				
-				final BXDFType bXDFType = getBXDFType();
-				
-				final Color3D result = evaluateDF(o, i);
-				
-				final double pDF = evaluatePDF(o, i);
-				
-				return Optional.of(new BXDFResult(bXDFType, result, i, pDF));
-			}
-			
-			final double u = Doubles.min(2.0D * (p.x - 0.5D), 0.99999994D);
+			final double u = p.x < 0.5D ? Doubles.min(2.0D * p.x, 0.99999994D) : Doubles.min(2.0D * (p.x - 0.5D), 0.99999994D);
 			final double v = p.y;
 			
-			final Vector3D h = this.microfacetDistribution.sampleH(o, new Point2D(u, v));
-			
-			final Vector3D i = Vector3D.reflection(o, h);
+			final Vector3D iSample = p.x < 0.5D ? Vector3D.sampleHemisphereCosineDistribution(new Point2D(u, v)) : Vector3D.reflection(o, this.microfacetDistribution.sampleH(o, new Point2D(u, v)));
+			final Vector3D i = p.x < 0.5D && o.z < 0.0D ? Vector3D.negate(iSample) : iSample;
 			
 			if(!Vector3D.sameHemisphereZ(o, i)) {
 				return Optional.empty();
