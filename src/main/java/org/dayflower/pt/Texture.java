@@ -190,7 +190,7 @@ public interface Texture {
 		Objects.requireNonNull(function, "function == null");
 		
 		return intersection -> {
-			return Objects.requireNonNull(function.apply(intersection));
+			return Objects.requireNonNull(function.apply(Objects.requireNonNull(intersection, "intersection == null")));
 		};
 	}
 	

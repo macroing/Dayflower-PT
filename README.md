@@ -33,6 +33,7 @@ Supported Materials
 -------------------
 * Bullseye
 * Checkerboard
+* Clear Coat
 * Disney
 * Glass
 * Glossy

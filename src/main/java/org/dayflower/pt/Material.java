@@ -90,6 +90,34 @@ public abstract class Material {
 		return new CheckerboardMaterial(materialA, materialB, angleDegrees, scaleU, scaleV);
 	}
 	
+	public static Material clearCoat() {
+		return clearCoat(Color3D.GRAY);
+	}
+	
+	public static Material clearCoat(final Color3D colorKD) {
+		return clearCoat(colorKD, Color3D.WHITE);
+	}
+	
+	public static Material clearCoat(final Color3D colorKD, final Color3D colorKS) {
+		return clearCoat(colorKD, colorKS, Color3D.BLACK);
+	}
+	
+	public static Material clearCoat(final Color3D colorKD, final Color3D colorKS, final Color3D colorEmission) {
+		return clearCoat(Texture.constant(colorKD), Texture.constant(colorKS), Texture.constant(colorEmission));
+	}
+	
+	public static Material clearCoat(final Texture textureKD) {
+		return clearCoat(textureKD, Texture.constant(Color3D.WHITE));
+	}
+	
+	public static Material clearCoat(final Texture textureKD, final Texture textureKS) {
+		return clearCoat(textureKD, textureKS, Texture.constant(Color3D.BLACK));
+	}
+	
+	public static Material clearCoat(final Texture textureKD, final Texture textureKS, final Texture textureEmission) {
+		return new ClearCoatMaterial(textureKD, textureKS, textureEmission);
+	}
+	
 	public static Material disney() {
 		return disney(Color3D.GRAY);
 	}
@@ -993,6 +1021,71 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	private static final class ClearCoatMaterial extends Material {
+		private final Texture textureEmission;
+		private final Texture textureKD;
+		private final Texture textureKS;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public ClearCoatMaterial(final Texture textureKD, final Texture textureKS, final Texture textureEmission) {
+			this.textureKD = Objects.requireNonNull(textureKD, "textureKD == null");
+			this.textureKS = Objects.requireNonNull(textureKS, "textureKS == null");
+			this.textureEmission = Objects.requireNonNull(textureEmission, "textureEmission == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Optional<Result> compute(final Intersection intersection) {
+			final Color3D colorKD = this.textureKD.compute(intersection);
+			final Color3D colorKS = this.textureKS.compute(intersection);
+			
+			final Vector3D direction = intersection.getRayWS().getDirection();
+			
+			final Vector3D surfaceNormal = intersection.getSurfaceNormalWS();
+			final Vector3D surfaceNormalCorrectlyOriented = intersection.getSurfaceNormalWSCorrectlyOriented();
+			
+			final boolean isEntering = Vector3D.dotProduct(surfaceNormal, surfaceNormalCorrectlyOriented) > 0.0D;
+			
+			final double etaA = 1.0D;
+			final double etaB = 1.5D;
+			final double etaI = isEntering ? etaA : etaB;
+			final double etaT = isEntering ? etaB : etaA;
+			final double eta = etaI / etaT;
+			
+			final Optional<Vector3D> optionalRefractionDirection = Vector3D.refraction(direction, surfaceNormalCorrectlyOriented, eta);
+			
+			if(optionalRefractionDirection.isPresent()) {
+				final Vector3D refractionDirection = optionalRefractionDirection.get();
+				
+				final double cosThetaI = Vector3D.dotProduct(direction, surfaceNormalCorrectlyOriented);
+				final double cosThetaICorrectlyOriented = isEntering ? -cosThetaI : Vector3D.dotProduct(refractionDirection, surfaceNormal);
+				
+				final double r0 = (etaB - etaA) * (etaB - etaA) / ((etaB + etaA) * (etaB + etaA));
+				
+				final double reflectance = Fresnel.evaluateDielectricSchlick(cosThetaICorrectlyOriented, r0);
+				final double transmittance = 1.0D - reflectance;
+				
+				final double probabilityRussianRoulette = 0.25D + 0.5D * reflectance;
+				final double probabilityRussianRouletteReflection = reflectance / probabilityRussianRoulette;
+				final double probabilityRussianRouletteTransmission = transmittance / (1.0D - probabilityRussianRoulette);
+				
+				final boolean isChoosingSpecularReflection = Randoms.nextDouble() < probabilityRussianRoulette;
+				
+				if(isChoosingSpecularReflection) {
+					return new BSDF(new SpecularBRDF(Color3D.multiply(colorKS, probabilityRussianRouletteReflection), new ConstantFresnel())).compute(intersection, this.textureEmission.compute(intersection));
+				}
+				
+				return new BSDF(new LambertianBRDF(Color3D.multiply(colorKD, probabilityRussianRouletteTransmission))).compute(intersection, this.textureEmission.compute(intersection));
+			}
+			
+			return new BSDF(new SpecularBRDF(colorKS, new ConstantFresnel())).compute(intersection, this.textureEmission.compute(intersection));
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	private static final class ConductorFresnel extends Fresnel {
 		private final Color3D etaI;
 		private final Color3D etaT;
@@ -1863,7 +1956,7 @@ public abstract class Material {
 			final Vector3D direction = intersection.getRayWS().getDirection();
 			
 			final Vector3D surfaceNormal = intersection.getSurfaceNormalWS();
-			final Vector3D surfaceNormalCorrectlyOriented = Vector3D.orientNormalNegated(direction, surfaceNormal);
+			final Vector3D surfaceNormalCorrectlyOriented = intersection.getSurfaceNormalWSCorrectlyOriented();
 			
 			final boolean isEntering = Vector3D.dotProduct(surfaceNormal, surfaceNormalCorrectlyOriented) > 0.0D;
 			
