@@ -20,6 +20,7 @@ Supported BXDFs
 * Disney Fake SS BRDF
 * Disney Retro BRDF
 * Disney Sheen BRDF
+* Fresnel Blend BRDF
 * Fresnel Specular BXDF
 * Lambertian BRDF
 * Lambertian BTDF
