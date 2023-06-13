@@ -1444,86 +1444,86 @@ public abstract class Material {
 		public Optional<Result> compute(final Intersection intersection) {
 			final List<BXDF> bXDFs = new ArrayList<>();
 			
-			final double doubleAnisotropic = this.textureAnisotropic.compute(intersection).average();
-			final double doubleClearCoat = this.textureClearCoat.compute(intersection).average();
-			final double doubleDiffuseTransmission = this.textureDiffuseTransmission.compute(intersection).average() / 2.0D;
-			final double doubleEta = this.textureEta.compute(intersection).average();
-			final double doubleMetallic = this.textureMetallic.compute(intersection).average();
-			final double doubleRoughness = this.textureRoughness.compute(intersection).average();
-			final double doubleSheen = this.textureSheen.compute(intersection).average();
-			final double doubleSpecularTint = this.textureSpecularTint.compute(intersection).average();
-			final double doubleSpecularTransmission = this.textureSpecularTransmission.compute(intersection).average();
+			final double anisotropic = this.textureAnisotropic.compute(intersection).average();
+			final double clearCoat = this.textureClearCoat.compute(intersection).average();
+			final double diffuseTransmission = this.textureDiffuseTransmission.compute(intersection).average() / 2.0D;
+			final double eta = this.textureEta.compute(intersection).average();
+			final double metallic = this.textureMetallic.compute(intersection).average();
+			final double roughness = this.textureRoughness.compute(intersection).average();
+			final double sheen = this.textureSheen.compute(intersection).average();
+			final double specularTint = this.textureSpecularTint.compute(intersection).average();
+			final double specularTransmission = this.textureSpecularTransmission.compute(intersection).average();
 			
 			final Color3D colorColor = Color3D.saturate(this.textureColor.compute(intersection), 0.0D, Doubles.MAX_VALUE);
 			final Color3D colorTint = Color3D.normalizeRelativeLuminance(colorColor);
-			final Color3D colorSheen = doubleSheen > 0.0D ? Color3D.blend(Color3D.WHITE, colorTint, this.textureSheenTint.compute(intersection).average()) : Color3D.BLACK;
+			final Color3D colorSheen = sheen > 0.0D ? Color3D.blend(Color3D.WHITE, colorTint, this.textureSheenTint.compute(intersection).average()) : Color3D.BLACK;
 			
-			final double diffuseWeight = (1.0D - doubleMetallic) * (1.0D - doubleSpecularTransmission);
+			final double diffuseWeight = (1.0D - metallic) * (1.0D - specularTransmission);
 			
 			if(diffuseWeight > 0.0D) {
 				if(this.isThin) {
-					final double floatFlatness = this.textureFlatness.compute(intersection).average();
+					final double flatness = this.textureFlatness.compute(intersection).average();
 					
-					final Color3D colorReflectanceScale0 = Color3D.multiply(colorColor, diffuseWeight * (1.0D - floatFlatness) * (1.0D - doubleDiffuseTransmission));
-					final Color3D colorReflectanceScale1 = Color3D.multiply(colorColor, diffuseWeight * (0.0D + floatFlatness) * (1.0D - doubleDiffuseTransmission));
+					final Color3D colorReflectanceScale0 = Color3D.multiply(colorColor, diffuseWeight * (1.0D - flatness) * (1.0D - diffuseTransmission));
+					final Color3D colorReflectanceScale1 = Color3D.multiply(colorColor, diffuseWeight * (0.0D + flatness) * (1.0D - diffuseTransmission));
 					
 					bXDFs.add(new DisneyDiffuseBRDF(colorReflectanceScale0));
-					bXDFs.add(new DisneyFakeSSBRDF(colorReflectanceScale1, doubleRoughness));
+					bXDFs.add(new DisneyFakeSSBRDF(colorReflectanceScale1, roughness));
 				} else {
 					final Color3D colorScatterDistance = this.textureScatterDistance.compute(intersection);
 					
 					if(colorScatterDistance.isBlack()) {
 						bXDFs.add(new DisneyDiffuseBRDF(Color3D.multiply(colorColor, diffuseWeight)));
 					} else {
-						bXDFs.add(new SpecularBTDF(Color3D.WHITE, 1.0D, doubleEta));
+						bXDFs.add(new SpecularBTDF(Color3D.WHITE, 1.0D, eta));
 					}
 				}
 				
-				bXDFs.add(new DisneyRetroBRDF(Color3D.multiply(colorColor, diffuseWeight), doubleRoughness));
+				bXDFs.add(new DisneyRetroBRDF(Color3D.multiply(colorColor, diffuseWeight), roughness));
 				
-				if(doubleSheen > 0.0D) {
-					bXDFs.add(new DisneySheenBRDF(Color3D.multiply(colorSheen, diffuseWeight * doubleSheen)));
+				if(sheen > 0.0D) {
+					bXDFs.add(new DisneySheenBRDF(Color3D.multiply(colorSheen, diffuseWeight * sheen)));
 				}
 			}
 			
-			final double aspect = Doubles.sqrt(1.0D - doubleAnisotropic * 0.9D);
+			final double aspect = Doubles.sqrt(1.0D - anisotropic * 0.9D);
 			
-			final double alphaX = Doubles.max(0.001D, doubleRoughness * doubleRoughness / aspect);
-			final double alphaY = Doubles.max(0.001D, doubleRoughness * doubleRoughness * aspect);
+			final double alphaX = Doubles.max(0.001D, roughness * roughness / aspect);
+			final double alphaY = Doubles.max(0.001D, roughness * roughness * aspect);
 			
 			final MicrofacetDistribution microfacetDistribution = new TrowbridgeReitzMicrofacetDistribution(true, true, alphaX, alphaY);
 			
-			final double floatR0 = ((doubleEta - 1.0D) * (doubleEta - 1.0D)) / ((doubleEta + 1.0D) * (doubleEta + 1.0D));
+			final double r0 = ((eta - 1.0D) * (eta - 1.0D)) / ((eta + 1.0D) * (eta + 1.0D));
 			
-			final Color3D colorSpecularR0 = Color3D.blend(Color3D.multiply(Color3D.blend(Color3D.WHITE, colorTint, doubleSpecularTint), floatR0), colorColor, doubleMetallic);
+			final Color3D colorSpecularR0 = Color3D.blend(Color3D.multiply(Color3D.blend(Color3D.WHITE, colorTint, specularTint), r0), colorColor, metallic);
 			
-			final Fresnel fresnel = new DisneyFresnel(colorSpecularR0, doubleEta, doubleMetallic);
+			final Fresnel fresnel = new DisneyFresnel(colorSpecularR0, eta, metallic);
 			
 			bXDFs.add(new TorranceSparrowBRDF(Color3D.WHITE, fresnel, microfacetDistribution));
 			
-			if(doubleClearCoat > 0.0D) {
-				bXDFs.add(new DisneyClearCoatBRDF(Doubles.lerp(0.1D, 0.001D, this.textureClearCoatGloss.compute(intersection).average()), doubleClearCoat));
+			if(clearCoat > 0.0D) {
+				bXDFs.add(new DisneyClearCoatBRDF(Doubles.lerp(0.1D, 0.001D, this.textureClearCoatGloss.compute(intersection).average()), clearCoat));
 			}
 			
-			if(doubleSpecularTransmission > 0.0D) {
-				final Color3D transmittanceScale = Color3D.multiply(Color3D.sqrt(colorColor), doubleSpecularTransmission);
+			if(specularTransmission > 0.0D) {
+				final Color3D transmittanceScale = Color3D.multiply(Color3D.sqrt(colorColor), specularTransmission);
 				
 				if(this.isThin) {
-					final double floatRoughnessScaled = (0.65D * doubleEta - 0.35D) * doubleRoughness;
+					final double roughnessScaled = (0.65D * eta - 0.35D) * roughness;
 					
-					final double alphaXScaled = Doubles.max(0.001D, floatRoughnessScaled * floatRoughnessScaled / aspect);
-					final double alphaYScaled = Doubles.max(0.001D, floatRoughnessScaled * floatRoughnessScaled * aspect);
+					final double alphaXScaled = Doubles.max(0.001D, roughnessScaled * roughnessScaled / aspect);
+					final double alphaYScaled = Doubles.max(0.001D, roughnessScaled * roughnessScaled * aspect);
 					
 					final MicrofacetDistribution microfacetDistributionScaled = new TrowbridgeReitzMicrofacetDistribution(true, false, alphaXScaled, alphaYScaled);
 					
-					bXDFs.add(new TorranceSparrowBTDF(transmittanceScale, microfacetDistributionScaled, 1.0D, doubleEta));
+					bXDFs.add(new TorranceSparrowBTDF(transmittanceScale, microfacetDistributionScaled, 1.0D, eta));
 				} else {
-					bXDFs.add(new TorranceSparrowBTDF(transmittanceScale, microfacetDistribution, 1.0D, doubleEta));
+					bXDFs.add(new TorranceSparrowBTDF(transmittanceScale, microfacetDistribution, 1.0D, eta));
 				}
 			}
 			
 			if(this.isThin) {
-				bXDFs.add(new LambertianBTDF(Color3D.multiply(colorColor, doubleDiffuseTransmission)));
+				bXDFs.add(new LambertianBTDF(Color3D.multiply(colorColor, diffuseTransmission)));
 			}
 			
 			final BSDF bSDF = new BSDF(bXDFs);
