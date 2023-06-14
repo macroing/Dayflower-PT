@@ -952,6 +952,133 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	@SuppressWarnings("unused")
+	private static final class BeckmannMicrofacetDistribution extends MicrofacetDistribution {
+		private final double alphaX;
+		private final double alphaY;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public BeckmannMicrofacetDistribution(final boolean isSamplingVisibleArea, final boolean isSeparableModel, final double alphaX, final double alphaY) {
+			super(isSamplingVisibleArea, isSeparableModel);
+			
+			this.alphaX = Doubles.max(alphaX, 0.001D);
+			this.alphaY = Doubles.max(alphaY, 0.001D);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Vector3D sampleH(final Vector3D o, final Point2D p) {
+			if(isSamplingVisibleArea()) {
+				return o.z >= 0.0F ? doSample(o, p) : Vector3D.negate(doSample(Vector3D.negate(o), p));
+			} else if(Doubles.equals(this.alphaX, this.alphaY)) {
+				final double phi = p.y * 2.0D * Doubles.PI;
+				final double cosTheta = 1.0D / Doubles.sqrt(1.0D + -this.alphaX * this.alphaX * Doubles.log(1.0D - p.x));
+				final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
+				
+				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
+			} else {
+				final double phi = Doubles.atan(this.alphaY / this.alphaX * Doubles.tan(2.0D * Doubles.PI * p.y + 0.5D * Doubles.PI)) + (p.y > 0.5D ? Doubles.PI : 0.0D);
+				final double cosTheta = 1.0D / Doubles.sqrt(1.0D + (-Doubles.log(1.0D - p.x) / (Doubles.pow2(Doubles.cos(phi)) / (this.alphaX * this.alphaX) + Doubles.pow2(Doubles.sin(phi)) / (this.alphaY * this.alphaY))));
+				final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
+				
+				return Vector3D.orientNormalSameHemisphereZ(o, Vector3D.directionSpherical(sinTheta, cosTheta, phi));
+			}
+		}
+		
+		@Override
+		public double computeDifferentialArea(final Vector3D h) {
+			final double tanThetaSquared = h.tanThetaSquared();
+			
+			if(Doubles.isInfinite(tanThetaSquared)) {
+				return 0.0D;
+			}
+			
+			return Doubles.exp(-tanThetaSquared * (h.cosPhiSquared() / (this.alphaX * this.alphaX) + h.sinPhiSquared() / (this.alphaY * this.alphaY))) / (Doubles.PI * this.alphaX * this.alphaY * h.cosThetaQuartic());
+		}
+		
+		@Override
+		public double computeLambda(final Vector3D o) {
+			final double tanThetaAbs = o.tanThetaAbs();
+			
+			if(Doubles.isInfinite(tanThetaAbs)) {
+				return 0.0D;
+			}
+			
+			final double alpha = Doubles.sqrt(o.cosPhiSquared() * (this.alphaX * this.alphaX) + o.sinPhiSquared() * (this.alphaY * this.alphaY));
+			final double alphaReciprocal = 1.0D / (alpha * tanThetaAbs);
+			
+			if(alphaReciprocal >= 1.6D) {
+				return 0.0D;
+			}
+			
+			return (1.0D - 1.259D * alphaReciprocal + 0.396D * alphaReciprocal * alphaReciprocal) / (3.535D * alphaReciprocal + 2.181D * alphaReciprocal * alphaReciprocal);
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private Vector3D doSample(final Vector3D i, final Point2D p) {
+			final Vector3D iStretched = Vector3D.normalize(new Vector3D(i.x * this.alphaX, i.y * this.alphaY, i.z));
+			
+			final double cosPhi = iStretched.cosPhi();
+			final double cosTheta = iStretched.cosTheta();
+			final double sinPhi = iStretched.sinPhi();
+			final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
+			final double tanTheta = sinTheta / cosTheta;
+			final double cotTheta = 1.0D / tanTheta;
+			
+			if(cosTheta > 0.9999D) {
+				final double r = Doubles.sqrt(-Doubles.log(1.0D - p.x));
+				final double phi = 2.0D * Doubles.PI * p.y;
+				final double slopeX = r * Doubles.cos(phi);
+				final double slopeY = r * Doubles.sin(phi);
+				
+				return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * this.alphaX), -((sinPhi * slopeX + cosPhi * slopeY) * this.alphaY), 1.0D));
+			}
+			
+			final double sampleX = Doubles.max(p.x, 1.0e-6D);
+			final double theta = Doubles.acos(cosTheta);
+			final double fit = 1.0D + theta * (-0.876D + theta * (0.4265D - 0.0594D * theta));
+			final double sqrtPiReciprocal = 1.0D / Doubles.sqrt(Doubles.PI);
+			
+			double a = -1.0D;
+			double b = Doubles.erf(cotTheta);
+			double c = b - (1.0D + b) * Doubles.pow(1.0D - sampleX, fit);
+			
+			final double normalization = 1.0D / (1.0D + c + sqrtPiReciprocal * tanTheta * Doubles.exp(-cotTheta * cotTheta));
+			
+			for(int j = 1; j < 10; j++) {
+				if(!(c >= a && c <= b)) {
+					c = 0.5D * (a + b);
+				}
+				
+				final double errorReciprocal = Doubles.erfInv(c);
+				final double value = normalization * (1.0D + b + sqrtPiReciprocal * tanTheta * Doubles.exp(-errorReciprocal * errorReciprocal)) - sampleX;
+				final double derivative = normalization * (1.0D - errorReciprocal * tanTheta);
+				
+				if(Doubles.abs(value) < 1.0e-5D) {
+					break;
+				}
+				
+				if(value > 0.0D) {
+					b = c;
+				} else {
+					a = c;
+				}
+				
+				b -= value / derivative;
+			}
+			
+			final double slopeX = Doubles.erfInv(c);
+			final double slopeY = Doubles.erfInv(2.0D * Doubles.max(p.y, 1.0e-6D) - 1.0D);
+			
+			return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * this.alphaX), -((sinPhi * slopeX + cosPhi * slopeY) * this.alphaY), 1.0D));
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	private static final class BullseyeMaterial extends Material {
 		private final Material materialA;
 		private final Material materialB;
@@ -2915,6 +3042,8 @@ public abstract class Material {
 			final double cosPhi = iStretched.cosPhi();
 			final double cosTheta = iStretched.cosTheta();
 			final double sinPhi = iStretched.sinPhi();
+			final double sinTheta = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta));
+			final double tanTheta = sinTheta / cosTheta;
 			
 			if(cosTheta > 0.9999D) {
 				final double r = Doubles.sqrt(p.x / (1.0D - p.x));
@@ -2926,15 +3055,14 @@ public abstract class Material {
 				return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * this.alphaX), -((sinPhi * slopeX + cosPhi * slopeY) * this.alphaY), 1.0D));
 			}
 			
-			final double a = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosTheta * cosTheta)) / cosTheta;
-			final double b = 2.0D * p.x / (2.0D / (1.0D + Doubles.sqrt(1.0D + a * a))) - 1.0D;
-			final double c = Doubles.min(1.0D / (b * b - 1.0D), 1.0e10D);
-			final double d = Doubles.sqrt(Doubles.max(a * a * c * c - (b * b - a * a) * c, 0.0D));
-			final double e = a * c + d;
-			final double f = p.y > 0.5D ? 2.0D * (p.y - 0.5D) : 2.0D * (0.5D - p.y);
+			final double a = 2.0D * p.x / (2.0D / (1.0D + Doubles.sqrt(1.0D + tanTheta * tanTheta))) - 1.0D;
+			final double b = Doubles.min(1.0D / (a * a - 1.0D), 1.0e10D);
+			final double c = Doubles.sqrt(Doubles.max(tanTheta * tanTheta * b * b - (a * a - tanTheta * tanTheta) * b, 0.0D));
+			final double d = tanTheta * b + c;
+			final double e = p.y > 0.5D ? 2.0D * (p.y - 0.5D) : 2.0D * (0.5D - p.y);
 			
-			final double slopeX = b < 0.0D || e > 1.0D / a ? a * c - d : e;
-			final double slopeY = (p.y > 0.5D ? 1.0D : -1.0D) * (f * (f * (f * 0.27385D - 0.73369D) + 0.46341D)) / (f * (f * (f * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Doubles.sqrt(1.0D + this.alphaX * this.alphaX);
+			final double slopeX = a < 0.0D || d > 1.0D / tanTheta ? tanTheta * b - c : d;
+			final double slopeY = (p.y > 0.5D ? 1.0D : -1.0D) * (e * (e * (e * 0.27385D - 0.73369D) + 0.46341D)) / (e * (e * (e * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Doubles.sqrt(1.0D + this.alphaX * this.alphaX);
 			
 			return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * this.alphaX), -((sinPhi * slopeX + cosPhi * slopeY) * this.alphaY), 1.0D));
 		}
