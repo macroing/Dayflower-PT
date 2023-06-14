@@ -526,6 +526,50 @@ public abstract class Material {
 		return new SubstrateMaterial(textureKD, textureKS, textureRoughnessU, textureRoughnessV, isRemappingRoughness, textureEmission);
 	}
 	
+	public static Material uber() {
+		return uber(Texture.constant(new Color3D(0.25D)));
+	}
+	
+	public static Material uber(final Texture textureKD) {
+		return uber(textureKD, Texture.constant(Color3D.BLACK));
+	}
+	
+	public static Material uber(final Texture textureKD, final Texture textureKR) {
+		return uber(textureKD, textureKR, Texture.constant(new Color3D(0.25D)));
+	}
+	
+	public static Material uber(final Texture textureKD, final Texture textureKR, final Texture textureKS) {
+		return uber(textureKD, textureKR, textureKS, Texture.constant(Color3D.BLACK));
+	}
+	
+	public static Material uber(final Texture textureKD, final Texture textureKR, final Texture textureKS, final Texture textureKT) {
+		return uber(textureKD, textureKR, textureKS, textureKT, Texture.constant(Color3D.BLACK));
+	}
+	
+	public static Material uber(final Texture textureKD, final Texture textureKR, final Texture textureKS, final Texture textureKT, final Texture textureEmission) {
+		return uber(textureKD, textureKR, textureKS, textureKT, textureEmission, Texture.constant(Color3D.WHITE));
+	}
+	
+	public static Material uber(final Texture textureKD, final Texture textureKR, final Texture textureKS, final Texture textureKT, final Texture textureEmission, final Texture textureOpacity) {
+		return uber(textureKD, textureKR, textureKS, textureKT, textureEmission, textureOpacity, Texture.constant(1.5D));
+	}
+	
+	public static Material uber(final Texture textureKD, final Texture textureKR, final Texture textureKS, final Texture textureKT, final Texture textureEmission, final Texture textureOpacity, final Texture textureEta) {
+		return uber(textureKD, textureKR, textureKS, textureKT, textureEmission, textureOpacity, textureEta, Texture.constant(0.1D));
+	}
+	
+	public static Material uber(final Texture textureKD, final Texture textureKR, final Texture textureKS, final Texture textureKT, final Texture textureEmission, final Texture textureOpacity, final Texture textureEta, final Texture textureRoughness) {
+		return uber(textureKD, textureKR, textureKS, textureKT, textureEmission, textureOpacity, textureEta, textureRoughness, textureRoughness);
+	}
+	
+	public static Material uber(final Texture textureKD, final Texture textureKR, final Texture textureKS, final Texture textureKT, final Texture textureEmission, final Texture textureOpacity, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV) {
+		return uber(textureKD, textureKR, textureKS, textureKT, textureEmission, textureOpacity, textureEta, textureRoughnessU, textureRoughnessV, true);
+	}
+	
+	public static Material uber(final Texture textureKD, final Texture textureKR, final Texture textureKS, final Texture textureKT, final Texture textureEmission, final Texture textureOpacity, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness) {
+		return new UberMaterial(textureKD, textureKR, textureKS, textureKT, textureEmission, textureOpacity, textureEta, textureRoughnessU, textureRoughnessV, isRemappingRoughness);
+	}
+	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	public static final class Result {
@@ -3065,6 +3109,77 @@ public abstract class Material {
 			final double slopeY = (p.y > 0.5D ? 1.0D : -1.0D) * (e * (e * (e * 0.27385D - 0.73369D) + 0.46341D)) / (e * (e * (e * 0.093073D + 0.309420D) - 1.0D) + 0.597999D) * Doubles.sqrt(1.0D + this.alphaX * this.alphaX);
 			
 			return Vector3D.normalize(new Vector3D(-((cosPhi * slopeX - sinPhi * slopeY) * this.alphaX), -((sinPhi * slopeX + cosPhi * slopeY) * this.alphaY), 1.0D));
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class UberMaterial extends Material {
+		private final Texture textureEmission;
+		private final Texture textureEta;
+		private final Texture textureKD;
+		private final Texture textureKR;
+		private final Texture textureKS;
+		private final Texture textureKT;
+		private final Texture textureOpacity;
+		private final Texture textureRoughnessU;
+		private final Texture textureRoughnessV;
+		private final boolean isRemappingRoughness;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public UberMaterial(final Texture textureKD, final Texture textureKR, final Texture textureKS, final Texture textureKT, final Texture textureEmission, final Texture textureOpacity, final Texture textureEta, final Texture textureRoughnessU, final Texture textureRoughnessV, final boolean isRemappingRoughness) {
+			this.textureKD = Objects.requireNonNull(textureKD, "textureKD == null");
+			this.textureKR = Objects.requireNonNull(textureKR, "textureKR == null");
+			this.textureKS = Objects.requireNonNull(textureKS, "textureKS == null");
+			this.textureKT = Objects.requireNonNull(textureKT, "textureKT == null");
+			this.textureEmission = Objects.requireNonNull(textureEmission, "textureEmission == null");
+			this.textureOpacity = Objects.requireNonNull(textureOpacity, "textureOpacity == null");
+			this.textureEta = Objects.requireNonNull(textureEta, "textureEta == null");
+			this.textureRoughnessU = Objects.requireNonNull(textureRoughnessU, "textureRoughnessU == null");
+			this.textureRoughnessV = Objects.requireNonNull(textureRoughnessV, "textureRoughnessV == null");
+			this.isRemappingRoughness = isRemappingRoughness;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Optional<Result> compute(final Intersection intersection) {
+			final Color3D colorOpacity = Color3D.saturate(this.textureOpacity.compute(intersection), 0.0F, Doubles.MAX_VALUE);
+			final Color3D colorKD = Color3D.multiply(colorOpacity, Color3D.saturate(this.textureKD.compute(intersection), 0.0F, Doubles.MAX_VALUE));
+			final Color3D colorKR = Color3D.multiply(colorOpacity, Color3D.saturate(this.textureKR.compute(intersection), 0.0F, Doubles.MAX_VALUE));
+			final Color3D colorKS = Color3D.multiply(colorOpacity, Color3D.saturate(this.textureKS.compute(intersection), 0.0F, Doubles.MAX_VALUE));
+			final Color3D colorKT = Color3D.multiply(colorOpacity, Color3D.saturate(this.textureKT.compute(intersection), 0.0F, Doubles.MAX_VALUE));
+			final Color3D colorTransmittanceScale = Color3D.saturate(Color3D.subtract(Color3D.WHITE, colorOpacity), 0.0F, Doubles.MAX_VALUE);
+			
+			final double eta = this.textureEta.compute(intersection).average();
+			
+			final double roughnessU = this.isRemappingRoughness ? MicrofacetDistribution.convertRoughnessToAlpha(this.textureRoughnessU.compute(intersection).average()) : this.textureRoughnessU.compute(intersection).average();
+			final double roughnessV = this.isRemappingRoughness ? MicrofacetDistribution.convertRoughnessToAlpha(this.textureRoughnessV.compute(intersection).average()) : this.textureRoughnessV.compute(intersection).average();
+			
+			final List<BXDF> bXDFs = new ArrayList<>();
+			
+			if(!colorTransmittanceScale.isBlack()) {
+				bXDFs.add(new SpecularBTDF(colorTransmittanceScale, 1.0F, 1.0F));
+			}
+			
+			if(!colorKD.isBlack()) {
+				bXDFs.add(new LambertianBRDF(colorKD));
+			}
+			
+			if(!colorKS.isBlack()) {
+				bXDFs.add(new TorranceSparrowBRDF(colorKS, new DielectricFresnel(1.0F, eta), new TrowbridgeReitzMicrofacetDistribution(true, false, roughnessU, roughnessV)));
+			}
+			
+			if(!colorKR.isBlack()) {
+				bXDFs.add(new SpecularBRDF(colorKR, new DielectricFresnel(1.0F, eta)));
+			}
+			
+			if(!colorKT.isBlack()) {
+				bXDFs.add(new SpecularBTDF(colorKT, 1.0F, eta));
+			}
+			
+			return new BSDF(bXDFs).compute(intersection, this.textureEmission.compute(intersection));
 		}
 	}
 }

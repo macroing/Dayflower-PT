@@ -44,6 +44,7 @@ Supported Materials
 * Phong
 * Plastic
 * Substrate
+* Uber
 
 Supported Shapes
 ----------------
