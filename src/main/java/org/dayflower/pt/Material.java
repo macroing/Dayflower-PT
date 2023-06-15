@@ -507,7 +507,7 @@ public abstract class Material {
 	}
 	
 	public static Material substrate(final Texture textureKD, final Texture textureKS) {
-		return substrate(textureKD, textureKS, Texture.constant(new Color3D(0.1D)));
+		return substrate(textureKD, textureKS, Texture.constant(0.1D));
 	}
 	
 	public static Material substrate(final Texture textureKD, final Texture textureKS, final Texture textureRoughness) {
