@@ -20,6 +20,7 @@ Supported BXDFs
 * Disney Fake SS BRDF
 * Disney Retro BRDF
 * Disney Sheen BRDF
+* Fourier BXDF
 * Fresnel Blend BRDF
 * Fresnel Specular BXDF
 * Lambertian BRDF
@@ -36,6 +37,7 @@ Supported Materials
 * Checkerboard
 * Clear Coat
 * Disney
+* Fourier
 * Glass
 * Glossy
 * Matte

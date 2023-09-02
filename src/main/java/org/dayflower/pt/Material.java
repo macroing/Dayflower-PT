@@ -18,11 +18,17 @@
  */
 package org.dayflower.pt;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.IntPredicate;
 
 import org.macroing.art4j.color.Color3D;
 import org.macroing.geo4j.common.AngleD;
@@ -248,6 +254,18 @@ public abstract class Material {
 	
 	public static Material disney(final Texture textureColor, final Texture textureEmission, final Texture textureScatterDistance, final Texture textureAnisotropic, final Texture textureClearCoat, final Texture textureClearCoatGloss, final Texture textureDiffuseTransmission, final Texture textureEta, final Texture textureFlatness, final Texture textureMetallic, final Texture textureRoughness, final Texture textureSheen, final Texture textureSheenTint, final Texture textureSpecularTint, final Texture textureSpecularTransmission, final boolean isThin) {
 		return new DisneyMaterial(textureColor, textureEmission, textureScatterDistance, textureAnisotropic, textureClearCoat, textureClearCoatGloss, textureDiffuseTransmission, textureEta, textureFlatness, textureMetallic, textureRoughness, textureSheen, textureSheenTint, textureSpecularTint, textureSpecularTransmission, isThin);
+	}
+	
+	public static Material fourier(final String filename) {
+		return fourier(filename, Color3D.BLACK);
+	}
+	
+	public static Material fourier(final String filename, final Color3D colorEmission) {
+		return fourier(filename, Texture.constant(colorEmission));
+	}
+	
+	public static Material fourier(final String filename, final Texture textureEmission) {
+		return new FourierMaterial(filename, textureEmission);
 	}
 	
 	public static Material glass() {
@@ -805,7 +823,7 @@ public abstract class Material {
 		public Optional<Result> compute(final Intersection intersection, final Color3D emission) {
 			final OrthonormalBasis33D orthonormalBasis = intersection.getOrthonormalBasisWS();
 			
-			final Vector3D nWS = intersection.getSurfaceNormalWSCorrectlyOriented();
+			final Vector3D nWS = intersection.getSurfaceNormalWS();
 			final Vector3D oWS = Vector3D.negate(intersection.getRayWS().getDirection());
 			final Vector3D oLS = orthonormalBasis.transformReverseNormalize(oWS);
 			
@@ -873,7 +891,7 @@ public abstract class Material {
 						probabilityDensityFunctionValue += currentBXDF.evaluatePDF(oLS, iLS);
 					}
 					
-					if(isReflecting && bXDF.getBXDFType().hasReflection() || !isReflecting && bXDF.getBXDFType().hasTransmission()) {
+					if(isReflecting && currentBXDF.getBXDFType().hasReflection() || !isReflecting && currentBXDF.getBXDFType().hasTransmission()) {
 						result = Color3D.add(result, currentBXDF.evaluateDF(oLS, iLS));
 					}
 				}
@@ -960,7 +978,7 @@ public abstract class Material {
 //		public static final BXDFType DIFFUSE_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(true, false, false);
 		public static final BXDFType DIFFUSE_TRANSMISSION = doCreateTransmission(true, false, false);
 		public static final BXDFType GLOSSY_REFLECTION = doCreateReflection(false, true, false);
-//		public static final BXDFType GLOSSY_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(false, true, false);
+		public static final BXDFType GLOSSY_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(false, true, false);
 		public static final BXDFType GLOSSY_TRANSMISSION = doCreateTransmission(false, true, false);
 		public static final BXDFType SPECULAR_REFLECTION = doCreateReflection(false, false, true);
 		public static final BXDFType SPECULAR_REFLECTION_AND_TRANSMISSION = doCreateReflectionAndTransmission(false, false, true);
@@ -1925,6 +1943,441 @@ public abstract class Material {
 	
 	////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	private static final class FourierBXDF implements BXDF {
+		private final FourierBXDFTable fourierBXDFTable;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public FourierBXDF(final FourierBXDFTable fourierBXDFTable) {
+			this.fourierBXDFTable = Objects.requireNonNull(fourierBXDFTable, "fourierBXDFTable == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public BXDFType getBXDFType() {
+			return BXDFType.GLOSSY_REFLECTION_AND_TRANSMISSION;
+		}
+		
+		@Override
+		public Color3D evaluateDF(final Vector3D o, final Vector3D i) {
+			final double muI = Vector3D.negate(i).cosTheta();
+			final double muO = o.cosTheta();
+			final double cosPhi = doCosDPhi(Vector3D.negate(i), o);
+			
+			final int[] offsetI = new int[1];
+			final int[] offsetO = new int[1];
+			
+			final double[] weightsI = new double[4];
+			final double[] weightsO = new double[4];
+			
+			if(!this.fourierBXDFTable.getWeightsAndOffset(muI, offsetI, weightsI) || !this.fourierBXDFTable.getWeightsAndOffset(muO, offsetO, weightsO)) {
+				return new Color3D();
+			}
+			
+			final double[] ak = new double[this.fourierBXDFTable.mMax * this.fourierBXDFTable.nChannels];
+			
+			int mMax = 0;
+			
+			for(int b = 0; b < 4; b++) {
+				for(int a = 0; a < 4; a++) {
+					final double weight = weightsI[a] * weightsO[b];
+					
+					if(weight != 0.0D) {
+						final int[] m = new int[1];
+						final int[] n = new int[1];
+						
+						final double[] ap = this.fourierBXDFTable.getAk(offsetI[0] + a, offsetO[0] + b, m, n);
+						
+						mMax = Ints.max(mMax, m[0]);
+						
+						for(int c = 0; c < this.fourierBXDFTable.nChannels; c++) {
+							for(int k = 0; k < m[0]; k++) {
+								ak[c * this.fourierBXDFTable.mMax + k] += weight * ap[n[0] + c * m[0] + k];
+							}
+						}
+					}
+				}
+			}
+			
+			final double y = Doubles.max(0.0D, Interpolation.fourier(ak, mMax, cosPhi, 0));
+			
+			double scale = muI != 0.0D ? 1.0D / Doubles.abs(muI) : 0.0D;
+			
+			if(muI * muO > 0.0D) {
+				final double eta = muI > 0.0D ? 1.0D / this.fourierBXDFTable.eta : this.fourierBXDFTable.eta;
+				
+				scale *= eta * eta;
+			}
+			
+			if(this.fourierBXDFTable.nChannels == 1) {
+				return new Color3D(y * scale);
+			}
+			
+			final double r = Interpolation.fourier(ak, mMax, cosPhi, 1 * this.fourierBXDFTable.mMax);
+			final double b = Interpolation.fourier(ak, mMax, cosPhi, 2 * this.fourierBXDFTable.mMax);
+			final double g = 1.39829D * y - 0.100913D * b - 0.297375D * r;
+			
+			final double[] rgb = {r * scale, g * scale, b * scale};
+			
+			return Color3D.saturate(new Color3D(rgb[0], rgb[1], rgb[2]), 0.0D, Doubles.MAX_VALUE);
+		}
+		
+		@Override
+		public Optional<BXDFResult> sampleDF(final Vector3D o, final Point2D p) {
+			final double muO = o.cosTheta();
+			
+			final double[] pdfMu = new double[1];
+			
+			final double muI = Interpolation.sampleCatmullRom2D(this.fourierBXDFTable.nMu, this.fourierBXDFTable.nMu, this.fourierBXDFTable.mu, this.fourierBXDFTable.mu, this.fourierBXDFTable.a0, this.fourierBXDFTable.cdf, muO, p.x, null, pdfMu);
+			
+			final int[] offsetI = new int[1];
+			final int[] offsetO = new int[1];
+			
+			final double[] weightsI = new double[4];
+			final double[] weightsO = new double[4];
+			
+			if(!this.fourierBXDFTable.getWeightsAndOffset(muI, offsetI, weightsI) || !this.fourierBXDFTable.getWeightsAndOffset(muO, offsetO, weightsO)) {
+				return Optional.empty();
+			}
+			
+			final double[] ak = new double[this.fourierBXDFTable.mMax * this.fourierBXDFTable.nChannels];
+			
+			int mMax = 0;
+			
+			for(int b = 0; b < 4; b++) {
+				for(int a = 0; a < 4; a++) {
+					final double weight = weightsI[a] * weightsO[b];
+					
+					if(weight != 0.0D) {
+						final int[] m = new int[1];
+						final int[] n = new int[1];
+						
+						final double[] ap = this.fourierBXDFTable.getAk(offsetI[0] + a, offsetO[0] + b, m, n);
+						
+						mMax = Ints.max(mMax, m[0]);
+						
+						for(int c = 0; c < this.fourierBXDFTable.nChannels; c++) {
+							for(int k = 0; k < m[0]; k++) {
+								ak[c * this.fourierBXDFTable.mMax + k] += weight * ap[n[0] + c * m[0] + k];
+							}
+						}
+					}
+				}
+			}
+			
+			final double[] phi = new double[1];
+			final double[] pdfPhi = new double[1];
+			
+			final double y = Interpolation.sampleFourier(ak, this.fourierBXDFTable.recip, mMax, p.x, pdfPhi, phi);
+			
+			final double pDF = Doubles.max(0.0D, pdfPhi[0] * pdfMu[0]);
+			
+			final double sin2ThetaI = Doubles.max(0.0D, 1.0D - muI * muI);
+			
+			double norm = Doubles.sqrt(sin2ThetaI / o.sinThetaSquared());
+			
+			if(Double.isInfinite(norm)) {
+				norm = 0.0D;
+			}
+			
+			final double sinPhi = Doubles.sin(phi[0]);
+			final double cosPhi = Doubles.cos(phi[0]);
+			
+			final Vector3D i = Vector3D.normalize(new Vector3D(-(norm * (cosPhi * o.x - sinPhi * o.y)), -(norm * (sinPhi * o.x + cosPhi * o.y)), -muI));
+			
+			double scale = muI != 0.0D ? 1.0D / Doubles.abs(muI) : 0.0D;
+			
+			if(muI * muO > 0.0D) {
+				final double eta = muI > 0.0D ? 1.0D / this.fourierBXDFTable.eta : this.fourierBXDFTable.eta;
+				
+				scale *= eta * eta;
+			}
+			
+			if(this.fourierBXDFTable.nChannels == 1) {
+				return Optional.of(new BXDFResult(getBXDFType(), new Color3D(y * scale), i, pDF));
+			}
+			
+			final double r = Interpolation.fourier(ak, mMax, cosPhi, 1 * this.fourierBXDFTable.mMax);
+			final double b = Interpolation.fourier(ak, mMax, cosPhi, 2 * this.fourierBXDFTable.mMax);
+			final double g = 1.39829D * y - 0.100913D * b - 0.297375D * r;
+			
+			final double[] rgb = {r * scale, g * scale, b * scale};
+			
+			return Optional.of(new BXDFResult(getBXDFType(), Color3D.saturate(new Color3D(rgb[0], rgb[1], rgb[2]), 0.0D, Doubles.MAX_VALUE), i, pDF));
+		}
+		
+		@Override
+		public double evaluatePDF(final Vector3D o, final Vector3D i) {
+			final double muI = Vector3D.negate(i).cosTheta();
+			final double muO = o.cosTheta();
+			final double cosPhi = doCosDPhi(Vector3D.negate(i), o);
+			
+			final int[] offsetI = new int[1];
+			final int[] offsetO = new int[1];
+			
+			final double[] weightsI = new double[4];
+			final double[] weightsO = new double[4];
+			
+			if(!this.fourierBXDFTable.getWeightsAndOffset(muI, offsetI, weightsI) || !this.fourierBXDFTable.getWeightsAndOffset(muO, offsetO, weightsO)) {
+				return 0.0D;
+			}
+			
+			final double[] ak = new double[this.fourierBXDFTable.mMax * this.fourierBXDFTable.nChannels];
+			
+			int mMax = 0;
+			
+			for(int j = 0; j < 4; j++) {
+				for(int k = 0; k < 4; k++) {
+					final double weight = weightsI[k] * weightsO[j];
+					
+					if(weight == 0.0D) {
+						continue;
+					}
+					
+					final int[] order = new int[1];
+					final int[] offset = new int[1];
+					
+					final double[] coeffs = this.fourierBXDFTable.getAk(offsetI[0] + k, offsetO[0] + j, order, offset);
+					
+					mMax = Ints.max(mMax, order[0]);
+					
+					for(int l = 0; l < order[0]; l++) {
+						ak[l] += coeffs[offset[0] + l] * weight;
+					}
+				}
+			}
+			
+			double rho = 0.0D;
+			
+			for(int j = 0; j < 4; j++) {
+				if(weightsO[j] == 0.0D) {
+					continue;
+				}
+				
+				rho += weightsO[j] * this.fourierBXDFTable.cdf[(offsetO[0] + j) * this.fourierBXDFTable.nMu + this.fourierBXDFTable.nMu - 1] * (2.0D * Doubles.PI);
+			}
+			
+			final double y = Interpolation.fourier(ak, mMax, cosPhi, 0);
+			
+			return rho > 0.0D && y > 0.0D ? y / rho : 0.0D;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private static double doCosDPhi(final Vector3D wa, final Vector3D wb) {
+			final double waxy = wa.x * wa.x + wa.y * wa.y;
+			final double wbxy = wb.x * wb.x + wb.y * wb.y;
+			
+			if(waxy == 0.0D || wbxy == 0.0D) {
+				return 1.0D;
+			}
+			
+			return Doubles.saturate((wa.x * wb.x + wa.y * wb.y) / Doubles.sqrt(waxy * wbxy), -1.0D, 1.0D);
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class FourierBXDFTable {
+		public double eta;
+		public double[] a;
+		public double[] a0;
+		public double[] cdf;
+		public double[] mu;
+		public double[] recip;
+		public int mMax;
+		public int nChannels;
+		public int nMu;
+		public int[] aOffset;
+		public int[] m;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public FourierBXDFTable() {
+			
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public boolean getWeightsAndOffset(final double cosTheta, final int[] offset, final double[] weights) {
+			return Interpolation.catmullRomWeights(this.nMu, this.mu, cosTheta, offset, weights);
+		}
+		
+		public boolean read(final String filename) {
+			this.mu = null;
+			this.cdf = null;
+			this.a = null;
+			this.aOffset = null;
+			this.m = null;
+			this.nChannels = 0;
+			
+			try(final BufferedInputStream bufferedInputStream = new BufferedInputStream(new FileInputStream(new File(filename)))) {
+				if(!doReadHeader(bufferedInputStream)) {
+					return false;
+				}
+				
+				if(!doReadVersion(bufferedInputStream)) {
+					return false;
+				}
+				
+				if(!doReadFlags(bufferedInputStream)) {
+					return false;
+				}
+				
+				this.nMu = doReadInt32(bufferedInputStream);
+				
+				final int nCoeffs = doReadInt32(bufferedInputStream);
+				
+				this.mMax = doReadInt32(bufferedInputStream);
+				this.nChannels = doReadInt32(bufferedInputStream);
+				
+				if(this.nChannels != 1 && this.nChannels != 3) {
+					return false;
+				}
+				
+				final int nBases = doReadInt32(bufferedInputStream);
+				
+				if(nBases != 1) {
+					return false;
+				}
+				
+//				Unused:
+				doReadInt32(bufferedInputStream);
+				doReadInt32(bufferedInputStream);
+				doReadInt32(bufferedInputStream);
+				
+				this.eta = doReadFloat(bufferedInputStream);
+				
+//				Unused:
+				doReadInt32(bufferedInputStream);
+				doReadInt32(bufferedInputStream);
+				doReadInt32(bufferedInputStream);
+				doReadInt32(bufferedInputStream);
+				
+				this.mu = new double[this.nMu];
+				this.cdf = new double[this.nMu * this.nMu];
+				this.a0 = new double[this.nMu * this.nMu];
+				
+				final int[] offsetAndLength = new int[this.nMu * this.nMu * 2];
+				
+				this.aOffset = new int[this.nMu * this.nMu];
+				this.m = new int[this.nMu * this.nMu];
+				this.a = new double[nCoeffs];
+				
+				for(int i = 0; i < this.nMu; i++) {
+					this.mu[i] = doReadFloat(bufferedInputStream);
+				}
+				
+				for(int i = 0; i < this.nMu * this.nMu; i++) {
+					this.cdf[i] = doReadFloat(bufferedInputStream);
+				}
+				
+				for(int i = 0; i < this.nMu * this.nMu * 2; i++) {
+					offsetAndLength[i] = doReadInt32(bufferedInputStream);
+				}
+				
+				for(int i = 0; i < nCoeffs; i++) {
+					this.a[i] = doReadFloat(bufferedInputStream);
+				}
+				
+				for(int i = 0; i < this.nMu * this.nMu; i++) {
+					final int offset = offsetAndLength[2 * i];
+					final int length = offsetAndLength[2 * i + 1];
+					
+					this.aOffset[i] = offset;
+					this.m[i] = length;
+					this.a0[i] = length > 0 ? this.a[offset] : 0.0F;
+				}
+				
+				this.recip = new double[this.mMax];
+				
+				for(int i = 0; i < this.mMax; i++) {
+					this.recip[i] = 1.0D / i;
+				}
+				
+				return true;
+			} catch(final IOException e) {
+				throw new UncheckedIOException(e);
+			}
+		}
+		
+		public double[] getAk(final int offsetI, final int offsetO, final int[] mptr, final int[] offset) {
+			mptr[0] = this.m[offsetO * this.nMu + offsetI];
+			
+			offset[0] = this.aOffset[offsetO * this.nMu + offsetI];
+			
+			return this.a;
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		private static boolean doReadFlags(final BufferedInputStream bufferedInputStream) throws IOException {
+			final int flags = doReadInt32(bufferedInputStream);
+			
+			return flags == 1;
+		}
+		
+		private static boolean doReadHeader(final BufferedInputStream bufferedInputStream) throws IOException {
+			final StringBuilder stringBuilder = new StringBuilder();
+			
+			for(int i = 0; i < 7; i++) {
+				stringBuilder.append((char)(bufferedInputStream.read()));
+			}
+			
+			return stringBuilder.toString().equals("SCATFUN");
+		}
+		
+		private static boolean doReadVersion(final BufferedInputStream bufferedInputStream) throws IOException {
+			final int version = bufferedInputStream.read();
+			
+			return version == 1;
+		}
+		
+		private static float doReadFloat(final BufferedInputStream bufferedInputStream) throws IOException {
+			return Float.intBitsToFloat(doReadInt32(bufferedInputStream));
+		}
+		
+		private static int doReadInt32(final BufferedInputStream bufferedInputStream) throws IOException {
+			final int a = bufferedInputStream.read();
+			final int b = bufferedInputStream.read();
+			final int c = bufferedInputStream.read();
+			final int d = bufferedInputStream.read();
+			
+			return ((a & 0xFF) << 0) | ((b & 0xFF) << 8) | ((c & 0xFF) << 16) | ((d & 0xFF) << 24);
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class FourierMaterial extends Material {
+		private final FourierBXDFTable fourierBXDFTable;
+		private final Texture textureEmission;
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public FourierMaterial(final String filename, final Texture textureEmission) {
+			this.fourierBXDFTable = new FourierBXDFTable();
+			this.fourierBXDFTable.read(Objects.requireNonNull(filename, "filename == null"));
+			this.textureEmission = Objects.requireNonNull(textureEmission, "textureEmission == null");
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		@Override
+		public Optional<Result> compute(final Intersection intersection) {
+			if(this.fourierBXDFTable.nChannels > 0) {
+				final BSDF bSDF = new BSDF(new FourierBXDF(this.fourierBXDFTable));
+				
+				return bSDF.compute(intersection, this.textureEmission.compute(intersection));
+			}
+			
+			return Optional.empty();
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
 	private static abstract class Fresnel {
 		protected Fresnel() {
 			
@@ -2358,6 +2811,412 @@ public abstract class Material {
 			final BSDF bSDF = new BSDF(new AshikhminShirleyBRDF(colorKR, roughness));
 			
 			return bSDF.compute(intersection, this.textureEmission.compute(intersection));
+		}
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	private static final class Interpolation {
+		private Interpolation() {
+			
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		public static boolean catmullRomWeights(final int size, final double[] nodes, final double x, final int[] offset, final double[] weights) {
+			if(!(x >= nodes[0] && x <= nodes[size - 1])) {
+				return false;
+			}
+			
+			final int index = findInterval(size, i -> nodes[i] <= x);
+			
+			offset[0] = index - 1;
+			
+			final double x0 = nodes[index + 0];
+			final double x1 = nodes[index + 1];
+			
+			final double t1 = (x - x0) / (x1 - x0);
+			final double t2 = t1 * t1;
+			final double t3 = t2 * t1;
+			
+			weights[1] = +2.0D * t3 - 3.0D * t2 + 1.0D;
+			weights[2] = -2.0D * t3 + 3.0D * t2;
+			
+			if(index > 0) {
+				final double w0 = (t3 - 2.0D * t2 + t1) * (x1 - x0) / (x1 - nodes[index - 1]);
+				
+				weights[0] = -w0;
+				weights[2] += w0;
+			} else {
+				final double w0 = t3 - 2.0D * t2 + t1;
+				
+				weights[0] = 0.0D;
+				weights[1] -= w0;
+				weights[2] += w0;
+			}
+			
+			if(index + 2 < size) {
+				final double w3 = (t3 - t2) * (x1 - x0) / (nodes[index + 2] - x0);
+				
+				weights[1] -= w3;
+				weights[3] = w3;
+			} else {
+				final double w3 = t3 - t2;
+				
+				weights[1] -= w3;
+				weights[2] += w3;
+				weights[3] = 0.0D;
+			}
+			
+			return true;
+		}
+		
+		@SuppressWarnings("unused")
+		public static double catmullRom(final int size, final double[] nodes, final double[] values, final double x) {
+			if(!(x >= nodes[0] && x <= nodes[size - 1])) {
+				return 0.0D;
+			}
+			
+			final int index = findInterval(size, i -> nodes[i] <= x);
+			
+			final double x0 = nodes[index + 0];
+			final double x1 = nodes[index + 1];
+			
+			final double f0 = values[index + 0];
+			final double f1 = values[index + 1];
+			
+			final double width = x1 - x0;
+			
+			double d0;
+			double d1;
+			
+			if(index > 0) {
+				d0 = width * (f1 - values[index - 1]) / (x1 - nodes[index - 1]);
+			} else {
+				d0 = f1 - f0;
+			}
+			
+			if(index + 2 < size) {
+				d1 = width * (values[index + 2] - f0) / (nodes[index + 2] - x0);
+			} else {
+				d1 = f1 - f0;
+			}
+			
+			final double t1 = (x - x0) / (x1 - x0);
+			final double t2 = t1 * t1;
+			final double t3 = t2 * t1;
+			
+			return (2.0D * t3 - 3.0D * t2 + 1.0D) * f0 + (-2.0D * t3 + 3.0D * t2) * f1 + (t3 - 2.0D * t2 + t1) * d0 + (t3 - t2) * d1;
+		}
+		
+		public static double fourier(final double[] a, final int m, final double cosPhi, final int aOffset) {
+			double value = 0.0D;
+			double cosKMinusOnePhi = cosPhi;
+			double cosKPhi = 1.0D;
+			
+			for(int k = 0; k < m; k++) {
+				value += a[aOffset + k] * cosKPhi;
+				
+				final double cosKPlusOnePhi = 2.0D * cosPhi * cosKPhi - cosKMinusOnePhi;
+				
+				cosKMinusOnePhi = cosKPhi;
+				cosKPhi = cosKPlusOnePhi;
+			}
+			
+			return value;
+		}
+		
+		@SuppressWarnings("unused")
+		public static double integrateCatmullRom(final int n, final double[] x, final double[] values, final double[] cDF, final int valuesOffset, final int cDFOffset) {
+			double sum = 0.0D;
+			
+			cDF[cDFOffset] = 0.0D;
+			
+			for(int i = 0; i < n - 1; i++) {
+				final double x0 = x[i + 0];
+				final double x1 = x[i + 1];
+				
+				final double f0 = values[valuesOffset + i + 0];
+				final double f1 = values[valuesOffset + i + 1];
+				
+				final double width = x1 - x0;
+				
+				double d0;
+				double d1;
+				
+				if(i > 0) {
+					d0 = width * (f1 - values[valuesOffset + i - 1]) / (x1 - x[i - 1]);
+				} else {
+					d0 = f1 - f0;
+				}
+				
+				if(i + 2 < n) {
+					d1 = width * (values[valuesOffset + i + 2] - f0) / (x[i + 2] - x0);
+				} else {
+					d1 = f1 - f0;
+				}
+				
+				sum += ((d0 - d1) * (1.0D / 12.0D) + (f0 + f1) * 0.5D) * width;
+				
+				cDF[cDFOffset + i + 1] = sum;
+			}
+			
+			return sum;
+		}
+		
+		public static double interpolate(final double[] array, final int index, final double[] weights, final int offset, final int size) {
+			double value = 0.0D;
+			
+			for(int i = 0; i < 4; i++) {
+				if(weights[i] != 0.0D) {
+					value += array[(offset + i) * size + index] * weights[i];
+				}
+			}
+			
+			return value;
+		}
+		
+		@SuppressWarnings("unused")
+		public static double invertCatmullRom(final int n, final double[] x, final double[] values, final double u) {
+			if(!(u > values[0])) {
+				return x[0];
+			} else if(!(u < values[n - 1])) {
+				return x[n - 1];
+			}
+			
+			final int index = findInterval(n, i -> values[i] <= u);
+			
+			final double x0 = x[index + 0];
+			final double x1 = x[index + 1];
+			
+			final double f0 = values[index + 0];
+			final double f1 = values[index + 1];
+			
+			final double width = x1 - x0;
+			
+			double d0;
+			double d1;
+			
+			if(index > 0) {
+				d0 = width * (f1 - values[index - 1]) / (x1 - x[index - 1]);
+			} else {
+				d0 = f1 - f0;
+			}
+			
+			if(index + 2 < n) {
+				d1 = width * (values[index + 2] - f0) / (x[index + 2] - x0);
+			} else {
+				d1 = f1 - f0;
+			}
+			
+			double a = 0.0D;
+			double b = 1.0D;
+			
+			double t1 = 0.5D;
+			
+			while(true) {
+				if(!(t1 > a && t1 < b)) {
+					t1 = 0.5D * (a + b);
+				}
+				
+				final double t2 = t1 * t1;
+				final double t3 = t2 * t1;
+				
+				final double fHat1 = (2.0D * t3 - 3.0D * t2 + 1.0D) * f0 + (-2.0D * t3 + 3.0D * t2) * f1 + (t3 - 2.0D * t2 + t1) * d0 + (t3 - t2) * d1;
+				final double fHat2 = (6.0D * t2 - 6.0D * t1) * f0 + (-6.0D * t2 + 6.0D * t1) * f1 + (3.0D * t2 - 4.0D * t1 + 1.0D) * d0 + (3.0D * t2 - 2.0D * t1) * d1;
+				
+				if(Doubles.abs(fHat1 - u) < 1.0e-6D || b - a < 1.0e-6D) {
+					break;
+				}
+				
+				if(fHat1 - u < 0.0D) {
+					a = t1;
+				} else {
+					b = t1;
+				}
+				
+				t1 -= (fHat1 - u) / fHat2;
+			}
+			
+			return x0 + t1 * width;
+		}
+		
+		public static double sampleCatmullRom2D(final int size1, final int size2, final double[] nodes1, final double[] nodes2, final double[] values, final double[] cDF, final double alpha, final double u, final double[] fVal, final double[] pDF) {
+			final int[] offset = new int[1];
+			
+			final double[] weights = new double[4];
+			
+			if(!catmullRomWeights(size1, nodes1, alpha, offset, weights)) {
+				return 0.0D;
+			}
+			
+			final double maximum = interpolate(cDF, size2 - 1, weights, offset[0], size2);
+			
+			double v = u * maximum;
+			
+			final double w = v;
+			
+			final int index = findInterval(size2, i -> interpolate(cDF, i, weights, offset[0], size2) <= w);
+			
+			final double f0 = interpolate(values, index + 0, weights, offset[0], size2);
+			final double f1 = interpolate(values, index + 1, weights, offset[0], size2);
+			
+			final double x0 = nodes2[index + 0];
+			final double x1 = nodes2[index + 1];
+			
+			final double width = x1 - x0;
+			
+			double d0;
+			double d1;
+			
+			v = (v - interpolate(cDF, index, weights, offset[0], size2)) / width;
+			
+			if(index > 0) {
+				d0 = width * (f1 - interpolate(values, index - 1, weights, offset[0], size2)) / (x1 - nodes2[index - 1]);
+			} else {
+				d0 = f1 - f0;
+			}
+			
+			if(index + 2 < size2) {
+				d1 = width * (interpolate(values, index + 2, weights, offset[0], size2) - f0) / (nodes2[index + 2] - x0);
+			} else {
+				d1 = f1 - f0;
+			}
+			
+			double t;
+			
+			if(f0 != f1) {
+				t = (f0 - Doubles.sqrt(Doubles.max(0.0D, f0 * f0 + 2.0D * v * (f1 - f0)))) / (f0 - f1);
+			} else {
+				t = v / f0;
+			}
+			
+			double a = 0.0D;
+			double b = 1.0D;
+			
+			double fHat1;
+			double fHat2;
+			
+			while(true) {
+				if(!(t >= a && t <= b)) {
+					t = 0.5D * (a + b);
+				}
+				
+				fHat1 = t * (f0 + t * (0.5D * d0 + t * ((1.0D / 3.0D) * (-2.0D * d0 - d1) + f1 - f0 + t * (0.25D * (d0 + d1) + 0.5D * (f0 - f1)))));
+				fHat2 = f0 + t * (d0 + t * (-2.0D * d0 - d1 + 3.0D * (f1 - f0) + t * (d0 + d1 + 2.0D * (f0 - f1))));
+				
+				if(Doubles.abs(fHat1 - v) < 1.0e-6D || b - a < 1.0e-6D) {
+					break;
+				}
+				
+				if(fHat1 - v < 0.0D) {
+					a = t;
+				} else {
+					b = t;
+				}
+				
+				t -= (fHat1 - v) / fHat2;
+			}
+			
+			if(fVal != null && fVal.length > 0) {
+				fVal[0] = fHat2;
+			}
+			
+			pDF[0] = fHat2 / maximum;
+			
+			return x0 + width * t;
+		}
+		
+		public static double sampleFourier(final double[] ak, final double[] recip, final int m, final double u, final double[] pdf, final double[] phiPtr) {
+			double v = u;
+			
+			final boolean flip = v >= 0.5D;
+			
+			if(flip) {
+				v = 1.0D - 2.0D * (v - 0.5D);
+			} else {
+				v *= 2.0F;
+			}
+			
+			double a = 0.0D;
+			double b = Doubles.PI;
+			double phi = 0.5D * Doubles.PI;
+			double f0;
+			double f1;
+			
+			while(true) {
+				final double cosPhi = Doubles.cos(phi);
+				final double sinPhi = Doubles.sqrt(Doubles.max(0.0D, 1.0D - cosPhi * cosPhi));
+				
+				double cosPhiPrev = cosPhi;
+				double cosPhiCur = 1.0D;
+				double sinPhiPrev = -sinPhi;
+				double sinPhiCur = 0.0D;
+				
+				f0 = ak[0] * phi;
+				f1 = ak[0];
+				
+				for(int k = 1; k < m; k++) {
+					final double sinPhiNext = 2.0D * cosPhi * sinPhiCur - sinPhiPrev;
+					final double cosPhiNext = 2.0D * cosPhi * cosPhiCur - cosPhiPrev;
+					
+					sinPhiPrev = sinPhiCur;
+					sinPhiCur = sinPhiNext;
+					
+					cosPhiPrev = cosPhiCur;
+					cosPhiCur = cosPhiNext;
+					
+					f0 += ak[k] * recip[k] * sinPhiNext;
+					f1 += ak[k] * cosPhiNext;
+				}
+				
+				f0 -= v * ak[0] * Doubles.PI;
+				
+				if(f0 > 0.0D) {
+					b = phi;
+				} else {
+					a = phi;
+				}
+				
+				if(Doubles.abs(f0) < 1.0e-6D || b - a < 1.0e-6D) {
+					break;
+				}
+				
+				phi -= f0 / f1;
+				
+				if(!(phi > a && phi < b)) {
+					phi = 0.5D * (a + b);
+				}
+			}
+			
+			if(flip) {
+				phi = 2.0D * Doubles.PI - phi;
+			}
+			
+			pdf[0] = (1.0D / (Doubles.PI * 2.0D)) * f1 / ak[0];
+			
+			phiPtr[0] = phi;
+			
+			return f1;
+		}
+		
+		public static int findInterval(final int size, final IntPredicate predicate) {
+			int first = 0;
+			int length = size;
+			
+			while(length > 0) {
+				final int half = length >> 1;
+				final int middle = first + half;
+				
+				if(predicate.test(middle)) {
+					first = middle + 1;
+					length -= half + 1;
+				} else {
+					length = half;
+				}
+			}
+			
+			return Ints.saturate(first - 1, 0, size - 2);
 		}
 	}
 	
