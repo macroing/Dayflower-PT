@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 - 2023 J&#246;rgen Lundgren
+ * Copyright 2022 - 2024 J&#246;rgen Lundgren
  * 
  * This file is part of org.dayflower.pt.
  * 
